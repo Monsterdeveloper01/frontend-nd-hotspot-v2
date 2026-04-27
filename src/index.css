@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #0ea5e9;
+    --primary-dark: #0284c7;
+    --secondary: #3b82f6;
+    --accent: #f59e0b;
+    --light: #f8fafc;
+    --dark: #1e293b;
+    --purple: #9333ea;
+    --emerald: #10b981;
+  }
+
+  body {
+    @apply font-sans bg-[#f8fafc] text-slate-900 antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 text-white px-6 py-3 rounded-xl font-bold transition-all hover:bg-blue-700 active:scale-95 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2;
+  }
+  
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/30 rounded-3xl p-8 shadow-sm;
+  }
+
+  /* 3D Button effect from example */
+  .btn-3d-blue {
+    @apply bg-blue-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-all duration-200 active:scale-95 border-b-4 border-blue-800;
+  }
+
+  .btn-3d-purple {
+    @apply bg-purple-600 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center shadow-md shadow-purple-500/20 hover:bg-purple-700 transition-all duration-200 active:scale-95 border-b-4 border-purple-800;
+  }
+
+  .btn-3d-green {
+    @apply bg-emerald-500 text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center shadow-md shadow-emerald-500/20 hover:bg-emerald-600 transition-all duration-200 active:scale-95 border-b-4 border-emerald-800;
+  }
+}
+
+/* Animations from example */
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+.animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
