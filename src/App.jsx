@@ -11,6 +11,7 @@ import BillLookup from './pages/BillLookup'
 import VoucherOnline from './pages/admin/VoucherOnline'
 import VoucherSold from './pages/admin/VoucherSold'
 import RadiusSettings from './pages/admin/RadiusSettings'
+import NetworkCenter from './pages/admin/NetworkCenter'
 import CheckVoucher from './pages/CheckVoucher'
 import PaymentSuccess from './pages/PaymentSuccess'
 import GamingArea from './pages/GamingArea'
@@ -51,6 +52,7 @@ function App() {
           <Route path="/admin/vouchers" element={<VoucherStock />} />
           <Route path="/admin/vouchers-online" element={<VoucherOnline />} />
           <Route path="/admin/vouchers-sold" element={<VoucherSold />} />
+          <Route path="/admin/network-center" element={<NetworkCenter />} />
           <Route path="/admin/radius-settings" element={<RadiusSettings />} />
           <Route path="/admin/voucher-plans" element={<VoucherPlans />} />
           <Route path="/admin/whatsapp" element={<WhatsAppSettings />} />
@@ -212,9 +214,9 @@ function Home() {
                     <div className="p-6 flex-1">
                       <div className="flex items-center justify-between mb-6">
                         <div className="text-left">
-                          <h3 className={`font-black text-2xl ${c.text} leading-none tracking-tighter`}>{plan.duration}</h3>
+                          <h3 className={`font-black text-2xl ${c.text} leading-none tracking-tighter uppercase`}>{plan.name}</h3>
                           <p className="text-slate-400 text-[10px] mt-2 font-black uppercase flex items-center gap-1 tracking-widest">
-                            <FaIcon name="clock" className="text-[10px]" /> Aktif {plan.duration}
+                            <FaIcon name="clock" className="text-[10px]" /> Aktif {plan.duration.endsWith('h') ? plan.duration.replace('h', ' Jam') : plan.duration.endsWith('d') ? plan.duration.replace('d', ' Hari') : plan.duration.replace('m', ' Bulan')} UNLIMITED
                           </p>
                         </div>
                         <div className={`w-12 h-12 ${c.iconBg} ${c.text} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform`}>

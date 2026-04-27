@@ -10,6 +10,7 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     online: <path d="M12 20v-6M6 20V10M18 20V4" />,
     sold: <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6zM3 6h18M16 10a4 4 0 01-8 0" />,
     customers: <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />,
+    network: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
     logout: <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />,
     menu: <path d="M4 6h16M4 12h16M4 18h16" />,
     close: <path d="M6 18L18 6M6 6l12 12" />
@@ -75,6 +76,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { name: 'Stock Voucher', path: '/admin/vouchers', icon: 'stock' },
     { name: 'User Online', path: '/admin/vouchers-online', icon: 'online' },
     { name: 'Voucher Terjual', path: '/admin/vouchers-sold', icon: 'sold' },
+    { name: 'Network Monitoring', path: '/admin/network-center', icon: 'network', section: 'INFRASTRUCTURE' },
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp', section: 'MESSAGING' },
     { name: 'Data Pelanggan', path: '/admin/customers', icon: 'customers', section: 'PELANGGAN BULANAN' },
   ]

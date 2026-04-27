@@ -91,7 +91,7 @@ const GamingArea = () => {
                                     <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-2 group-hover:text-purple-400 transition-colors">{plan.name}</h3>
                                     <div className="flex items-baseline gap-1 mb-8">
                                         <span className="text-4xl font-black italic tracking-tighter">Rp {Number(plan.price).toLocaleString()}</span>
-                                        <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest">/ {plan.duration}</span>
+                                        <span className="text-slate-500 font-black uppercase text-[10px] tracking-widest">/ {plan.duration.endsWith('h') ? plan.duration.replace('h', ' Jam') : plan.duration.endsWith('d') ? plan.duration.replace('d', ' Hari') : plan.duration.replace('m', ' Bulan')} UNLIMITED</span>
                                     </div>
 
                                     <div className="space-y-4 mb-10">
