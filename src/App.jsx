@@ -14,7 +14,6 @@ import RadiusSettings from './pages/admin/RadiusSettings'
 import NetworkCenter from './pages/admin/NetworkCenter'
 import CheckVoucher from './pages/CheckVoucher'
 import Maintenance from './pages/Maintenance'
-import SpeedTest from './pages/SpeedTest'
 import PaymentSuccess from './pages/PaymentSuccess'
 import GamingArea from './pages/GamingArea'
 import GamingCheckout from './pages/GamingCheckout'
@@ -62,7 +61,6 @@ function App() {
         <Route path="/gaming-success" element={<GamingSuccess />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/speed-test" element={<SpeedTest />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/check-voucher" element={<CheckVoucher />} />
         <Route path="/payment" element={<BillLookup />} />
@@ -184,34 +182,10 @@ function Home() {
             </div>
             
             {/* Quick Actions Mobile */}
-            <div className="grid grid-cols-1 gap-3 lg:hidden mt-8">
-              <Link to="/gaming-area" className="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center shadow-lg shadow-purple-200 animate-pulse">
-                <i className="fas fa-gamepad mr-2"></i> Enter Gaming Area
-              </Link>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 lg:hidden mt-8">
                 <Link to="/payment" className="btn-3d-blue py-3 text-xs"><i className="fas fa-credit-card mr-2"></i> Bayar Tagihan</Link>
                 <Link to="/check-voucher" className="bg-white border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs flex items-center justify-center shadow-sm hover:border-blue-400 hover:text-blue-600 transition-all duration-200 active:scale-95">
                   <i className="fas fa-search mr-2"></i> Cek Voucher
-                </Link>
-              </div>
-            </div>
-
-            {/* Desktop Gaming Area Banner */}
-            <div className="hidden lg:block">
-                <Link to="/gaming-area" className="group relative block w-80 p-8 bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden border border-slate-800 hover:scale-105 transition-all duration-500">
-                    <div className="relative z-10">
-                        <div className="w-12 h-12 bg-purple-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-500/50 group-hover:rotate-12 transition-transform">
-                            <i className="fas fa-gamepad text-white text-xl"></i>
-                        </div>
-                        <h4 className="text-white font-black text-xl mb-1 uppercase tracking-tighter">Gaming Area</h4>
-                        <p className="text-slate-400 text-xs font-bold leading-relaxed mb-6">High priority bandwidth for gaming & streaming.</p>
-                        <div className="inline-flex items-center gap-2 text-purple-400 font-black text-[10px] uppercase tracking-widest group-hover:gap-4 transition-all">
-                            Enter Zone <i className="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-                    {/* Animated Background Gradients */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/20 rounded-full blur-3xl group-hover:bg-purple-600/40 transition-colors"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-600/10 rounded-full blur-3xl"></div>
                 </Link>
             </div>
           </div>
@@ -275,6 +249,44 @@ function Home() {
                   </div>
                 )
               })
+            )}
+
+            {/* Special Gaming Area Card at the end */}
+            {!loading && (
+              <Link to="/gaming-area" className="w-full max-w-[340px] rounded-2xl overflow-hidden border-2 border-purple-200 shadow-xl shadow-purple-50 flex flex-col bg-white hover:shadow-purple-100 hover:-translate-y-2 transition-all duration-300 relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-blue-50 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                <div className="h-2 bg-gradient-to-r from-purple-400 to-blue-400"></div>
+                
+                <div className="p-8 flex-1 flex flex-col relative z-10">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="text-left">
+                      <h3 className="font-black text-3xl text-purple-700 leading-none tracking-tighter uppercase">GAMING<br/>AREA</h3>
+                      <p className="text-purple-400 text-[10px] mt-3 font-black uppercase flex items-center gap-2 tracking-widest">
+                        <i className="fas fa-bolt text-blue-500"></i> Low Latency Active
+                      </p>
+                    </div>
+                    <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                      <i className="fas fa-gamepad text-2xl"></i>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-10 text-left">
+                    <div className="text-sm text-slate-500 font-bold leading-relaxed">
+                      Butuh kecepatan lebih untuk push rank? Masuk ke area gaming kami.
+                    </div>
+                  </div>
+
+                  <div className="mt-auto">
+                    <div className="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-purple-700 transition-colors shadow-lg shadow-purple-200">
+                      Buka Area <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
+                <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+              </Link>
             )}
           </div>
         </div>

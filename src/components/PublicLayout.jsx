@@ -40,13 +40,6 @@ const PublicLayout = ({ children }) => {
                             <span className="font-bold text-slate-700 text-lg">Beranda</span>
                         </Link>
 
-                        <Link to="/speed-test" onClick={toggleMenu} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-amber-50 hover:border-amber-100 transition-all group">
-                            <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i className="fas fa-bolt text-xl" />
-                            </div>
-                            <span className="font-bold text-slate-700 text-lg">Speedtest</span>
-                        </Link>
-
                         <Link to="/check-voucher" onClick={toggleMenu} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-blue-50 hover:border-blue-100 transition-all group">
                             <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i className="fas fa-search text-xl" />
