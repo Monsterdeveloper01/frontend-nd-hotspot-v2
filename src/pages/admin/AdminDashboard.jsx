@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Line } from 'react-chartjs-2'
+import { Line, Bar } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -19,6 +20,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -55,6 +57,7 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
 
 const AdminDashboard = () => {
   const [data, setData] = useState(null)
+  const [peakHours, setPeakHours] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [time, setTime] = useState(new Date())
@@ -65,17 +68,40 @@ const AdminDashboard = () => {
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyFilter, setHistoryFilter] = useState('all')
 
+  const [isMaintenance, setIsMaintenance] = useState(false)
+
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/dashboard/stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      setData(res.data)
+      const [statsRes, peakRes, maintRes] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_API_URL}/dashboard/stats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${import.meta.env.VITE_API_URL}/analytics/peak-hours`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${import.meta.env.VITE_API_URL}/maintenance/status`)
+      ])
+      setData(statsRes.data)
+      setPeakHours(peakRes.data)
+      setIsMaintenance(maintRes.data.maintenance_mode)
     } catch (err) {
       console.error('Failed to fetch dashboard data')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const toggleMaintenance = async () => {
+    if (!confirm(`Apakah Anda yakin ingin ${isMaintenance ? 'MENONAKTIFKAN' : 'MENGAKTIFKAN'} Mode Maintenance?`)) return
+    try {
+      const token = localStorage.getItem('token')
+      await axios.post(`${import.meta.env.VITE_API_URL}/maintenance/toggle`, { active: !isMaintenance }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setIsMaintenance(!isMaintenance)
+    } catch (err) {
+      alert('Gagal mengubah mode maintenance')
     }
   }
 
@@ -123,7 +149,7 @@ const AdminDashboard = () => {
     if (modalOpen) fetchHistory(1, historyFilter)
   }, [modalOpen, historyFilter])
 
-  if (loading) return (
+  if (loading || !data) return (
     <div className="flex items-center justify-center h-96">
       <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
     </div>
@@ -187,6 +213,13 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <button 
+            onClick={toggleMaintenance}
+            className={`px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg ${isMaintenance ? 'bg-rose-600 text-white shadow-rose-200' : 'bg-white text-slate-600 border border-slate-200 hover:border-rose-200 hover:text-rose-600 shadow-sm'}`}
+          >
+            <div className={`w-2 h-2 rounded-full ${isMaintenance ? 'bg-white animate-pulse' : 'bg-slate-300'}`}></div>
+            {isMaintenance ? 'Maintenance: ON' : 'Maintenance: OFF'}
+          </button>
           <div className="bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
             <Icon name="clock" className="w-4 h-4 text-blue-600" />
             <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">
@@ -290,22 +323,61 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Chart Section */}
-      <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-          <div>
-            <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Trend Pendapatan Harian</h3>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Akumulasi settlement Bill & Voucher bulan ini</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Live Processing</span>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* Revenue Chart */}
+        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Trend Pendapatan</h3>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Akumulasi settlement harian bulan ini</p>
+            </div>
+            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+              <Icon name="trend" className="w-5 h-5" />
             </div>
           </div>
+          <div className="h-80 w-full">
+            <Line data={chartConfig} options={chartOptions} />
+          </div>
         </div>
-        <div className="h-80 w-full">
-          <Line data={chartConfig} options={chartOptions} />
+
+        {/* Peak Hours Chart */}
+        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+            <div>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Jam Ramai Pengunjung</h3>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Statistik kunjungan unik per jam (7 hari terakhir)</p>
+            </div>
+            <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+              <Icon name="clock" className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="h-80 w-full">
+            <Bar 
+              data={{
+                labels: peakHours.map(p => p.hour),
+                datasets: [{
+                  label: 'Visitor Hits',
+                  data: peakHours.map(p => p.count),
+                  backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                  hoverBackgroundColor: 'rgba(79, 70, 229, 1)',
+                  borderRadius: 8,
+                }]
+              }} 
+              options={{
+                ...chartOptions,
+                plugins: {
+                  ...chartOptions.plugins,
+                  tooltip: {
+                    ...chartOptions.plugins.tooltip,
+                    callbacks: {
+                      label: (ctx) => `${ctx.parsed.y} Kunjungan`
+                    }
+                  }
+                }
+              }} 
+            />
+          </div>
         </div>
       </div>
 
@@ -452,15 +524,15 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {historyData.data.map((tx) => (
+                  {historyData?.data?.map((tx) => (
                     <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-6 font-mono text-xs font-black text-slate-900">{tx.external_id}</td>
                       <td className="px-6 py-6">
-                        <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${tx.external_id.startsWith('BILL-') ? 'bg-purple-100 text-purple-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                          {tx.external_id.startsWith('BILL-') ? 'Bill Payment' : 'Voucher Sale'}
+                        <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${tx.external_id?.startsWith('BILL-') ? 'bg-purple-100 text-purple-600' : 'bg-emerald-100 text-emerald-600'}`}>
+                          {tx.external_id?.startsWith('BILL-') ? 'Bill Payment' : 'Voucher Sale'}
                         </span>
                       </td>
-                      <td className="px-6 py-6 font-black text-slate-900 tracking-tight">Rp {tx.amount.toLocaleString('id-ID')}</td>
+                      <td className="px-6 py-6 font-black text-slate-900 tracking-tight">Rp {(tx.amount || 0).toLocaleString('id-ID')}</td>
                       <td className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                         {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                       </td>

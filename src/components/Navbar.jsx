@@ -56,6 +56,7 @@ const Navbar = ({ toggleMenu }) => {
                     
                     <nav className="flex items-center gap-8">
                         <Link to="/" className="text-sm font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Home</Link>
+                        <Link to="/speed-test" className="text-sm font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Speedtest</Link>
                         <Link to="/payment" className="text-sm font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Bayar Tagihan</Link>
                         <Link to="/check-voucher" className="text-sm font-black text-slate-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Cek Voucher</Link>
                     </nav>

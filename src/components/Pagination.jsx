@@ -31,7 +31,18 @@ const Pagination = ({ meta, onPageChange }) => {
                     return (
                         <button
                             key={index}
-                            onClick={() => link.url && onPageChange(new URL(link.url).searchParams.get('page'))}
+                            onClick={() => {
+                                if (!link.url) return;
+                                try {
+                                    const urlObj = new URL(link.url, window.location.origin);
+                                    const page = urlObj.searchParams.get('page');
+                                    if (page) onPageChange(page);
+                                } catch (e) {
+                                    // Fallback for malformed URLs
+                                    const match = link.url.match(/[?&]page=(\d+)/);
+                                    if (match) onPageChange(match[1]);
+                                }
+                            }}
                             disabled={!link.url}
                             className={`
                                 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all

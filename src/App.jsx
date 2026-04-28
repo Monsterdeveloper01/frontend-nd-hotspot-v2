@@ -13,6 +13,8 @@ import VoucherSold from './pages/admin/VoucherSold'
 import RadiusSettings from './pages/admin/RadiusSettings'
 import NetworkCenter from './pages/admin/NetworkCenter'
 import CheckVoucher from './pages/CheckVoucher'
+import Maintenance from './pages/Maintenance'
+import SpeedTest from './pages/SpeedTest'
 import PaymentSuccess from './pages/PaymentSuccess'
 import GamingArea from './pages/GamingArea'
 import GamingCheckout from './pages/GamingCheckout'
@@ -21,6 +23,27 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import PublicLayout from './components/PublicLayout'
 import { VoucherSkeleton } from './components/Skeleton'
+import axios from 'axios'
+
+// Configure Axios Defaults
+const bypassToken = localStorage.getItem('maintenance_bypass');
+if (bypassToken) {
+  axios.defaults.headers.common['X-Maintenance-Bypass'] = bypassToken;
+}
+
+// Global Response Interceptor
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const isMaintenancePage = window.location.pathname === '/maintenance';
+    if (error.response?.status === 503 && error.response?.data?.error === 'maintenance_mode') {
+      if (!isMaintenancePage) {
+        window.location.href = '/maintenance';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Private Route Component
 const PrivateRoute = ({ children }) => {
@@ -38,6 +61,8 @@ function App() {
         <Route path="/gaming-checkout" element={<GamingCheckout />} />
         <Route path="/gaming-success" element={<GamingSuccess />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/maintenance" element={<Maintenance />} />
+        <Route path="/speed-test" element={<SpeedTest />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/check-voucher" element={<CheckVoucher />} />
         <Route path="/payment" element={<BillLookup />} />
@@ -94,16 +119,25 @@ function Home() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/voucher-plans?is_gaming=false`)
-        const data = await response.json()
-        setPlans(data)
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/voucher-plans?is_gaming=false`)
+        setPlans(res.data || [])
       } catch (err) {
         console.error('Failed to fetch plans')
       } finally {
         setLoading(false)
       }
     }
+
+    const logVisit = async () => {
+      try {
+        await axios.post(`${import.meta.env.VITE_API_URL}/log-visit`, { page: 'home' })
+      } catch (err) {
+        // Silently fail
+      }
+    }
+
     fetchPlans()
+    logVisit()
   }, [])
 
   const handleWhatsAppClick = () => {
@@ -195,14 +229,14 @@ function Home() {
             <p className="text-slate-500 font-bold mt-2">Koneksi cepat untuk aktivitas online Anda</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div className="flex flex-wrap justify-center gap-8">
             {loading ? (
-              [1, 2, 3, 4, 5].map(i => <VoucherSkeleton key={i} />)
+              [1, 2, 3, 4, 5].map(i => <div key={i} className="w-full max-w-[340px]"><VoucherSkeleton /></div>)
             ) : (
               plans.map((plan, index) => {
                 const c = getColorClasses(index);
                 return (
-                  <div key={plan.id} className={`rounded-2xl overflow-hidden border-2 ${c.border} shadow-lg shadow-slate-200/50 flex flex-col bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative group`}>
+                  <div key={plan.id} className={`w-full max-w-[340px] rounded-2xl overflow-hidden border-2 ${c.border} shadow-lg shadow-slate-200/50 flex flex-col bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative group`}>
                     {index === 2 && (
                       <div className="absolute -top-0 -right-0 bg-emerald-500 text-white text-[10px] font-black px-4 py-2 rounded-bl-2xl shadow-md z-10 flex items-center gap-1">
                         <i className="fas fa-fire text-[9px]"></i> BEST SELLER
