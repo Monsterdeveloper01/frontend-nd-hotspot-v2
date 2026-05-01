@@ -65,10 +65,10 @@ function App() {
         <Route path="/check-voucher" element={<CheckVoucher />} />
         <Route path="/payment" element={<BillLookup />} />
         <Route path="/bill-lookup" element={<BillLookup />} />
-        
+
         {/* HIDDEN ADMIN LOGIN */}
         <Route path="/portal-secret-nd-admin" element={<AdminLogin />} />
-        
+
         {/* PROTECTED ADMIN ROUTES */}
         <Route element={<PrivateRoute><AdminLayoutWrapper /></PrivateRoute>}>
           <Route path="/admin-dashboard-access-granted" element={<AdminDashboard />} />
@@ -92,13 +92,13 @@ function App() {
 import AdminLayout from './components/AdminLayout'
 import { Outlet } from 'react-router-dom'
 const AdminLayoutWrapper = () => {
-    // We can extract title/subtitle from location if needed, 
-    // but for now let's keep it simple or use a context.
-    return (
-        <AdminLayout title="Admin System" subtitle="Management & Monitoring Core">
-            <Outlet />
-        </AdminLayout>
-    )
+  // We can extract title/subtitle from location if needed, 
+  // but for now let's keep it simple or use a context.
+  return (
+    <AdminLayout title="Admin System" subtitle="Management & Monitoring Core">
+      <Outlet />
+    </AdminLayout>
+  )
 }
 
 // Icon Helper Component (Font Awesome style)
@@ -158,9 +158,9 @@ function Home() {
       <section className="relative pt-20 lg:pt-28 pb-16 overflow-hidden">
         {/* Background Image with Effects */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src="/logo-wifi-section.png" 
-            alt="Background" 
+          <img
+            src="/logo-wifi-section.png"
+            alt="Background"
             className="w-full h-full object-cover opacity-20 blur-[2px] scale-100"
           />
           <div className="absolute inset-0 bg-white/20"></div>
@@ -169,24 +169,24 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 text-center lg:text-left relative z-10">
           <div className="lg:flex items-center justify-between">
             <div className="lg:max-w-2xl">
-                <div className="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-full mb-6 shadow-sm">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                  <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Network Status: Optimized</span>
-                </div>
-                <h2 className="text-4xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight animate-fadeIn">
-                  Pilih Paket <span className="text-blue-600 underline decoration-blue-100 underline-offset-8">Voucher</span> Internet.
-                </h2>
-                <p className="text-lg text-slate-500 font-bold max-w-xl mb-10 leading-relaxed animate-fadeIn" style={{animationDelay: '0.1s'}}>
-                  Nikmati koneksi internet tercepat dan paling stabil. Tanpa ribet, langsung aktif, dan kuota unlimited!
-                </p>
+              <div className="hidden lg:inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm border border-blue-100 rounded-full mb-6 shadow-sm">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Network Status: Optimized</span>
+              </div>
+              <h2 className="text-4xl lg:text-6xl font-black text-slate-900 mb-6 tracking-tight leading-tight animate-fadeIn">
+                Pilih Paket <span className="text-blue-600 underline decoration-blue-100 underline-offset-8">Voucher</span> Internet.
+              </h2>
+              <p className="text-lg text-slate-500 font-bold max-w-xl mb-10 leading-relaxed animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                Nikmati koneksi internet tercepat dan paling stabil. Tanpa ribet, langsung aktif, dan kuota unlimited!
+              </p>
             </div>
-            
+
             {/* Quick Actions Mobile */}
             <div className="grid grid-cols-2 gap-3 lg:hidden mt-8">
-                <Link to="/payment" className="btn-3d-blue py-3 text-xs"><i className="fas fa-credit-card mr-2"></i> Bayar Tagihan</Link>
-                <Link to="/check-voucher" className="bg-white border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs flex items-center justify-center shadow-sm hover:border-blue-400 hover:text-blue-600 transition-all duration-200 active:scale-95">
-                  <i className="fas fa-search mr-2"></i> Cek Voucher
-                </Link>
+              <Link to="/payment" className="btn-3d-blue py-3 text-xs"><i className="fas fa-credit-card mr-2"></i> Bayar Tagihan</Link>
+              <Link to="/check-voucher" className="bg-white border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs flex items-center justify-center shadow-sm hover:border-blue-400 hover:text-blue-600 transition-all duration-200 active:scale-95">
+                <i className="fas fa-search mr-2"></i> Cek Voucher
+              </Link>
             </div>
           </div>
         </div>
@@ -216,9 +216,9 @@ function Home() {
                         <i className="fas fa-fire text-[9px]"></i> BEST SELLER
                       </div>
                     )}
-                    
+
                     <div className={`h-2 ${c.topLine}`}></div>
-                    
+
                     <div className="p-6 flex-1">
                       <div className="flex items-center justify-between mb-6">
                         <div className="text-left">
@@ -231,9 +231,9 @@ function Home() {
                           <FaIcon name="wifi" className="text-xl" />
                         </div>
                       </div>
-                      
+
                       <div className={`border-t-2 ${c.border} border-opacity-10 my-6`}></div>
-                      
+
                       <div className="mb-8 text-left">
                         <div className={`text-3xl font-black ${c.text} tracking-tight`}>Rp {plan.price.toLocaleString()}</div>
                         <div className="text-[10px] text-slate-400 font-black uppercase mt-1 tracking-widest">Unlimited Access</div>
@@ -250,47 +250,86 @@ function Home() {
                 )
               })
             )}
-
-            {/* Special Gaming Area Card at the end */}
-            {!loading && (
-              <Link to="/gaming-area" className="w-full max-w-[340px] rounded-2xl overflow-hidden border-2 border-purple-200 shadow-xl shadow-purple-50 flex flex-col bg-white hover:shadow-purple-100 hover:-translate-y-2 transition-all duration-300 relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-blue-50 opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                <div className="h-2 bg-gradient-to-r from-purple-400 to-blue-400"></div>
-                
-                <div className="p-8 flex-1 flex flex-col relative z-10">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="text-left">
-                      <h3 className="font-black text-3xl text-purple-700 leading-none tracking-tighter uppercase">GAMING<br/>AREA</h3>
-                      <p className="text-purple-400 text-[10px] mt-3 font-black uppercase flex items-center gap-2 tracking-widest">
-                        <i className="fas fa-bolt text-blue-500"></i> Low Latency Active
-                      </p>
-                    </div>
-                    <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
-                      <i className="fas fa-gamepad text-2xl"></i>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-10 text-left">
-                    <div className="text-sm text-slate-500 font-bold leading-relaxed">
-                      Butuh kecepatan lebih untuk push rank? Masuk ke area gaming kami.
-                    </div>
-                  </div>
-
-                  <div className="mt-auto">
-                    <div className="w-full py-4 bg-purple-600 text-white rounded-xl font-black uppercase text-xs tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-purple-700 transition-colors shadow-lg shadow-purple-200">
-                      Buka Area <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Decorative Elements */}
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-purple-100 rounded-full blur-3xl opacity-50"></div>
-                <div className="absolute -top-10 -left-10 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
-              </Link>
-            )}
           </div>
         </div>
       </section>
+
+      {/* New Dedicated Gaming Area Section */}
+      {!loading && (
+        <section className="py-20 bg-white relative overflow-hidden">
+          {/* Decorative Background Elements for White BG */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-50 rounded-full blur-[120px] -mr-64 -mt-64 opacity-60"></div>
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-50 rounded-full blur-[120px] -ml-64 -mb-64 opacity-60"></div>
+
+          <div className="max-w-7xl mx-auto px-4 relative z-10">
+            <div className="bg-white/80 backdrop-blur-2xl rounded-[3rem] p-8 md:p-16 shadow-[0_40px_100px_rgba(0,0,0,0.08)] border border-slate-100 flex flex-col lg:flex-row items-center gap-12 group transition-all duration-700 relative">
+              
+              {/* Rocket Element (Updated for White BG) */}
+              <div className="absolute -top-12 -right-12 w-32 h-32 hidden lg:block pointer-events-none group-hover:translate-x-[-20px] group-hover:translate-y-[20px] transition-transform duration-1000">
+                <div className="relative w-full h-full animate-float">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+                  <i className="fas fa-rocket text-6xl text-purple-600 drop-shadow-[0_10px_20px_rgba(147,51,234,0.3)] -rotate-45"></i>
+                </div>
+              </div>
+
+              <div className="lg:w-1/2 text-center lg:text-left">
+                <div className="inline-flex items-center gap-3 px-4 py-2 bg-blue-50 rounded-full mb-6 border border-blue-100">
+                  <span className="relative flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                  </span>
+                  <span className="text-blue-600 text-xs font-black uppercase tracking-[0.3em]">Low Latency Active</span>
+                </div>
+                
+                <h2 className="text-5xl md:text-7xl font-black text-slate-900 leading-none tracking-tighter uppercase italic mb-8">
+                  GAMING<br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">AREA ACCESS</span>
+                </h2>
+
+                <div className="flex flex-wrap justify-center lg:justify-start gap-4 mb-8">
+                  <div className="bg-slate-50 border border-slate-100 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow">
+                    <i className="fas fa-bolt text-amber-500 text-xl"></i>
+                    <span className="text-slate-700 font-bold text-sm">Turbo Speed</span>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-100 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow">
+                    <i className="fas fa-shield-alt text-emerald-500 text-xl"></i>
+                    <span className="text-slate-700 font-bold text-sm">Anti Lag</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:w-1/2 flex flex-col items-center lg:items-end">
+                {/* Pro Badge */}
+                <div className="mb-8 transform -rotate-2">
+                  <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-xs font-black px-6 py-2.5 rounded-full shadow-lg shadow-blue-500/30 flex items-center gap-3 animate-bounce-slow">
+                    <i className="fas fa-crown text-amber-300"></i>
+                    <span>PRO PLAYERS CHOICE</span>
+                  </div>
+                </div>
+
+                {/* System Message Bubble (Light Mode Refined) */}
+                <div className="relative p-6 md:p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 mb-10 shadow-inner max-w-md group-hover:bg-white transition-colors duration-500">
+                  <div className="absolute -top-4 left-8 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full text-[10px] font-black text-white uppercase tracking-widest shadow-md">System Message</div>
+                  <p className="text-base md:text-xl text-slate-700 font-bold leading-relaxed italic">
+                    "Butuh kecepatan lebih untuk push rank? Masuk ke area gaming kami sekarang."
+                  </p>
+                  <div className="flex justify-end mt-4 opacity-40">
+                    <span className="text-xs text-slate-500 font-mono italic font-bold">16:47 • Delivered • Live</span>
+                  </div>
+                </div>
+
+                <Link to="/gaming-area" className="w-full max-w-sm py-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-[1.5rem] font-black uppercase text-sm tracking-[0.3em] flex items-center justify-center gap-4 hover:shadow-[0_20px_40px_rgba(37,99,235,0.3)] hover:-translate-y-1 transition-all relative overflow-hidden group/btn shadow-xl">
+                   <span className="relative z-10 flex items-center gap-3">
+                    BUKA AREA GAMING <i className="fas fa-chevron-right animate-pulse"></i>
+                  </span>
+                  <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover/btn:animate-shine"></div>
+                </Link>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Cara Beli Section */}
       <section className="py-16 bg-slate-50 border-t border-slate-200">
@@ -299,7 +338,7 @@ function Home() {
             <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Cara Beli Voucher</h2>
             <p className="text-slate-500 font-bold mt-1">3 langkah mudah mendapatkan voucher internet</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center bg-white p-8 rounded-3xl border-2 border-purple-100 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="w-16 h-16 bg-purple-600 text-white rounded-2xl flex items-center justify-center mb-6 font-black text-2xl shadow-lg shadow-purple-500/30 rotate-3">1</div>
@@ -330,14 +369,15 @@ function Home() {
           </div>
         </div>
       </section>
+
       {/* Mobile Bottom Nav */}
       <div className="lg:hidden fixed left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] bottom-0">
         <div className="grid grid-cols-4 py-3">
-          <button onClick={() => window.scrollTo({top:0, behavior:'smooth'})} className="text-purple-600 flex flex-col items-center group">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-purple-600 flex flex-col items-center group">
             <FaIcon name="home" className="text-xl mb-1 group-active:scale-110 transition-transform" />
             <span className="text-[10px] font-black uppercase tracking-tighter">Home</span>
           </button>
-          <button onClick={() => document.getElementById('packages').scrollIntoView({behavior:'smooth'})} className="text-blue-500 flex flex-col items-center group">
+          <button onClick={() => document.getElementById('packages').scrollIntoView({ behavior: 'smooth' })} className="text-blue-500 flex flex-col items-center group">
             <FaIcon name="wifi" className="text-xl mb-1 group-active:scale-110 transition-transform" />
             <span className="text-[10px] font-black uppercase tracking-tighter">Paket</span>
           </button>
