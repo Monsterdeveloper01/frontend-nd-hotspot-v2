@@ -184,7 +184,12 @@ const CustomerManagement = () => {
                                 <input 
                                     type="text" 
                                     value={formData.whatsapp}
-                                    onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
+                                    onChange={(e) => {
+                                        let val = e.target.value.replace(/\D/g, '');
+                                        if (val.startsWith('0')) val = '62' + val.substring(1);
+                                        else if (val.length > 0 && !val.startsWith('62')) val = '62' + val;
+                                        setFormData({...formData, whatsapp: val});
+                                    }}
                                     className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
                                     placeholder="628..."
                                     required

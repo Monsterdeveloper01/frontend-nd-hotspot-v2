@@ -25,7 +25,8 @@ const GamingCheckout = () => {
     }
 
     const validatePhone = (number) => {
-        return /^[0-9]{8,15}$/.test(number)
+        // Valid if it's 9-13 digits (after stripping 0/62)
+        return /^[0-9]{9,13}$/.test(number)
     }
 
     const handleSubmit = (e) => {
@@ -45,7 +46,7 @@ const GamingCheckout = () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/checkout`, {
                 voucher_plan_id: plan.id,
-                phone: phone
+                phone: '62' + phone
             })
 
             if (response.data.success) {
@@ -184,7 +185,12 @@ const GamingCheckout = () => {
                                         type="tel" 
                                         id="phoneInput"
                                         value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
+                                        onChange={(e) => {
+                                            let val = e.target.value.replace(/\D/g, '');
+                                            if (val.startsWith('0')) val = val.substring(1);
+                                            if (val.startsWith('62')) val = val.substring(2);
+                                            setPhone(val);
+                                        }}
                                         required 
                                         placeholder="812xxxxx" 
                                         className="w-full pl-16 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-purple-400 focus:bg-white outline-none transition font-black italic text-xl text-slate-800 placeholder:text-slate-300"

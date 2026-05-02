@@ -33,13 +33,13 @@ const Sidebar = () => {
   const menuItems = [
     { name: 'Dashboard', path: '/admin-dashboard-access-granted', icon: 'dashboard', section: 'GENERAL' },
     { name: 'RADIUS Settings', path: '/admin/radius-settings', icon: 'master', section: 'RADIUS SYSTEM' },
+    { name: 'Data Pelanggan', path: '/admin/customers', icon: 'customers', section: 'PELANGGAN BULANAN' },
+    { name: 'Pelanggan Aktif/Isolir', path: '/admin/customers', icon: 'customers' },
     { name: 'Master Voucher', path: '/admin/voucher-plans', icon: 'master', section: 'VOUCHER MANAGEMENT' },
     { name: 'Stock Voucher', path: '/admin/vouchers', icon: 'stock' },
     { name: 'Voucher Online', path: '/admin/vouchers-online', icon: 'online' },
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp' },
     { name: 'Voucher Terjual', path: '/admin/vouchers-sold', icon: 'sold' },
-    { name: 'Data Pelanggan', path: '/admin/customers', icon: 'customers', section: 'PELANGGAN BULANAN' },
-    { name: 'Pelanggan Aktif/Isolir', path: '/admin/customers', icon: 'customers' },
   ]
 
   return (

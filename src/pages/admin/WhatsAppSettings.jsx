@@ -39,7 +39,7 @@ const WhatsAppSettings = () => {
     setSending(true)
     try {
       await axios.post('http://localhost:5000/send-message', {
-        number: testNumber,
+        number: '62' + testNumber,
         message: testMessage
       })
       alert('Pesan tes dikirim!')

@@ -24,6 +24,7 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
 const RadiusSettings = () => {
     const [clients, setClients] = useState([])
     const [logs, setLogs] = useState([])
+    const [serverStatus, setServerStatus] = useState('Checking...')
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [formData, setFormData] = useState({
@@ -37,13 +38,15 @@ const RadiusSettings = () => {
             const token = localStorage.getItem('token')
             const config = { headers: { Authorization: `Bearer ${token}` } }
             
-            const [clientsRes, logsRes] = await Promise.all([
+            const [clientsRes, logsRes, statusRes] = await Promise.all([
                 axios.get(`${import.meta.env.VITE_API_URL}/radius-clients`, config),
-                axios.get(`${import.meta.env.VITE_API_URL}/radius-logs`, config)
+                axios.get(`${import.meta.env.VITE_API_URL}/radius-logs`, config),
+                axios.get(`${import.meta.env.VITE_API_URL}/radius-status`, config).catch(() => ({ data: { status: 'Offline' } }))
             ])
             
             setClients(clientsRes.data)
             setLogs(logsRes.data)
+            setServerStatus(statusRes.data.status)
         } catch (err) {
             console.error('Failed to fetch RADIUS data')
         } finally {
@@ -89,154 +92,250 @@ const RadiusSettings = () => {
     }
 
     return (
-        <div className="space-y-8 animate-fadeIn pb-20">
+        <div className="space-y-10 animate-fadeIn pb-20">
             {/* Header Section Premium */}
-            <div className="bg-white rounded-[40px] p-8 border border-slate-100 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-[80px] opacity-60 -mr-32 -mt-32"></div>
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[40px] p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-[120px] opacity-20 -mr-32 -mt-32"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500 rounded-full blur-[100px] opacity-10 -ml-32 -mb-32"></div>
+                
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-indigo-600 rounded-lg text-white">
-                                <Icon name="shield" className="w-5 h-5" />
+                        <div className="flex items-center gap-4 mb-3">
+                            <div className="p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 text-white shadow-xl">
+                                <Icon name="shield" className="w-6 h-6" />
                             </div>
-                            <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">RADIUS CENTER</h1>
+                            <h1 className="text-3xl font-black text-white tracking-tight uppercase">Radius Operations</h1>
                         </div>
-                        <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em]">Advanced Centralized Authentication Protocol</p>
                     </div>
-                    <div className="flex gap-4">
-                        <div className="bg-emerald-50 border border-emerald-100 px-5 py-3 rounded-2xl flex items-center gap-3">
-                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Server Port 1812 Active</span>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <div className={`backdrop-blur-md border px-6 py-4 rounded-2xl flex items-center gap-4 shadow-lg transition-colors ${
+                            serverStatus === 'Online' 
+                                ? 'bg-emerald-500/10 border-emerald-500/20' 
+                                : serverStatus === 'Checking...'
+                                ? 'bg-amber-500/10 border-amber-500/20'
+                                : 'bg-rose-500/10 border-rose-500/20'
+                        }`}>
+                            <div className="relative flex items-center justify-center w-3 h-3">
+                                {serverStatus === 'Online' ? (
+                                    <>
+                                        <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </>
+                                ) : serverStatus === 'Checking...' ? (
+                                    <>
+                                        <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-pulse"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                                    </>
+                                ) : (
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                )}
+                            </div>
+                            <div className="flex flex-col">
+                                <span className={`text-[10px] font-black uppercase tracking-widest leading-none mb-1 ${
+                                    serverStatus === 'Online' ? 'text-emerald-400' : serverStatus === 'Checking...' ? 'text-amber-400' : 'text-rose-400'
+                                }`}>Port 1812 / 1813</span>
+                                <span className="text-xs font-bold text-slate-300">
+                                    {serverStatus === 'Online' ? 'Service Active' : serverStatus === 'Checking...' ? 'Checking Status...' : 'Service Offline'}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-                {/* Registration Form */}
-                <div className="xl:col-span-4 space-y-8">
-                    <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden sticky top-8">
-                        <div className="p-8 border-b border-slate-100 bg-slate-50/50">
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                <Icon name="plus" className="text-indigo-600" /> Daftarkan NAS Baru
-                            </h2>
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
+                {/* Registration Form & Stats */}
+                <div className="xl:col-span-4 space-y-10">
+                    <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden sticky top-8">
+                        <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
+                            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                                <Icon name="plus" className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">NAS Registration</h2>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Add Router Client</p>
+                            </div>
                         </div>
                         <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                            <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Identity Name</label>
-                                <input 
-                                    type="text" 
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 text-sm" 
-                                    placeholder="Mikrotik OLT 1"
-                                    required
-                                />
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Identity Name</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400">
+                                        <Icon name="router" className="w-5 h-5" />
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                        className="w-full pl-14 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm" 
+                                        placeholder="Main Router LT 1"
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Router IP Address</label>
-                                <input 
-                                    type="text" 
-                                    value={formData.ip_address}
-                                    onChange={(e) => setFormData({...formData, ip_address: e.target.value})}
-                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 text-sm" 
-                                    placeholder="192.168.1.1"
-                                    required
-                                />
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">IP Address</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400">
+                                        <Icon name="ip" className="w-5 h-5" />
+                                    </div>
+                                    <input 
+                                        type="text" 
+                                        value={formData.ip_address}
+                                        onChange={(e) => setFormData({...formData, ip_address: e.target.value})}
+                                        className="w-full pl-14 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono" 
+                                        placeholder="192.168.x.x"
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="space-y-4">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Shared Secret</label>
-                                <input 
-                                    type="password" 
-                                    value={formData.shared_secret}
-                                    onChange={(e) => setFormData({...formData, shared_secret: e.target.value})}
-                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:border-indigo-500 outline-none transition-all placeholder:text-slate-300 text-sm" 
-                                    placeholder="••••••••"
-                                    required
-                                />
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Shared Secret</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400">
+                                        <Icon name="secret" className="w-5 h-5" />
+                                    </div>
+                                    <input 
+                                        type="password" 
+                                        value={formData.shared_secret}
+                                        onChange={(e) => setFormData({...formData, shared_secret: e.target.value})}
+                                        className="w-full pl-14 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono tracking-widest" 
+                                        placeholder="••••••••"
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <button 
-                                type="submit" 
-                                disabled={submitting}
-                                className="w-full py-5 bg-slate-900 hover:bg-indigo-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
-                            >
-                                {submitting ? <Icon name="refresh" className="animate-spin w-4 h-4" /> : <><Icon name="check" className="w-4 h-4" /> Otorisasi NAS</>}
-                            </button>
+                            <div className="pt-2">
+                                <button 
+                                    type="submit" 
+                                    disabled={submitting}
+                                    className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+                                >
+                                    {submitting ? <Icon name="refresh" className="animate-spin w-5 h-5" /> : <><Icon name="check" className="w-5 h-5" /> Authorize NAS</>}
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
 
                 {/* Clients Table & Logs */}
-                <div className="xl:col-span-8 space-y-8">
+                <div className="xl:col-span-8 space-y-10">
                     {/* Authorized Table */}
-                    <div className="bg-white rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center">
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                                <Icon name="router" className="text-slate-400" /> Authorized Clients
-                            </h2>
-                            <span className="bg-slate-100 text-slate-500 text-[9px] font-black px-3 py-1 rounded-full">{clients.length} NAS</span>
+                    <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
+                        <div className="px-8 py-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                                    <Icon name="router" className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Network Access Servers</h2>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Authorized to communicate</p>
+                                </div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-2xl font-black text-slate-900 tracking-tighter leading-none">{clients.length}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 mt-1">Active Nodes</span>
+                            </div>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="bg-slate-50/50">
-                                        <th className="px-8 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Router Identity</th>
-                                        <th className="px-8 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">IP Address</th>
-                                        <th className="px-8 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Aksi</th>
+                                    <tr className="bg-slate-50 border-b border-slate-100">
+                                        <th className="px-10 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Identity & IP</th>
+                                        <th className="px-10 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Status</th>
+                                        <th className="px-10 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-50">
-                                    {clients.map((client) => (
-                                        <tr key={client.id} className="hover:bg-indigo-50/20 transition-colors">
-                                            <td className="px-8 py-5 font-black text-slate-800 uppercase text-xs tracking-tight">{client.name}</td>
-                                            <td className="px-8 py-5">
-                                                <code className="bg-slate-100 text-indigo-600 px-3 py-1 rounded-lg font-black text-[11px]">{client.ip_address}</code>
+                                <tbody className="divide-y divide-slate-100">
+                                    {clients.length > 0 ? clients.map((client) => (
+                                        <tr key={client.id} className="hover:bg-slate-50/50 transition-colors group">
+                                            <td className="px-10 py-6">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                                        <Icon name="router" className="w-5 h-5" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="font-black text-slate-900 text-sm uppercase tracking-tight">{client.name}</span>
+                                                        <span className="font-mono text-[11px] font-bold text-slate-500 mt-1">{client.ip_address}</span>
+                                                    </div>
+                                                </div>
                                             </td>
-                                            <td className="px-8 py-5 text-right">
-                                                <button onClick={() => handleDelete(client.id)} className="p-2.5 text-slate-400 hover:text-rose-600 transition-colors">
-                                                    <Icon name="delete" className="w-4 h-4" />
+                                            <td className="px-10 py-6">
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                                    Permitted
+                                                </span>
+                                            </td>
+                                            <td className="px-10 py-6 text-right">
+                                                <button onClick={() => handleDelete(client.id)} className="p-3 bg-white border border-slate-200 text-slate-400 rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all shadow-sm" title="Revoke Access">
+                                                    <Icon name="delete" className="w-5 h-5" />
                                                 </button>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="3" className="px-10 py-20 text-center text-slate-400 font-black italic uppercase tracking-[0.2em]">No NAS Registered.</td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {/* Protocol Logs */}
-                    <div className="bg-slate-950 rounded-[40px] border border-white/5 shadow-2xl overflow-hidden flex flex-col h-[500px]">
-                        <div className="px-8 py-6 bg-black/30 border-b border-white/5 flex justify-between items-center">
-                            <h2 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-3">
-                                <Icon name="terminal" className="text-emerald-500" /> Protocol Stream
-                            </h2>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                                <span className="text-[8px] font-black text-emerald-500/70 uppercase tracking-widest">Real-time Telemetry</span>
-                            </div>
+            {/* Protocol Logs - Full Width Section */}
+            <div className="bg-[#0b1120] rounded-[32px] border border-slate-800 shadow-2xl shadow-indigo-900/10 overflow-hidden flex flex-col h-[600px] relative mt-10">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+                <div className="px-8 py-6 bg-slate-900/50 border-b border-slate-800 flex justify-between items-center backdrop-blur-md relative z-10">
+                    <div className="flex items-center gap-4">
+                        <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                            <Icon name="terminal" className="w-5 h-5 text-emerald-400" />
                         </div>
-                        <div className="flex-1 overflow-y-auto p-8 font-mono text-[10px] space-y-3 scrollbar-hide">
-                            {logs.length > 0 ? logs.map((log) => (
-                                <div key={log.id} className="flex gap-4 border-l-2 pl-4 py-1 hover:bg-white/5 transition-colors group" 
-                                     style={{ borderColor: log.status === 'Success' ? '#10b981' : '#f43f5e' }}>
-                                    <span className="text-slate-600 shrink-0 font-bold">[{new Date(log.created_at).toLocaleTimeString()}]</span>
-                                    <span className={`font-black shrink-0 w-16 uppercase tracking-widest ${log.status === 'Success' ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                        {log.type}
-                                    </span>
-                                    <span className="text-indigo-400 shrink-0 font-bold">{log.client_ip}</span>
-                                    <span className="text-slate-300">
-                                        {log.username && <span className="text-amber-400 font-black mr-2 uppercase tracking-tight">[{log.username}]</span>}
-                                        {log.message}
-                                    </span>
-                                </div>
-                            )) : (
-                                <div className="h-full flex flex-col items-center justify-center opacity-30">
-                                    <Icon name="terminal" className="w-12 h-12 text-slate-600 mb-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700">No telemetry detected</span>
-                                </div>
-                            )}
+                        <div>
+                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Protocol Telemetry</h2>
+                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Live AAA Event Stream</p>
                         </div>
                     </div>
+                    <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
+                        <div className="relative w-2.5 h-2.5">
+                            <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75"></div>
+                            <div className="relative bg-emerald-400 rounded-full w-2.5 h-2.5"></div>
+                        </div>
+                        <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Monitoring</span>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-8 font-mono text-[11px] space-y-4 scrollbar-hide relative z-10">
+                    {logs.length > 0 ? logs.map((log) => (
+                        <div key={log.id} className="flex gap-4 items-start group hover:bg-white/[0.02] p-2 rounded-lg transition-colors" >
+                            <div className="flex flex-col mt-0.5">
+                                <span className="text-slate-600 font-bold whitespace-nowrap">
+                                    {new Date(log.created_at).toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'})}
+                                </span>
+                            </div>
+                            <div className="flex flex-col gap-1 w-full">
+                                <div className="flex items-center gap-3">
+                                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${log.status === 'Success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                                        {log.type}
+                                    </span>
+                                    <span className="text-indigo-400/80 font-bold px-2 py-0.5 bg-indigo-500/10 rounded-md border border-indigo-500/20">
+                                        {log.client_ip}
+                                    </span>
+                                </div>
+                                <p className="text-slate-300 mt-1 leading-relaxed">
+                                    {log.username && <span className="text-amber-400 font-bold mr-2">[{log.username}]</span>}
+                                    {log.message}
+                                </p>
+                            </div>
+                        </div>
+                    )) : (
+                        <div className="h-full flex flex-col items-center justify-center opacity-40">
+                            <div className="w-16 h-16 border border-slate-700 rounded-2xl flex items-center justify-center mb-6">
+                                <Icon name="terminal" className="w-8 h-8 text-slate-500" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-[0.4em] text-slate-600">Awaiting Auth Requests</span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

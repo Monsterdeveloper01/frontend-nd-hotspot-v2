@@ -29,8 +29,8 @@ ChartJS.register(
 
 const Icon = ({ name, className = "w-5 h-5" }) => {
   const icons = {
-    revenue: <path d="M12 1v22m5-18H8.5a4.5 4.5 0 000 9h7a4.5 4.5 0 010 9H7" />,
-    users: <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8z" />,
+    revenue: <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
+    users: <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />,
     voucher: <path d="M15 5v2m-6-2v2M3 10V6a2 2 0 012-2h14a2 2 0 012 2v4M3 10h18M3 10v10a2 2 0 002 2h14a2 2 0 002-2V10M7 14h10" />,
     clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
     refresh: <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />,
@@ -151,18 +151,18 @@ const AdminDashboard = () => {
 
   if (loading || !data) return (
     <div className="flex items-center justify-center h-96">
-      <div className="w-12 h-12 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+      <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
     </div>
   )
 
   const chartConfig = {
     labels: data?.chart.map(c => new Date(c.date).getDate()) || [],
     datasets: [{
-      label: 'Revenue',
+      label: 'Pendapatan (Rp)',
       data: data?.chart.map(c => c.total) || [],
       fill: true,
       borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.05)',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
       tension: 0.4,
       pointRadius: 4,
       pointHoverRadius: 6,
@@ -203,351 +203,433 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="space-y-10 pb-20">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase leading-none">Dashboard Overview</h1>
-          <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">
-            Monitoring finansial dan operasional ND-Hotspot real-time
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={toggleMaintenance}
-            className={`px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg ${isMaintenance ? 'bg-rose-600 text-white shadow-rose-200' : 'bg-white text-slate-600 border border-slate-200 hover:border-rose-200 hover:text-rose-600 shadow-sm'}`}
-          >
-            <div className={`w-2 h-2 rounded-full ${isMaintenance ? 'bg-white animate-pulse' : 'bg-slate-300'}`}></div>
-            {isMaintenance ? 'Maintenance: ON' : 'Maintenance: OFF'}
-          </button>
-          <div className="bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <Icon name="clock" className="w-4 h-4 text-blue-600" />
-            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">
-              {time.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}, {time.toLocaleTimeString('id-ID')}
-            </span>
-          </div>
-          <button 
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-200 flex items-center gap-2 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50"
-          >
-            <Icon name="refresh" className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh Data
-          </button>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Revenue Card */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10 group hover:shadow-xl hover:-translate-y-1 transition-all">
-          <div className="flex justify-between items-start mb-10">
-            <div className="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
-              <Icon name="revenue" className="w-7 h-7" />
-            </div>
-            <div className="flex gap-2">
-              <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest">Bulan Ini</span>
-              <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest">Hari Ini</span>
-            </div>
-          </div>
-          <div className="space-y-8">
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Pendapatan (Bulan Ini)</p>
-              <h2 className="text-3xl font-black text-slate-900 tracking-tighter">Rp {data.stats.monthly_revenue.toLocaleString('id-ID')}</h2>
-            </div>
-            <div className="pt-8 border-t border-slate-100">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Omset Hari Ini</p>
-              <h2 className="text-2xl font-black text-emerald-600 tracking-tighter italic">Rp {data.stats.today_revenue.toLocaleString('id-ID')}</h2>
-              <div className="mt-4 flex gap-2">
-                <span className="text-[8px] font-black px-2 py-1 bg-indigo-50 text-indigo-600 rounded">Bill: {data.stats.bill_revenue_today > 0 ? Math.round((data.stats.bill_revenue_today/data.stats.today_revenue)*100) : 0}%</span>
-                <span className="text-[8px] font-black px-2 py-1 bg-emerald-50 text-emerald-600 rounded">Voucher: {data.stats.voucher_revenue_today > 0 ? Math.round((data.stats.voucher_revenue_today/data.stats.today_revenue)*100) : 0}%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Customer Card */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10 group hover:shadow-xl hover:-translate-y-1 transition-all">
-          <div className="flex justify-between items-start mb-10">
-            <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg">
-              <Icon name="users" className="w-7 h-7" />
-            </div>
-            <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest">User Base</span>
-          </div>
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="text-center">
-              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Total</p>
-              <p className="text-2xl font-black text-slate-900">{data.stats.total_customers}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Due</p>
-              <p className="text-2xl font-black text-amber-500">{data.stats.due_customers}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Isolir</p>
-              <p className="text-2xl font-black text-rose-500">{data.stats.isolated_customers}</p>
-            </div>
-          </div>
-          <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
-            <div>
-              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Live Online</p>
-              <p className="text-xl font-black text-emerald-600">{data.stats.online_count} <span className="text-[8px]">Active</span></p>
-            </div>
-            <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500" style={{ width: `${(data.stats.online_count / Math.max(1, data.stats.total_customers)) * 100}%` }}></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sales Activity Card */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10 group hover:shadow-xl hover:-translate-y-1 transition-all">
-          <div className="flex justify-between items-start mb-10">
-            <div className="w-14 h-14 bg-amber-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200">
-              <Icon name="voucher" className="w-7 h-7" />
-            </div>
-            <span className="bg-amber-50 text-amber-600 px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest">Penjualan</span>
-          </div>
-          <div className="space-y-6">
-            <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-              <div className="flex justify-between items-center mb-2">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Voucher Terjual</p>
-                <span className="text-[8px] font-black text-emerald-600">Hari Ini</span>
-              </div>
-              <h2 className="text-3xl font-black text-slate-900">{data.stats.voucher_sold_today} <span className="text-sm">VCR</span></h2>
-            </div>
-            <div className="flex items-center justify-between px-2">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Voucher Revenue</p>
-              <p className="text-lg font-black text-indigo-600">Rp {data.stats.voucher_revenue_today.toLocaleString('id-ID')}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Revenue Chart */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-            <div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Trend Pendapatan</h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Akumulasi settlement harian bulan ini</p>
-            </div>
-            <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
-              <Icon name="trend" className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="h-80 w-full">
-            <Line data={chartConfig} options={chartOptions} />
-          </div>
-        </div>
-
-        {/* Peak Hours Chart */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 p-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-            <div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase">Jam Ramai Pengunjung</h3>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Statistik kunjungan unik per jam (7 hari terakhir)</p>
-            </div>
-            <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
-              <Icon name="clock" className="w-5 h-5" />
-            </div>
-          </div>
-          <div className="h-80 w-full">
-            <Bar 
-              data={{
-                labels: peakHours.map(p => p.hour),
-                datasets: [{
-                  label: 'Visitor Hits',
-                  data: peakHours.map(p => p.count),
-                  backgroundColor: 'rgba(79, 70, 229, 0.6)',
-                  hoverBackgroundColor: 'rgba(79, 70, 229, 1)',
-                  borderRadius: 8,
-                }]
-              }} 
-              options={{
-                ...chartOptions,
-                plugins: {
-                  ...chartOptions.plugins,
-                  tooltip: {
-                    ...chartOptions.plugins.tooltip,
-                    callbacks: {
-                      label: (ctx) => `${ctx.parsed.y} Kunjungan`
-                    }
-                  }
-                }
-              }} 
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Tables Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Active Vouchers & Online Users */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-10 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md">
-                <Icon name="check" className="w-5 h-5" />
-              </div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Active & Online</h2>
-            </div>
-            <div className="flex gap-2">
-              <span className="text-[8px] font-black px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 uppercase tracking-widest">{data.stats.online_count} Online</span>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-slate-50">
-                  <th className="px-8 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Voucher</th>
-                  <th className="px-8 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Status</th>
-                  <th className="px-8 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Usage</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {data.combined_users.map((user) => (
-                  <tr key={user.id} className="hover:bg-slate-50 transition-colors group">
-                    <td className="px-8 py-4">
-                      <p className="text-sm font-black text-slate-900 tracking-tight uppercase">{user.code}</p>
-                      <p className="text-[9px] font-bold text-indigo-500 uppercase tracking-tighter">{user.plan_name}</p>
-                    </td>
-                    <td className="px-8 py-4">
-                      {user.is_online ? (
-                        <span className="flex items-center gap-2 text-emerald-600 font-black text-[9px] uppercase tracking-widest">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-                          Online
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-2 text-slate-400 font-black text-[9px] uppercase tracking-widest">
-                          <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
-                          Offline
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-8 py-4">
-                      <div className="text-[10px] font-mono font-bold text-slate-500 italic">
-                        {user.is_online ? user.uptime : 'Last seen: ' + new Date(user.used_at || 0).toLocaleTimeString('id-ID')}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Recent Transactions */}
-        <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-10 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-md">
-                <Icon name="bill" className="w-5 h-5" />
-              </div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Recent Payments</h2>
-            </div>
-            <button 
-              onClick={() => setModalOpen(true)}
-              className="text-[9px] font-black text-indigo-600 uppercase tracking-widest hover:underline"
-            >
-              Lihat Semua
-            </button>
-          </div>
-          <div className="divide-y divide-slate-50">
-            {data.recent_transactions.map((tx) => (
-              <div key={tx.id} className="px-10 py-5 hover:bg-slate-50 transition-all flex items-center justify-between group">
-                <div className="flex items-center gap-5">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${tx.external_id.startsWith('BILL-') ? 'bg-purple-50 border-purple-100 text-purple-600' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
-                    <Icon name={tx.external_id.startsWith('BILL-') ? 'bill' : 'voucher'} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{tx.external_id}</p>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-[8px] font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded uppercase tracking-widest">SUCCESS</span>
-                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest italic">{new Date(tx.created_at).toLocaleTimeString('id-ID')}</span>
+    <div className="space-y-8 pb-20">
+        {/* Header Dashboard */}
+        <div className="mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+                    <p className="text-gray-600 mt-1">Selamat datang kembali, Admin! 
+                        <span className="text-blue-600 font-medium ml-1">• Sistem Billing ND-Hotspot</span>
+                    </p>
+                </div>
+                <div className="flex items-center gap-3 mt-4 md:mt-0">
+                    <div className="text-sm text-gray-700 bg-gray-50 px-4 py-2.5 rounded-lg font-medium border border-gray-200 shadow-sm">
+                        <div className="flex items-center gap-2">
+                            <Icon name="clock" className="w-4 h-4 text-blue-600" />
+                            <span className="font-semibold">
+                                {time.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })},{' '}
+                                {time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                            </span>
+                        </div>
                     </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-black text-emerald-600 tracking-tighter italic">+Rp {tx.amount.toLocaleString('id-ID')}</p>
-                  <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">{new Date(tx.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* History Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-6xl max-h-[90vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-300">
-            {/* Modal Header */}
-            <div className="bg-slate-950 px-12 py-8 flex justify-between items-center shrink-0">
-              <div>
-                <h2 className="text-2xl font-black text-white uppercase tracking-tight">Full Transaction History</h2>
-                <div className="flex gap-4 mt-4">
-                  {['all', 'bill', 'voucher'].map((f) => (
                     <button 
-                      key={f}
-                      onClick={() => setHistoryFilter(f)}
-                      className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${historyFilter === f ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+                        onClick={handleRefresh} 
+                        disabled={refreshing}
+                        className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center gap-2 font-medium shadow-sm hover:shadow-md disabled:opacity-75"
                     >
-                      {f}
+                        <Icon name="refresh" className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                        {refreshing ? 'Memuat...' : 'Refresh Data'}
                     </button>
-                  ))}
+                    <button 
+                        onClick={toggleMaintenance}
+                        className={`px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-2 ${isMaintenance ? 'bg-rose-600 text-white hover:bg-rose-700' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+                    >
+                        <div className={`w-2 h-2 rounded-full ${isMaintenance ? 'bg-white animate-pulse' : 'bg-gray-400'}`}></div>
+                        {isMaintenance ? 'Maint: ON' : 'Maint: OFF'}
+                    </button>
                 </div>
-              </div>
-              <button 
-                onClick={() => setModalOpen(false)}
-                className="p-4 bg-white/5 text-white rounded-2xl hover:bg-white/10 transition-colors"
-              >
-                <Icon name="close" className="w-6 h-6" />
-              </button>
+            </div>
+        </div>
+
+        {/* Statistik Atas (3 Kolom Besar) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+            {/* Kotak 1: Total Pendapatan */}
+            <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6 hover:shadow-xl transition-all duration-300 group">
+                <div className="flex items-start justify-between mb-4">
+                    <div className="p-2.5 bg-blue-100 rounded-lg">
+                        <Icon name="revenue" className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="flex gap-2">
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">Bulan Ini</span>
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">Hari Ini</span>
+                    </div>
+                </div>
+                
+                <div className="space-y-4">
+                    <div>
+                        <p className="text-sm text-gray-600 mb-1 font-medium">Total Pendapatan Bulan Ini</p>
+                        <p className="text-2xl font-bold text-gray-900">Rp {data.stats.monthly_revenue.toLocaleString('id-ID')}</p>
+                        <div className="mt-2 flex items-center text-xs text-blue-600">
+                            <Icon name="trend" className="w-3.5 h-3.5 mr-1" />
+                            <span>{data.stats.monthly_revenue > 0 ? (100).toFixed(1) : '0'}% dari target</span>
+                        </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-blue-100">
+                        <p className="text-sm text-gray-600 mb-1 font-medium">Total Omset Hari Ini</p>
+                        <p className="text-2xl font-bold text-emerald-700">Rp {data.stats.today_revenue.toLocaleString('id-ID')}</p>
+                        <div className="mt-2 flex items-center justify-between">
+                            <div className="flex items-center text-xs text-emerald-600">
+                                <Icon name="trend" className="w-3.5 h-3.5 mr-1" />
+                                <span>vs kemarin</span>
+                            </div>
+                            <div className="flex gap-2">
+                                <span className="text-[10px] px-2 py-1 bg-blue-50 text-blue-700 rounded font-bold">Bill {data.stats.today_revenue > 0 ? ((data.stats.bill_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                                <span className="text-[10px] px-2 py-1 bg-emerald-50 text-emerald-700 rounded font-bold">VCR {data.stats.today_revenue > 0 ? ((data.stats.voucher_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* Modal Content */}
-            <div className="flex-1 overflow-y-auto p-12 relative">
-              {historyLoading && (
-                <div className="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
-                  <div className="w-10 h-10 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin"></div>
+            {/* Kotak 2: Total Pelanggan */}
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 group">
+                <div className="flex items-start justify-between mb-4">
+                    <div className="p-2.5 bg-gray-100 rounded-lg">
+                        <Icon name="users" className="w-6 h-6 text-gray-700" />
+                    </div>
+                    <div className="flex gap-2">
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">Total</span>
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800">Due</span>
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-800">Isolir</span>
+                    </div>
                 </div>
-              )}
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Order ID</th>
-                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Type</th>
-                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Amount</th>
-                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Time</th>
-                    <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 text-right">Details</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {historyData?.data?.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-6 font-mono text-xs font-black text-slate-900">{tx.external_id}</td>
-                      <td className="px-6 py-6">
-                        <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${tx.external_id?.startsWith('BILL-') ? 'bg-purple-100 text-purple-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                          {tx.external_id?.startsWith('BILL-') ? 'Bill Payment' : 'Voucher Sale'}
+                
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                        <p className="text-sm text-gray-600 mb-1 font-medium">Total</p>
+                        <p className="text-2xl font-bold text-gray-900">{data.stats.total_customers.toLocaleString('id-ID')}</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-600 mb-1 font-medium">Due</p>
+                        <p className="text-2xl font-bold text-yellow-600">{data.stats.due_customers.toLocaleString('id-ID')}</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-600 mb-1 font-medium">Isolir</p>
+                        <p className="text-2xl font-bold text-red-600">{data.stats.isolated_customers.toLocaleString('id-ID')}</p>
+                    </div>
+                </div>
+                
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>Statistik pelanggan terkini</span>
+                        <span className="text-emerald-600 font-bold flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            {data.stats.online_count} Online
                         </span>
-                      </td>
-                      <td className="px-6 py-6 font-black text-slate-900 tracking-tight">Rp {(tx.amount || 0).toLocaleString('id-ID')}</td>
-                      <td className="px-6 py-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                        {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-                      </td>
-                      <td className="px-6 py-6 text-right">
-                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest italic">{tx.payment_method || 'QRIS'}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <Pagination meta={historyData.meta} onPageChange={(p) => fetchHistory(p)} />
+                    </div>
+                </div>
             </div>
-          </div>
+
+            {/* Kotak 3: Pendapatan Bill dan Voucher */}
+            <div className="bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-lg border border-purple-100 p-6 hover:shadow-xl transition-all duration-300 group">
+                <div className="flex items-start justify-between mb-4">
+                    <div className="p-2.5 bg-purple-100 rounded-lg">
+                        <Icon name="bill" className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">Hari Ini</span>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-white rounded-lg border border-purple-200 p-3">
+                        <p className="text-xs text-gray-600 mb-1">Pendapatan Bill</p>
+                        <p className="text-lg font-bold text-purple-700">Rp {data.stats.bill_revenue_today.toLocaleString('id-ID')}</p>
+                    </div>
+                    <div className="bg-white rounded-lg border border-emerald-200 p-3">
+                        <p className="text-xs text-gray-600 mb-1">Voucher Terjual</p>
+                        <p className="text-lg font-bold text-emerald-700">{data.stats.voucher_sold_today.toLocaleString('id-ID')}</p>
+                        <div className="mt-1 flex items-center justify-between text-[10px] text-emerald-600">
+                            <span>VCR</span>
+                            <span className="text-emerald-800 bg-emerald-100 px-1 py-0.5 rounded font-bold">
+                                {time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-emerald-50 to-white rounded-lg border border-emerald-200 p-3">
+                    <div className="flex items-center justify-between mb-1">
+                        <p className="text-xs text-gray-600">Pendapatan Voucher</p>
+                    </div>
+                    <p className="text-lg font-bold text-emerald-700">Rp {data.stats.voucher_revenue_today.toLocaleString('id-ID')}</p>
+                    <div className="mt-1 flex items-center justify-between text-[10px]">
+                        <span className="text-gray-500">Rata-rata/voucher:</span>
+                        <span className="font-semibold text-emerald-700">
+                            Rp {data.stats.voucher_sold_today > 0 ? Math.round(data.stats.voucher_revenue_today/data.stats.voucher_sold_today).toLocaleString('id-ID') : '0'}
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
-      )}
+
+        {/* Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Chart Pendapatan Bulan Berjalan */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+                    <div>
+                        <h3 className="text-xl font-bold text-gray-900">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+                        <p className="text-xs text-gray-500 mt-1">Analisis pendapatan harian Bill dan Voucher</p>
+                    </div>
+                    <div className="flex items-center gap-3 mt-4 md:mt-0">
+                        <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200">
+                            Total: Rp {data.stats.monthly_revenue.toLocaleString('id-ID')}
+                        </span>
+                    </div>
+                </div>
+                
+                <div className="h-72 w-full">
+                    <Line data={chartConfig} options={chartOptions} />
+                </div>
+            </div>
+
+            {/* Peak Hours Chart */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+                    <div>
+                        <h3 className="text-xl font-bold text-gray-900">Jam Ramai Pengunjung</h3>
+                        <p className="text-xs text-gray-500 mt-1">Statistik kunjungan unik per jam (7 hari terakhir)</p>
+                    </div>
+                    <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
+                        <Icon name="clock" className="w-4 h-4" />
+                    </div>
+                </div>
+                <div className="h-72 w-full">
+                    <Bar 
+                        data={{
+                            labels: peakHours.map(p => p.hour),
+                            datasets: [{
+                                label: 'Visitor Hits',
+                                data: peakHours.map(p => p.count),
+                                backgroundColor: 'rgba(79, 70, 229, 0.6)',
+                                hoverBackgroundColor: 'rgba(79, 70, 229, 1)',
+                                borderRadius: 4,
+                            }]
+                        }} 
+                        options={{
+                            ...chartOptions,
+                            plugins: {
+                                ...chartOptions.plugins,
+                                tooltip: {
+                                    ...chartOptions.plugins.tooltip,
+                                    callbacks: {
+                                        label: (ctx) => `${ctx.parsed.y} Kunjungan`
+                                    }
+                                }
+                            }
+                        }} 
+                    />
+                </div>
+            </div>
+        </div>
+
+        {/* Voucher Aktif & Transaksi Terkini */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            {/* Voucher Aktif & User Online */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-900">Voucher Aktif & Online</h3>
+                            <p className="text-xs text-gray-500 mt-1">Gabungan sesi aktif</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex items-center justify-center w-6 h-6">
+                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full absolute animate-ping"></div>
+                            </div>
+                            <span className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-800 font-bold">
+                                {data.stats.online_count} Online
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50 sticky top-0 z-10">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Voucher</th>
+                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Uptime</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-100">
+                            {data.combined_users.length > 0 ? data.combined_users.map((user, idx) => (
+                                <tr key={idx} className="hover:bg-gray-50 transition-colors duration-150">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {user.is_online ? (
+                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-50 text-emerald-700 border border-emerald-200">
+                                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></div>
+                                                Online
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200">
+                                                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></div>
+                                                Offline
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <p className="text-sm font-bold text-gray-900 uppercase">{user.code}</p>
+                                        <p className="text-[10px] text-blue-600 font-bold uppercase">{user.plan_name || 'VOUCHER'}</p>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {user.is_online ? (
+                                            <span className="font-mono text-xs font-semibold text-gray-700">{user.uptime}</span>
+                                        ) : (
+                                            <span className="text-[10px] text-gray-400 italic">Exp: {new Date(user.expires_at || Date.now()).toLocaleDateString('id-ID')}</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr>
+                                    <td colSpan="3" className="px-6 py-8 text-center text-gray-400 text-sm italic">
+                                        Tidak ada sesi aktif
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Transaksi Terkini */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-900">Transaksi Terkini</h3>
+                            <p className="text-xs text-gray-500 mt-1">Pembayaran terbaru yang berhasil</p>
+                        </div>
+                        <button 
+                            onClick={() => setModalOpen(true)}
+                            className="px-4 py-2 text-[11px] font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm"
+                        >
+                            Lihat Semua
+                        </button>
+                    </div>
+                </div>
+
+                <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+                    {data.recent_transactions.length > 0 ? data.recent_transactions.map((tx) => {
+                        const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
+                        return (
+                            <div key={tx.id} className="p-4 hover:bg-gray-50 transition-colors">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-4">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${isBill ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-emerald-50 border-emerald-200 text-emerald-600'}`}>
+                                            <Icon name={isBill ? 'bill' : 'voucher'} className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm text-gray-900">{tx.external_id}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[9px] bg-green-100 text-green-800 px-1.5 py-0.5 rounded font-bold uppercase">SUCCESS</span>
+                                                <span className="text-[10px] text-gray-400 font-medium">{new Date(tx.created_at).toLocaleTimeString('id-ID')}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-bold text-emerald-600">+Rp {tx.amount.toLocaleString('id-ID')}</p>
+                                        <p className="text-[10px] text-gray-500 mt-1">{new Date(tx.created_at).toLocaleDateString('id-ID')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    }) : (
+                        <div className="text-center py-10">
+                            <p className="text-gray-400 text-sm italic">Belum ada transaksi</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+
+        {/* Modal Riwayat Transaksi */}
+        {modalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white px-8 py-6 shrink-0">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-2xl font-bold">Riwayat Transaksi</h3>
+                                <p className="text-gray-300 text-sm mt-1">Semua transaksi yang berhasil diproses</p>
+                            </div>
+                            <button onClick={() => setModalOpen(false)} className="p-2 hover:bg-gray-700 rounded-xl transition-colors">
+                                <Icon name="close" className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <div className="flex space-x-2 mt-6">
+                            {['all', 'bill', 'voucher'].map(f => (
+                                <button 
+                                    key={f}
+                                    onClick={() => setHistoryFilter(f)}
+                                    className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors ${historyFilter === f ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                                >
+                                    {f === 'all' ? 'Semua' : f === 'bill' ? 'Tagihan' : 'Voucher'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto relative p-6 bg-gray-50">
+                        {historyLoading && (
+                            <div className="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center">
+                                <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+                                <p className="text-sm font-bold text-gray-600">Memuat data...</p>
+                            </div>
+                        )}
+                        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <table className="w-full text-left">
+                                <thead className="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">ID Transaksi</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Jumlah</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Waktu</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Metode</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {historyData?.data?.map((tx) => {
+                                        const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
+                                        return (
+                                            <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4 font-mono text-sm font-bold text-gray-900">{tx.external_id}</td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isBill ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                                        {isBill ? 'Tagihan' : 'Voucher'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 font-bold text-gray-900 text-base">Rp {(tx.amount || 0).toLocaleString('id-ID')}</td>
+                                                <td className="px-6 py-4 text-xs text-gray-500 font-medium">
+                                                    {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">
+                                                        {tx.payment_method || 'QRIS'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                            {!historyLoading && historyData?.data?.length === 0 && (
+                                <div className="text-center py-16">
+                                    <p className="text-gray-400 font-medium">Belum ada transaksi untuk filter ini.</p>
+                                </div>
+                            )}
+                        </div>
+                        <div className="mt-6">
+                            <Pagination meta={historyData.meta} onPageChange={(p) => fetchHistory(p)} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
     </div>
   )
 }
