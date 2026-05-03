@@ -7,23 +7,25 @@ const formatTanggal = (dateString) => {
     if (!dateString || dateString === '0000-00-00') return '-';
     
     try {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
-            const [year, month, day] = dateString.split('-');
+        // Handle ISO strings or YYYY-MM-DD
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
             return `${day}-${month}-${year}`;
         }
-        else if (/^\d{1,2}[-\/\.]\d{1,2}[-\/\.]\d{4}$/.test(dateString)) {
-            return dateString;
-        }
-        else if (/^\d{1,2}$/.test(dateString)) {
+        
+        // Fallback for numeric only (day)
+        if (/^\d{1,2}$/.test(dateString)) {
             const now = new Date();
             const day = dateString.padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
             return `${day}-${month}-${year}`;
         }
-        else {
-            return dateString;
-        }
+        
+        return dateString;
     } catch (e) {
         console.error('Error formatting date:', e, dateString);
         return dateString || '-';
