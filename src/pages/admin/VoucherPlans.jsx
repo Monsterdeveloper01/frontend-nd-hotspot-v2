@@ -28,6 +28,7 @@ const VoucherPlans = () => {
     const [priceDisplay, setPriceDisplay] = useState('')
     const [formData, setFormData] = useState({
         name: '',
+        mikrotik_profile: '',
         is_gaming: false,
         duration_value: '',
         duration_unit: 'h',
@@ -79,6 +80,7 @@ const VoucherPlans = () => {
         
         setFormData({
             name: plan.name,
+            mikrotik_profile: plan.mikrotik_profile || '',
             is_gaming: plan.is_gaming,
             duration_value: durationValue,
             duration_unit: durationUnit,
@@ -93,7 +95,7 @@ const VoucherPlans = () => {
 
     const handleCancelEdit = () => {
         setEditingId(null)
-        setFormData({ name: '', is_gaming: false, duration_value: '', duration_unit: 'h', upload_limit: '', download_limit: '', shared_users: 1, price: 0 })
+        setFormData({ name: '', mikrotik_profile: '', is_gaming: false, duration_value: '', duration_unit: 'h', upload_limit: '', download_limit: '', shared_users: 1, price: 0 })
         setPriceDisplay('')
     }
 
@@ -104,7 +106,8 @@ const VoucherPlans = () => {
         const duration = `${formData.duration_value}${formData.duration_unit}`
         const payload = {
             ...formData,
-            duration: duration
+            duration: duration,
+            mikrotik_profile: formData.mikrotik_profile || formData.name.replace(/\s+/g, '-')
         }
 
         try {
@@ -195,15 +198,26 @@ const VoucherPlans = () => {
                                 <Icon name="speed" className="w-3 h-3" /> Basic Information
                             </h3>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Nama Paket</label>
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Nama Paket (Display)</label>
                                 <input 
                                     type="text" 
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                     className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
-                                    placeholder="e.g. PREMIUM_1D"
+                                    placeholder="e.g. PREMIUM 1 HARI"
                                     required
                                 />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">MikroTik Profile (System)</label>
+                                <input 
+                                    type="text" 
+                                    value={formData.mikrotik_profile}
+                                    onChange={(e) => setFormData({...formData, mikrotik_profile: e.target.value})}
+                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
+                                    placeholder="e.g. PREMIUM_1H"
+                                />
+                                <p className="text-[8px] font-bold text-slate-400 mt-1 uppercase ml-1">Nama profile yang akan masuk ke MikroTik</p>
                             </div>
                             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                                 <label className="flex items-center gap-3 cursor-pointer">
@@ -271,26 +285,27 @@ const VoucherPlans = () => {
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Upload</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Upload (Mbps)</label>
                                     <input 
                                         type="text" 
                                         value={formData.upload_limit}
                                         onChange={(e) => setFormData({...formData, upload_limit: e.target.value})}
                                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
-                                        placeholder="e.g. 5M"
+                                        placeholder="e.g. 5"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Download</label>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Download (Mbps)</label>
                                     <input 
                                         type="text" 
                                         value={formData.download_limit}
                                         onChange={(e) => setFormData({...formData, download_limit: e.target.value})}
                                         className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
-                                        placeholder="e.g. 15M"
+                                        placeholder="e.g. 15"
                                     />
                                 </div>
                             </div>
+                            <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest ml-1">Cukup isi angka (misal: 5), sistem otomatis menambah 'M'</p>
                             <button 
                                 type="submit" 
                                 disabled={submitting}
