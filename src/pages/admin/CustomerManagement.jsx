@@ -91,6 +91,25 @@ const CustomerManagement = () => {
         setFormData({ name: '', whatsapp: '', billing_amount: '', due_date: '' })
     }
 
+    const handleToggleStatus = async (id) => {
+        try {
+            const token = localStorage.getItem('token')
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/toggle-status`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            
+            if (response.data.mikrotik_synced) {
+                alert(response.data.message)
+            } else {
+                alert('⚠️ PERINGATAN: ' + response.data.message)
+            }
+            
+            fetchCustomers(meta.current_page)
+        } catch (err) {
+            alert('Gagal memperbarui status')
+        }
+    }
+
     const handleDelete = async (id) => {
         if (!confirm('Yakin hapus data pelanggan ini?')) return
         try {
@@ -108,10 +127,16 @@ const CustomerManagement = () => {
         if (!confirm('Konfirmasi pembayaran manual?')) return
         try {
             const token = localStorage.getItem('token')
-            await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/pay-manual`, {}, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/pay-manual`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             })
-            alert('Pembayaran berhasil dan struk dikirim via WA')
+            
+            if (response.data.mikrotik_synced) {
+                alert(response.data.message)
+            } else {
+                alert('⚠️ PERINGATAN: ' + response.data.message)
+            }
+            
             fetchCustomers(meta.current_page)
         } catch (err) {
             alert('Gagal memproses pembayaran')
@@ -349,29 +374,34 @@ const CustomerManagement = () => {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-center">
-                                        {c.is_isolated ? (
-                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200">
-                                                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                                                Terisolir
-                                            </span>
-                                        ) : c.is_synced ? (
-                                            c.mikrotik_enabled ? (
-                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100">
-                                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
-                                                    Aktif (Router)
+                                        <button 
+                                            onClick={() => handleToggleStatus(c.id)}
+                                            className="focus:outline-none"
+                                        >
+                                            {c.is_isolated ? (
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200 hover:bg-rose-700 transition-all">
+                                                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                                    Terisolir
                                                 </span>
+                                            ) : c.is_synced ? (
+                                                c.mikrotik_enabled ? (
+                                                    <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100 hover:bg-emerald-100 transition-all">
+                                                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
+                                                        Aktif (Router)
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-amber-100 hover:bg-amber-100 transition-all">
+                                                        <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                                                        Disable (Router)
+                                                    </span>
+                                                )
                                             ) : (
-                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-amber-100">
-                                                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                                                    Disable (Router)
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-slate-200 hover:bg-slate-200 transition-all">
+                                                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                                                    Not Found
                                                 </span>
-                                            )
-                                        ) : (
-                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-slate-200">
-                                                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
-                                                Not Found
-                                            </span>
-                                        )}
+                                            )}
+                                        </button>
                                     </td>
                                     <td className="px-8 py-6 text-center">
                                         {c.status_bayar === 'paid' ? (
