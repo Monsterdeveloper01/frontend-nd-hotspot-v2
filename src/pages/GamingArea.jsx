@@ -102,12 +102,21 @@ const GamingArea = () => {
                                             </div>
                                             <span className="font-black text-xs uppercase tracking-tighter text-slate-700">Sangat Tinggi</span>
                                         </div>
-                                        <div className="flex justify-between items-center bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100">
-                                            <div className="flex items-center gap-3 text-slate-500 font-black uppercase text-[10px] tracking-widest">
-                                                <FaIcon name="tachometer-alt" className="text-blue-500" />
-                                                Kecepatan
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col bg-slate-50/50 backdrop-blur-sm px-5 py-4 rounded-2xl border border-slate-100 group-hover:bg-white group-hover:border-emerald-200 transition-all duration-300">
+                                                <div className="flex items-center gap-2 text-slate-500 font-black uppercase text-[8px] tracking-[0.2em] mb-1">
+                                                    <FaIcon name="arrow-up" className="text-emerald-500 group-hover:animate-bounce" />
+                                                    Upload
+                                                </div>
+                                                <span className="font-black text-xs uppercase tracking-tighter text-slate-700">{plan.upload_limit} <span className="text-[10px] text-slate-400">Mbps</span></span>
                                             </div>
-                                            <span className="font-black text-xs uppercase tracking-tighter text-slate-700">{plan.download_limit} Mbps</span>
+                                            <div className="flex flex-col bg-slate-50/50 backdrop-blur-sm px-5 py-4 rounded-2xl border border-slate-100 group-hover:bg-white group-hover:border-blue-200 transition-all duration-300">
+                                                <div className="flex items-center gap-2 text-slate-500 font-black uppercase text-[8px] tracking-[0.2em] mb-1">
+                                                    <FaIcon name="arrow-down" className="text-blue-500 group-hover:animate-bounce" />
+                                                    Download
+                                                </div>
+                                                <span className="font-black text-xs uppercase tracking-tighter text-slate-700">{plan.download_limit} <span className="text-[10px] text-slate-400">Mbps</span></span>
+                                            </div>
                                         </div>
                                     </div>
 

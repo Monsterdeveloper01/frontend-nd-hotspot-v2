@@ -120,18 +120,18 @@ const GamingCheckout = () => {
                 )}
 
                 {paymentResult ? (
-                    <div className="bg-white border-2 border-slate-100 rounded-[45px] p-10 shadow-2xl relative overflow-hidden text-center">
+                    <div className="bg-white border-2 border-slate-100 rounded-[30px] md:rounded-[45px] p-6 md:p-10 shadow-2xl relative overflow-hidden text-center">
                         <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-purple-500 to-blue-500"></div>
                         <div className="mb-10">
                             <div className="w-20 h-20 bg-purple-50 text-purple-600 border border-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
                                 <i className="fas fa-qrcode text-3xl"></i>
                             </div>
-                            <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-2 text-slate-900">Scan & Bayar</h2>
-                            <p className="text-slate-500 font-bold text-sm">Menyiapkan akses prioritas gaming...</p>
+                            <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter mb-2 text-slate-900">Scan & Bayar</h2>
+                            <p className="text-slate-500 font-bold text-[10px] md:text-sm">Menyiapkan akses prioritas gaming...</p>
                         </div>
 
-                        <div className="bg-slate-50 p-4 rounded-[40px] border-4 border-purple-50 inline-block mb-10 shadow-inner">
-                            <img src={paymentResult.payment_url} className="w-64 h-64 rounded-[30px]" alt="Gaming QRIS" />
+                        <div className="bg-slate-50 p-4 rounded-[25px] md:rounded-[40px] border-4 border-purple-50 inline-block mb-10 shadow-inner">
+                            <img src={paymentResult.payment_url} className="w-56 h-56 md:w-64 md:h-64 rounded-[20px] md:rounded-[30px]" alt="Gaming QRIS" />
                         </div>
 
                         <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-10 text-left relative overflow-hidden group">
@@ -151,13 +151,13 @@ const GamingCheckout = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white border-2 border-slate-100 rounded-[45px] overflow-hidden shadow-2xl">
+                    <div className="bg-white border-2 border-slate-100 rounded-[30px] md:rounded-[45px] overflow-hidden shadow-2xl">
                         {/* Header */}
-                        <div className="p-10 bg-slate-50 border-b border-slate-100 relative">
+                        <div className="p-6 md:p-10 bg-slate-50 border-b border-slate-100 relative">
                             <div className="flex justify-between items-start mb-8 relative z-10">
                                 <div>
-                                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900">Finalisasi <span className="text-purple-600">Akses</span></h1>
-                                    <p className="text-slate-400 font-bold text-xs mt-1 uppercase tracking-widest">Deployment Area Gaming</p>
+                                    <h1 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-slate-900">Finalisasi <span className="text-purple-600">Akses</span></h1>
+                                    <p className="text-slate-400 font-bold text-[10px] mt-1 uppercase tracking-widest">Deployment Area Gaming</p>
                                 </div>
                                 <div className="w-12 h-12 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm">
                                     <i className="fas fa-bolt"></i>
@@ -165,10 +165,18 @@ const GamingCheckout = () => {
                             </div>
                             <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
                                 <div className="flex justify-between items-center">
-                                    <div>
-                                        <p className="text-purple-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Paket Tier</p>
-                                        <p className="text-xl font-black italic uppercase tracking-tighter text-slate-700">{plan.name}</p>
-                                    </div>
+                                     <div>
+                                         <p className="text-purple-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Paket Tier</p>
+                                         <p className="text-xl font-black italic uppercase tracking-tighter text-slate-700">{plan.name}</p>
+                                         <div className="flex gap-4 mt-2">
+                                          <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                                 <i className="fas fa-arrow-up text-emerald-500"></i> {plan.upload_limit} Mbps
+                                             </div>
+                                             <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                                 <i className="fas fa-arrow-down text-blue-500"></i> {plan.download_limit} Mbps
+                                             </div>
+                                         </div>
+                                     </div>
                                     <div className="text-right">
                                         <p className="text-2xl font-black italic text-slate-900 tracking-tighter">Rp {formatRupiah(plan.price)}</p>
                                     </div>
@@ -176,7 +184,7 @@ const GamingCheckout = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-10 space-y-10">
+                        <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-8 md:space-y-10">
                             <div className="space-y-4">
                                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Nomor Tujuan (WhatsApp)</label>
                                 <div className="relative group">
@@ -193,7 +201,7 @@ const GamingCheckout = () => {
                                         }}
                                         required 
                                         placeholder="812xxxxx" 
-                                        className="w-full pl-16 pr-6 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-purple-400 focus:bg-white outline-none transition font-black italic text-xl text-slate-800 placeholder:text-slate-300"
+                                        className="w-full pl-14 md:pl-16 pr-6 py-4 md:py-5 bg-slate-50 border-2 border-slate-100 rounded-xl md:rounded-2xl focus:border-purple-400 focus:bg-white outline-none transition font-black italic text-lg md:text-xl text-slate-800 placeholder:text-slate-300"
                                         inputMode="numeric"
                                     />
                                     <div className="absolute inset-0 rounded-2xl bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>

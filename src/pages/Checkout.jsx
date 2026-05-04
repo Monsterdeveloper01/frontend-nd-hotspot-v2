@@ -199,7 +199,7 @@ const Checkout = () => {
                     )}
 
                     {paymentResult ? (
-                        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center relative overflow-hidden">
+                        <div className="bg-white rounded-2xl md:rounded-[30px] shadow-lg border border-gray-200 p-6 md:p-8 text-center relative overflow-hidden">
                             <div className="mb-6">
                                 <div className={`w-16 h-16 ${theme.primary.gradient} rounded-xl flex items-center justify-center mx-auto mb-4`}>
                                     <i className="fas fa-qrcode text-white text-2xl"></i>
@@ -209,8 +209,8 @@ const Checkout = () => {
                             </div>
                             
                             <div className="mb-8">
-                                <div className="bg-white p-4 rounded-xl border-2 border-gray-100 inline-block shadow-inner">
-                                    <img src={paymentResult.payment_url} className="w-60 h-60 rounded-lg" alt="QR Code" />
+                                <div className="bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 inline-block shadow-inner">
+                                    <img src={paymentResult.payment_url} className="w-56 h-56 md:w-60 md:h-60 rounded-lg" alt="QR Code" />
                                 </div>
                             </div>
                             
@@ -237,12 +237,12 @@ const Checkout = () => {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
-                            <div className={`${theme.primary.gradient} p-8 text-white relative`}>
+                        <div className="bg-white rounded-[25px] md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
+                            <div className={`${theme.primary.gradient} p-6 md:p-8 text-white relative`}>
                                 <div className="flex items-center justify-between mb-6">
                                     <div>
-                                        <h1 className="text-2xl font-black uppercase tracking-tighter">Checkout</h1>
-                                        <p className="text-white/80 text-xs font-bold mt-1">Konfirmasi pembelian voucher internet</p>
+                                        <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter">Checkout</h1>
+                                        <p className="text-white/80 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">Konfirmasi pembelian voucher</p>
                                     </div>
                                     <div className="text-3xl opacity-50">
                                         <i className="fas fa-shopping-basket"></i>
@@ -251,8 +251,15 @@ const Checkout = () => {
                                 <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30">
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <p className="text-white text-sm font-black uppercase tracking-widest">{plan.name}</p>
-                                            <p className="text-xs text-white/70 font-bold">High Speed Voucher</p>
+                                            <p className="text-white text-xs md:text-sm font-black uppercase tracking-widest">{plan.name}</p>
+                                            <div className="flex gap-3 mt-1.5 opacity-80">
+                                                <div className="flex items-center gap-1 text-[8px] font-black text-white uppercase">
+                                                    <i className="fas fa-arrow-up"></i> {plan.upload_limit} Mbps
+                                                </div>
+                                                <div className="flex items-center gap-1 text-[8px] font-black text-white uppercase">
+                                                    <i className="fas fa-arrow-down"></i> {plan.download_limit} Mbps
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-2xl font-black italic">Rp {formatRupiah(plan.price)}</p>
@@ -261,7 +268,7 @@ const Checkout = () => {
                                 </div>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="p-8 space-y-8">
+                            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6 md:space-y-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block ml-1">Nomor WhatsApp *</label>
                                     <div className="relative">
@@ -278,7 +285,7 @@ const Checkout = () => {
                                             }}
                                             required 
                                             placeholder="812xxxxx" 
-                                            className="w-full pl-16 pr-6 py-5 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-blue-500 outline-none transition font-black text-lg placeholder:text-gray-300"
+                                            className="w-full pl-14 md:pl-16 pr-6 py-4 md:py-5 bg-gray-50 border-2 border-gray-100 rounded-xl md:rounded-2xl focus:border-blue-500 outline-none transition font-black text-base md:text-lg placeholder:text-gray-300"
                                             inputMode="numeric"
                                         />
                                     </div>
