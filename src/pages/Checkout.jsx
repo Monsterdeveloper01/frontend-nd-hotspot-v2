@@ -212,11 +212,13 @@ const Checkout = () => {
                                 <div className="bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 inline-block shadow-inner relative group">
                                     <img 
                                         src={paymentResult.payment_url} 
-                                        className="w-56 h-56 md:w-60 md:h-60 rounded-lg" 
+                                        className="w-56 h-56 md:w-60 md:h-60 rounded-lg mx-auto" 
                                         alt="QR Code" 
                                         onError={(e) => {
                                             e.target.onerror = null;
-                                            e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(paymentResult.payment_url);
+                                            // PRIORITASKAN qr_string untuk QRIS yang valid (IDR), bukan link gambar
+                                            const qrData = paymentResult.qr_string || paymentResult.payment_url;
+                                            e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrData);
                                         }}
                                     />
                                     <div className="mt-4 flex flex-col gap-2">

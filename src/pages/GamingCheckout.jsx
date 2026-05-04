@@ -133,11 +133,13 @@ const GamingCheckout = () => {
                         <div className="bg-slate-50 p-4 rounded-[25px] md:rounded-[40px] border-4 border-purple-50 inline-block mb-8 shadow-inner relative group">
                             <img 
                                 src={paymentResult.payment_url} 
-                                className="w-56 h-56 md:w-64 md:h-64 rounded-[20px] md:rounded-[30px]" 
+                                className="w-56 h-56 md:w-64 md:h-64 rounded-[20px] md:rounded-[30px] mx-auto" 
                                 alt="Gaming QRIS" 
                                 onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(paymentResult.payment_url);
+                                    // PRIORITASKAN qr_string untuk QRIS yang valid (IDR), bukan link gambar
+                                    const qrData = paymentResult.qr_string || paymentResult.payment_url;
+                                    e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrData);
                                 }}
                             />
                             <div className="mt-4">
