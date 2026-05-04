@@ -64,9 +64,11 @@ const AdminDashboard = () => {
   
   // History Modal State
   const [modalOpen, setModalOpen] = useState(false)
-  const [historyData, setHistoryData] = useState({ data: [], meta: {} })
+  const [historyData, setHistoryData] = useState({ data: [], meta: { links: [] } })
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyFilter, setHistoryFilter] = useState('all')
+
+  const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
   const [isMaintenance, setIsMaintenance] = useState(false)
 
@@ -183,7 +185,7 @@ const AdminDashboard = () => {
         cornerRadius: 12,
         displayColors: false,
         callbacks: {
-          label: (ctx) => `Rp ${ctx.parsed.y.toLocaleString('id-ID')}`
+          label: (ctx) => `Rp ${formatPrice(ctx.parsed.y)}`
         }
       }
     },
@@ -259,7 +261,7 @@ const AdminDashboard = () => {
                 <div className="space-y-4">
                     <div>
                         <p className="text-sm text-gray-600 mb-1 font-medium">Total Pendapatan Bulan Ini</p>
-                        <p className="text-2xl font-bold text-gray-900">Rp {data.stats.monthly_revenue.toLocaleString('id-ID')}</p>
+                        <p className="text-2xl font-bold text-gray-900">Rp {formatPrice(data.stats.monthly_revenue)}</p>
                         <div className="mt-2 flex items-center text-xs text-blue-600">
                             <Icon name="trend" className="w-3.5 h-3.5 mr-1" />
                             <span>{data.stats.monthly_revenue > 0 ? (100).toFixed(1) : '0'}% dari target</span>
@@ -268,7 +270,7 @@ const AdminDashboard = () => {
                     
                     <div className="pt-4 border-t border-blue-100">
                         <p className="text-sm text-gray-600 mb-1 font-medium">Total Omset Hari Ini</p>
-                        <p className="text-2xl font-bold text-emerald-700">Rp {data.stats.today_revenue.toLocaleString('id-ID')}</p>
+                        <p className="text-2xl font-bold text-emerald-700">Rp {formatPrice(data.stats.today_revenue)}</p>
                         <div className="mt-2 flex items-center justify-between">
                             <div className="flex items-center text-xs text-emerald-600">
                                 <Icon name="trend" className="w-3.5 h-3.5 mr-1" />
@@ -334,7 +336,7 @@ const AdminDashboard = () => {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="bg-white rounded-lg border border-purple-200 p-3">
                         <p className="text-xs text-gray-600 mb-1">Pendapatan Bill</p>
-                        <p className="text-lg font-bold text-purple-700">Rp {data.stats.bill_revenue_today.toLocaleString('id-ID')}</p>
+                        <p className="text-lg font-bold text-purple-700">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
                     </div>
                     <div className="bg-white rounded-lg border border-emerald-200 p-3">
                         <p className="text-xs text-gray-600 mb-1">Voucher Terjual</p>
@@ -352,11 +354,11 @@ const AdminDashboard = () => {
                     <div className="flex items-center justify-between mb-1">
                         <p className="text-xs text-gray-600">Pendapatan Voucher</p>
                     </div>
-                    <p className="text-lg font-bold text-emerald-700">Rp {data.stats.voucher_revenue_today.toLocaleString('id-ID')}</p>
+                    <p className="text-lg font-bold text-emerald-700">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
                     <div className="mt-1 flex items-center justify-between text-[10px]">
                         <span className="text-gray-500">Rata-rata/voucher:</span>
                         <span className="font-semibold text-emerald-700">
-                            Rp {data.stats.voucher_sold_today > 0 ? Math.round(data.stats.voucher_revenue_today/data.stats.voucher_sold_today).toLocaleString('id-ID') : '0'}
+                            Rp {data.stats.voucher_sold_today > 0 ? formatPrice(data.stats.voucher_revenue_today/data.stats.voucher_sold_today) : '0'}
                         </span>
                     </div>
                 </div>
@@ -374,7 +376,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex items-center gap-3 mt-4 md:mt-0">
                         <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200">
-                            Total: Rp {data.stats.monthly_revenue.toLocaleString('id-ID')}
+                            Total: Rp {formatPrice(data.stats.monthly_revenue)}
                         </span>
                     </div>
                 </div>
@@ -524,15 +526,22 @@ const AdminDashboard = () => {
                                             <Icon name={isBill ? 'bill' : 'voucher'} className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-sm text-gray-900">{tx.external_id}</p>
+                                            {isBill ? (
+                                                <p className="font-bold text-sm text-gray-900">{tx.customer?.name || tx.external_id}</p>
+                                            ) : (
+                                                <div className="flex flex-col">
+                                                    <p className="font-bold text-sm text-gray-900">{tx.voucher?.code || 'ND-VOUCHER'}</p>
+                                                    <p className="text-[10px] text-gray-500 font-bold">{tx.customer_phone || '-'}</p>
+                                                </div>
+                                            )}
                                             <div className="flex items-center gap-2 mt-1">
                                                 <span className="text-[9px] bg-green-100 text-green-800 px-1.5 py-0.5 rounded font-bold uppercase">SUCCESS</span>
-                                                <span className="text-[10px] text-gray-400 font-medium">{new Date(tx.created_at).toLocaleTimeString('id-ID')}</span>
+                                                <span className="text-[9px] text-blue-600 font-mono tracking-tight">{tx.external_id}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-bold text-emerald-600">+Rp {tx.amount.toLocaleString('id-ID')}</p>
+                                        <p className="text-sm font-bold text-emerald-600">+Rp {formatPrice(tx.amount)}</p>
                                         <p className="text-[10px] text-gray-500 mt-1">{new Date(tx.created_at).toLocaleDateString('id-ID')}</p>
                                     </div>
                                 </div>
@@ -586,6 +595,7 @@ const AdminDashboard = () => {
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">ID Transaksi</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Pelanggan / Detail</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Jumlah</th>
                                         <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Waktu</th>
@@ -599,11 +609,25 @@ const AdminDashboard = () => {
                                             <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
                                                 <td className="px-6 py-4 font-mono text-sm font-bold text-gray-900">{tx.external_id}</td>
                                                 <td className="px-6 py-4">
+                                                    {isBill ? (
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-900">{tx.customer?.name || '-'}</p>
+                                                            <p className="text-[10px] text-gray-500">{tx.customer_phone || '-'}</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <p className="text-sm font-bold text-blue-600 uppercase">{tx.voucher?.code || 'VOUCHER'}</p>
+                                                            <p className="text-[10px] text-gray-500">WA: {tx.customer_phone || '-'}</p>
+                                                            <p className="text-[9px] bg-blue-50 text-blue-600 px-1 rounded inline-block font-bold">{tx.plan?.name || 'Voucher Plan'}</p>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4">
                                                     <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isBill ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>
                                                         {isBill ? 'Tagihan' : 'Voucher'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 font-bold text-gray-900 text-base">Rp {(tx.amount || 0).toLocaleString('id-ID')}</td>
+                                                <td className="px-6 py-4 font-bold text-gray-900 text-base">Rp {formatPrice(tx.amount)}</td>
                                                 <td className="px-6 py-4 text-xs text-gray-500 font-medium">
                                                     {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                                                 </td>
