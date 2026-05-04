@@ -355,14 +355,21 @@ const CustomerManagement = () => {
                                                 Terisolir
                                             </span>
                                         ) : c.is_synced ? (
-                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100">
-                                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
-                                                Linked
-                                            </span>
+                                            c.mikrotik_enabled ? (
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100">
+                                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
+                                                    Aktif (Router)
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-amber-100">
+                                                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                                                    Disable (Router)
+                                                </span>
+                                            )
                                         ) : (
                                             <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-slate-200">
                                                 <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
-                                                Offline
+                                                Not Found
                                             </span>
                                         )}
                                     </td>
