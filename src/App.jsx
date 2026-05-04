@@ -234,20 +234,7 @@ function Home() {
 
                       <div className={`border-t-2 ${c.border} border-opacity-10 my-6`}></div>
 
-                      <div className="mb-6 grid grid-cols-2 gap-4">
-                        <div className={`p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col`}>
-                           <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                              <i className="fas fa-arrow-up text-[7px]"></i> Upload
-                           </span>
-                           <span className={`text-xs font-black ${c.text}`}>{plan.upload_limit} Mbps</span>
-                        </div>
-                        <div className={`p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col`}>
-                           <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                              <i className="fas fa-arrow-down text-[7px]"></i> Download
-                           </span>
-                           <span className={`text-xs font-black ${c.text}`}>{plan.download_limit} Mbps</span>
-                        </div>
-                      </div>
+                      {/* Kecepatan Upload/Download dihilangkan agar tampilan lebih simpel untuk voucher biasa */}
 
                       <div className="mb-8 text-left">
                         <div className={`text-3xl font-black ${c.text} tracking-tight`}>Rp {plan.price.toLocaleString()}</div>
