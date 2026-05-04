@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client'
 import axios from 'axios'
 
-const socket = io('http://localhost:5000')
+const socket = io(import.meta.env.VITE_WA_URL)
 
 const WhatsAppSettings = () => {
   const [status, setStatus] = useState('checking')
@@ -19,7 +19,7 @@ const WhatsAppSettings = () => {
     socket.on('log', (log) => setLogs(prev => [log, ...prev].slice(0, 100)))
 
     // Initial fetch
-    axios.get('http://localhost:5000/status').then(res => {
+    axios.get(`${import.meta.env.VITE_WA_URL}/status`).then(res => {
       setStatus(res.data.status)
       setQr(res.data.qr)
       setLogs(res.data.logs)
@@ -38,7 +38,7 @@ const WhatsAppSettings = () => {
     if (!testNumber) return
     setSending(true)
     try {
-      await axios.post('http://localhost:5000/send-message', {
+      await axios.post(`${import.meta.env.VITE_WA_URL}/send-message`, {
         number: '62' + testNumber,
         message: testMessage
       })
