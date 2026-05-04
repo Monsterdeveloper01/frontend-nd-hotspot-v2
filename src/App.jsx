@@ -192,6 +192,42 @@ function Home() {
         </div>
       </section>
 
+      {/* Maintenance Notice Section */}
+      <section className="px-4 pt-12 pb-0">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-amber-50 border-2 border-amber-200 rounded-[2rem] p-6 md:p-8 relative overflow-hidden shadow-xl shadow-amber-100">
+            {/* Background pattern */}
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <i className="fas fa-tools text-6xl text-amber-600 rotate-12"></i>
+            </div>
+            
+            <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+              <div className="w-16 h-16 bg-amber-400 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-amber-200">
+                <i className="fas fa-exclamation-triangle text-2xl text-white animate-bounce-slow"></i>
+              </div>
+              
+              <div className="text-center md:text-left flex-1">
+                <h3 className="text-xl font-black text-amber-900 mb-2 uppercase tracking-tight">PENGUMUMAN LAYANAN</h3>
+                <p className="text-amber-800 font-bold leading-relaxed">
+                  <span className="text-amber-600">ND-HotspotV2</span> masih dalam proses perbaikan dan peningkatan layanan sistem. 
+                  Jika Anda mengalami masalah <span className="underline decoration-amber-300">transaksi gagal</span>, menemukan <span className="underline decoration-amber-300">bug</span> atau <span className="underline decoration-amber-300">error</span>, mohon hubungi admin segera.
+                </p>
+              </div>
+
+              <a 
+                href="https://wa.me/6285129391531?text=Halo%20Admin%20ND-Hotspot,%20saya%20mengalami%20kendala%20saat%20transaksi/menemukan%20bug."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-emerald-200 transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-3 whitespace-nowrap"
+              >
+                <i className="fab fa-whatsapp text-xl"></i>
+                CHAT ADMIN
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Packages Grid */}
       <section id="packages" className="py-12 bg-white flex-1">
         <div className="max-w-7xl mx-auto px-4">
