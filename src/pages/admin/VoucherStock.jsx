@@ -87,7 +87,7 @@ const VoucherDetailModal = ({ voucher, onClose }) => {
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kadaluarsa</p>
                                 <p className="text-sm font-bold text-slate-700">
-                                    {voucher.expires_at ? new Date(voucher.expires_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'Unlimited'}
+                                    {voucher.expires_at ? new Date(voucher.expires_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'Belum Digunakan'}
                                 </p>
                             </div>
                         </div>

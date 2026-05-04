@@ -482,7 +482,11 @@ const AdminDashboard = () => {
                                         {user.is_online ? (
                                             <span className="font-mono text-xs font-semibold text-gray-700">{user.uptime}</span>
                                         ) : (
-                                            <span className="text-[10px] text-gray-400 italic">Exp: {new Date(user.expires_at || Date.now()).toLocaleDateString('id-ID')}</span>
+                                            <span className="text-[10px] text-gray-400 italic">
+                                                {user.expires_at 
+                                                    ? `Exp: ${new Date(user.expires_at).toLocaleDateString('id-ID')}` 
+                                                    : 'Belum Digunakan'}
+                                            </span>
                                         )}
                                     </td>
                                 </tr>
