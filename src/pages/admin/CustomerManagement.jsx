@@ -323,14 +323,17 @@ const CustomerManagement = () => {
                                     <td colSpan="5" className="px-8 py-20 text-center text-slate-400 font-bold italic">Loading records...</td>
                                 </tr>
                             ) : customers.length > 0 ? customers.map((c) => (
-                                <tr key={c.id} className="hover:bg-blue-50/30 transition-colors group">
+                                <tr key={c.id} className={`hover:bg-blue-50/30 transition-colors group ${c.is_isolated ? 'bg-rose-50/70' : ''}`}>
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-sm shadow-md">
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md ${c.is_isolated ? 'bg-rose-600' : 'bg-gradient-to-br from-blue-600 to-indigo-700'}`}>
                                                 {c.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
-                                                <div className="font-black text-slate-900 text-lg leading-none uppercase tracking-tight">{c.name}</div>
+                                                <div className="font-black text-slate-900 text-lg leading-none uppercase tracking-tight">
+                                                    {c.name}
+                                                    {c.is_isolated && <span className="ml-2 text-[8px] bg-rose-600 text-white px-2 py-0.5 rounded-full align-middle">ISOLATED</span>}
+                                                </div>
                                                 <div className="flex items-center gap-2 mt-1.5">
                                                     <Icon name="phone" className="w-3 h-3 text-slate-400" />
                                                     <span className="text-slate-400 font-bold text-[11px]">{c.whatsapp}</span>
@@ -340,20 +343,25 @@ const CustomerManagement = () => {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="font-black text-slate-800 text-sm">Rp {Number(c.billing_amount).toLocaleString('id-ID')}</div>
-                                        <div className="text-[10px] font-black text-blue-500 uppercase mt-1 tracking-widest flex items-center gap-2">
+                                        <div className={`text-[10px] font-black uppercase mt-1 tracking-widest flex items-center gap-2 ${c.is_isolated ? 'text-rose-600' : 'text-blue-500'}`}>
                                             <Icon name="clock" className="w-3 h-3" />
                                             Due: {new Date(c.due_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-center">
-                                        {c.is_synced ? (
+                                        {c.is_isolated ? (
+                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200">
+                                                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                                Terisolir
+                                            </span>
+                                        ) : c.is_synced ? (
                                             <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-emerald-100">
                                                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></span>
                                                 Linked
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-50 text-rose-600 rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-100">
-                                                <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
+                                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest border border-slate-200">
+                                                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
                                                 Offline
                                             </span>
                                         )}
