@@ -209,12 +209,30 @@ const Checkout = () => {
                             </div>
                             
                             <div className="mb-8">
-                                <div className="bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 inline-block shadow-inner">
-                                    <img src={paymentResult.payment_url} className="w-56 h-56 md:w-60 md:h-60 rounded-lg" alt="QR Code" />
+                                <div className="bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 inline-block shadow-inner relative group">
+                                    <img 
+                                        src={paymentResult.payment_url} 
+                                        className="w-56 h-56 md:w-60 md:h-60 rounded-lg" 
+                                        alt="QR Code" 
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(paymentResult.payment_url);
+                                        }}
+                                    />
+                                    <div className="mt-4 flex flex-col gap-2">
+                                        <a 
+                                            href={paymentResult.payment_url} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-[10px] font-black text-blue-600 hover:text-blue-700 underline uppercase tracking-widest"
+                                        >
+                                            <i className="fas fa-external-link-alt mr-1"></i> Buka Gambar di Tab Baru
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div className={`bg-gradient-to-r ${theme.primary.light} rounded-2xl p-6 border ${theme.primary.border}/20 mb-8`}>
+                            <div className={`bg-gradient-to-r ${theme.primary.light} rounded-2xl p-6 border ${theme.primary.border}/20 mb-6`}>
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="text-gray-600 font-bold text-sm">Total Pembayaran</span>
                                     <span className={`text-2xl font-black ${theme.primary.color}`}>
@@ -224,6 +242,25 @@ const Checkout = () => {
                                 <div className="text-[10px] text-gray-500 text-left font-black uppercase tracking-widest mt-2">
                                     Order ID: {paymentResult.external_id}
                                 </div>
+                            </div>
+
+                            {/* Captive Portal Fix / Warning */}
+                            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-8 text-left">
+                                <p className="text-[10px] font-black text-amber-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <i className="fas fa-info-circle"></i> QR Tidak Muncul?
+                                </p>
+                                <p className="text-[10px] text-amber-700 font-bold leading-relaxed">
+                                    Jika Anda menggunakan browser bawaan Wifi (Captive Portal) dan QR tidak muncul, silakan <b>Salin Link</b> lalu buka di <b>Chrome/Safari</b> biasa.
+                                </p>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(window.location.href);
+                                        alert('Link pembayaran berhasil disalin! Silakan buka Chrome/Safari dan tempel link tersebut.');
+                                    }}
+                                    className="mt-3 w-full py-2 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
+                                >
+                                    Salin Link Pembayaran
+                                </button>
                             </div>
                             
                             <div className="space-y-4">
