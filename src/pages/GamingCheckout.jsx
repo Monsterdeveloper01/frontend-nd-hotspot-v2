@@ -130,17 +130,54 @@ const GamingCheckout = () => {
                             <p className="text-slate-500 font-bold text-[10px] md:text-sm">Menyiapkan akses prioritas gaming...</p>
                         </div>
 
-                        <div className="bg-slate-50 p-4 rounded-[25px] md:rounded-[40px] border-4 border-purple-50 inline-block mb-10 shadow-inner">
-                            <img src={paymentResult.payment_url} className="w-56 h-56 md:w-64 md:h-64 rounded-[20px] md:rounded-[30px]" alt="Gaming QRIS" />
+                        <div className="bg-slate-50 p-4 rounded-[25px] md:rounded-[40px] border-4 border-purple-50 inline-block mb-8 shadow-inner relative group">
+                            <img 
+                                src={paymentResult.payment_url} 
+                                className="w-56 h-56 md:w-64 md:h-64 rounded-[20px] md:rounded-[30px]" 
+                                alt="Gaming QRIS" 
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' + encodeURIComponent(paymentResult.payment_url);
+                                }}
+                            />
+                            <div className="mt-4">
+                                <a 
+                                    href={paymentResult.payment_url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] font-black text-purple-600 hover:text-purple-700 underline uppercase tracking-widest"
+                                >
+                                    <i className="fas fa-external-link-alt mr-1"></i> Buka Gambar di Tab Baru
+                                </a>
+                            </div>
                         </div>
 
-                        <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-10 text-left relative overflow-hidden group">
+                        <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-6 text-left relative overflow-hidden group">
                             <div className="flex justify-between items-center mb-1">
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Biaya Protokol</span>
                                 <span className="text-2xl font-black italic text-purple-600 tracking-tighter">Rp {formatRupiah(plan.price)}</span>
                             </div>
                             <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">ID Transaksi: {paymentResult.external_id}</div>
                             <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-all"></div>
+                        </div>
+
+                        {/* Captive Portal Fix for Gamers */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 mb-10 text-left">
+                            <p className="text-[10px] font-black text-amber-800 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <i className="fas fa-exclamation-triangle"></i> QR Tidak Muncul? (CNA FIX)
+                            </p>
+                            <p className="text-[10px] text-amber-700 font-bold leading-relaxed">
+                                Jika Anda di browser bawaan Wifi dan QR tidak muncul, <b>Salin Link</b> lalu buka di <b>Chrome/Safari</b> biasa untuk melanjutkan pembayaran.
+                            </p>
+                            <button 
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert('Link pembayaran berhasil disalin! Silakan buka Chrome/Safari dan tempel link tersebut.');
+                                }}
+                                className="mt-4 w-full py-3 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                            >
+                                Salin Link Misi
+                            </button>
                         </div>
 
                         <div className="space-y-6">
