@@ -203,18 +203,55 @@ function Home() {
             <p className="text-slate-500 font-bold mt-2">Koneksi cepat untuk aktivitas online Anda</p>
           </div>
 
-          <div className="flex flex-col items-center justify-center py-20 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl mb-8 animate-bounce-slow">
-              <i className="fas fa-tools text-4xl text-blue-600"></i>
-            </div>
-            <h3 className="text-3xl font-black text-slate-800 mb-4 tracking-tighter uppercase">SYSTEM UNDER BUILD</h3>
-            <p className="text-slate-500 font-bold max-w-md text-center leading-relaxed">
-              Kami sedang melakukan pembaharuan sistem untuk memberikan pengalaman internet yang lebih baik. Silakan cek kembali nanti!
-            </p>
-            <div className="mt-10 flex gap-4">
-              <div className="px-6 py-2 bg-blue-100 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-widest">Optimizing Security</div>
-              <div className="px-6 py-2 bg-purple-100 text-purple-600 rounded-full text-[10px] font-black uppercase tracking-widest">Updating Plans</div>
-            </div>
+          <div className="flex flex-wrap justify-center gap-8">
+            {loading ? (
+              [1, 2, 3, 4, 5].map(i => <div key={i} className="w-full max-w-[340px]"><VoucherSkeleton /></div>)
+            ) : (
+              plans.map((plan, index) => {
+                const c = getColorClasses(index);
+                return (
+                  <div key={plan.id} className={`w-full max-w-[340px] rounded-2xl overflow-hidden border-2 ${c.border} shadow-lg shadow-slate-200/50 flex flex-col bg-white hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative group`}>
+                    {index === 2 && (
+                      <div className="absolute -top-0 -right-0 bg-emerald-500 text-white text-[10px] font-black px-4 py-2 rounded-bl-2xl shadow-md z-10 flex items-center gap-1">
+                        <i className="fas fa-fire text-[9px]"></i> BEST SELLER
+                      </div>
+                    )}
+
+                    <div className={`h-2 ${c.topLine}`}></div>
+
+                    <div className="p-6 flex-1">
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="text-left">
+                          <h3 className={`font-black text-2xl ${c.text} leading-none tracking-tighter uppercase`}>{plan.name}</h3>
+                          <p className="text-slate-400 text-[10px] mt-2 font-black uppercase flex items-center gap-1 tracking-widest">
+                            <FaIcon name="clock" className="text-[10px]" /> Aktif {plan.duration.endsWith('h') ? plan.duration.replace('h', ' Jam') : plan.duration.endsWith('d') ? plan.duration.replace('d', ' Hari') : plan.duration.replace('m', ' Bulan')} UNLIMITED
+                          </p>
+                        </div>
+                        <div className={`w-12 h-12 ${c.iconBg} ${c.text} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform`}>
+                          <FaIcon name="wifi" className="text-xl" />
+                        </div>
+                      </div>
+
+                      <div className={`border-t-2 ${c.border} border-opacity-10 my-6`}></div>
+
+                      {/* Kecepatan Upload/Download dihilangkan agar tampilan lebih simpel untuk voucher biasa */}
+
+                      <div className="mb-8 text-left">
+                        <div className={`text-3xl font-black ${c.text} tracking-tight`}>Rp {plan.price.toLocaleString()}</div>
+                        <div className="text-[10px] text-slate-400 font-black uppercase mt-1 tracking-widest">Unlimited Access</div>
+                      </div>
+
+                      <button
+                        onClick={() => navigate('/checkout', { state: { plan } })}
+                        className={`w-full ${c.btn} flex items-center justify-center group/btn`}
+                      >
+                        <i className="fas fa-shopping-cart mr-2 group-hover/btn:translate-x-[-2px] transition-transform"></i> Beli Sekarang
+                      </button>
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
         </div>
       </section>
