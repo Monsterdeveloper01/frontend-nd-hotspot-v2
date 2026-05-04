@@ -28,6 +28,9 @@ const CustomerManagement = () => {
     const [meta, setMeta] = useState(null)
     const [editingId, setEditingId] = useState(null)
     const [searchTerm, setSearchTerm] = useState('')
+    const [filterLink, setFilterLink] = useState('all') // all, active, isolated
+    const [filterPay, setFilterPay] = useState('all') // all, paid, unpaid
+    const [filterOverdue, setFilterOverdue] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
         whatsapp: '',
@@ -36,11 +39,17 @@ const CustomerManagement = () => {
     })
     const [submitting, setSubmitting] = useState(false)
 
-    const fetchCustomers = async (page = 1, q = searchTerm) => {
+    const fetchCustomers = async (page = 1, q = searchTerm, link = filterLink, pay = filterPay, overdue = filterOverdue) => {
         try {
             setLoading(true)
             const token = localStorage.getItem('token')
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/customers?page=${page}&q=${q}`, {
+            
+            let url = `${import.meta.env.VITE_API_URL}/customers?page=${page}&q=${q}`
+            if (link !== 'all') url += `&is_isolated=${link === 'isolated' ? 1 : 0}`
+            if (pay !== 'all') url += `&status_bayar=${pay}`
+            if (overdue) url += `&overdue=1`
+
+            const response = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             setCustomers(response.data.data)
@@ -59,7 +68,7 @@ const CustomerManagement = () => {
 
     useEffect(() => {
         fetchCustomers(1)
-    }, [])
+    }, [filterLink, filterPay, filterOverdue])
 
     const handleSearch = (e) => {
         e.preventDefault()
@@ -245,20 +254,56 @@ const CustomerManagement = () => {
 
             {/* List & Filter Card */}
             <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-8 bg-slate-50/50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <form onSubmit={handleSearch} className="relative w-full md:w-96 group">
-                        <input 
-                            type="text" 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm group-hover:border-blue-300" 
-                            placeholder="Cari Nama / WhatsApp..."
-                        />
-                        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                            <Icon name="search" className="w-5 h-5 text-slate-400" />
+                <div className="p-8 bg-slate-50/50 border-b border-slate-100 flex flex-col xl:flex-row justify-between items-center gap-6">
+                    <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto">
+                        <form onSubmit={handleSearch} className="relative w-full md:w-80 group">
+                            <input 
+                                type="text" 
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm group-hover:border-blue-300" 
+                                placeholder="Cari Nama / WhatsApp..."
+                            />
+                            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                                <Icon name="search" className="w-5 h-5 text-slate-400" />
+                            </div>
+                            <button type="submit" className="hidden">Search</button>
+                        </form>
+
+                        <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                            <select 
+                                value={filterLink}
+                                onChange={(e) => setFilterLink(e.target.value)}
+                                className="px-4 py-4 bg-white border border-slate-200 rounded-2xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            >
+                                <option value="all">SEMUA LINK</option>
+                                <option value="active">LINK AKTIF</option>
+                                <option value="isolated">TERISOLIR</option>
+                            </select>
+
+                            <select 
+                                value={filterPay}
+                                onChange={(e) => setFilterPay(e.target.value)}
+                                className="px-4 py-4 bg-white border border-slate-200 rounded-2xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            >
+                                <option value="all">SEMUA BAYAR</option>
+                                <option value="paid">LUNAS</option>
+                                <option value="unpaid">TEMPO</option>
+                            </select>
+
+                            <button 
+                                onClick={() => setFilterOverdue(!filterOverdue)}
+                                className={`px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-sm flex items-center gap-2 whitespace-nowrap ${filterOverdue ? 'bg-rose-500 text-white border-rose-500 shadow-rose-200' : 'bg-white border border-slate-200 text-slate-500 hover:border-rose-300'}`}
+                            >
+                                <Icon name="clock" className={`w-3 h-3 ${filterOverdue ? 'text-white' : 'text-rose-500'}`} />
+                                {filterOverdue ? 'JATUH TEMPO ON' : 'CEK JATUH TEMPO'}
+                            </button>
                         </div>
-                        <button type="submit" className="hidden">Search</button>
-                    </form>
+                    </div>
+                    
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-inner">
+                        Total: {meta?.total || 0} Records
+                    </div>
                 </div>
 
                 <div className="overflow-x-auto">
