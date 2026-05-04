@@ -14,7 +14,7 @@ const AdminLogin = () => {
     setError('')
 
     try {
-      const apiUrl = 'http://localhost:8000/api/login';
+      const apiUrl = `${import.meta.env.VITE_API_URL}/login`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
