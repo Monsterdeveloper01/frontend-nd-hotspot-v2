@@ -365,39 +365,39 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Chart Pendapatan Bulan Berjalan */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-                    <div>
-                        <h3 className="text-xl font-bold text-gray-900">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-                        <p className="text-xs text-gray-500 mt-1">Analisis pendapatan harian Bill dan Voucher</p>
-                    </div>
-                    <div className="flex items-center gap-3 mt-4 md:mt-0">
-                        <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200">
-                            Total: Rp {formatPrice(data.stats.monthly_revenue)}
-                        </span>
-                    </div>
+        {/* Chart Pendapatan Bulan Berjalan (Full Width) */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+                <div>
+                    <h3 className="text-xl font-bold text-gray-900">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+                    <p className="text-xs text-gray-500 mt-1">Analisis pendapatan harian Bill dan Voucher (Tanggal 1 - Akhir Bulan)</p>
                 </div>
-                
-                <div className="h-72 w-full">
-                    <Line data={chartConfig} options={chartOptions} />
+                <div className="flex items-center gap-3 mt-4 md:mt-0">
+                    <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200">
+                        Total: Rp {formatPrice(data.stats.monthly_revenue)}
+                    </span>
                 </div>
             </div>
+            
+            <div className="h-80 w-full">
+                <Line data={chartConfig} options={chartOptions} />
+            </div>
+        </div>
 
+        {/* Jam Ramai Grid */}
+        <div className="grid grid-cols-1 gap-8 mb-8">
             {/* Peak Hours Chart */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
                     <div>
-                        <h3 className="text-xl font-bold text-gray-900">Jam Ramai Pengunjung</h3>
-                        <p className="text-xs text-gray-500 mt-1">Statistik kunjungan unik per jam (7 hari terakhir)</p>
+                        <h3 className="text-xl font-bold text-gray-900">Jam Ramai Pengunjung (Hari Ini)</h3>
+                        <p className="text-xs text-gray-500 mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
                     </div>
                     <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
                         <Icon name="clock" className="w-4 h-4" />
                     </div>
                 </div>
-                <div className="h-72 w-full">
+                <div className="h-64 w-full">
                     <Bar 
                         data={{
                             labels: peakHours.map(p => p.hour),
@@ -479,15 +479,22 @@ const AdminDashboard = () => {
                                         <p className="text-[10px] text-blue-600 font-bold uppercase">{user.plan_name || 'VOUCHER'}</p>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        {user.is_online ? (
-                                            <span className="font-mono text-xs font-semibold text-gray-700">{user.uptime}</span>
-                                        ) : (
-                                            <span className="text-[10px] text-gray-400 italic">
-                                                {user.expires_at 
-                                                    ? `Exp: ${new Date(user.expires_at).toLocaleDateString('id-ID')}` 
-                                                    : 'Belum Digunakan'}
-                                            </span>
-                                        )}
+                                        <div className="flex flex-col">
+                                            {user.is_online ? (
+                                                <>
+                                                    <span className="font-mono text-xs font-bold text-gray-700">Uptime: {user.uptime}</span>
+                                                    <span className="text-[9px] text-rose-600 font-bold mt-0.5">
+                                                        Exp: {user.expires_at ? new Date(user.expires_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <span className="text-[10px] text-gray-400 italic">
+                                                    {user.expires_at 
+                                                        ? `Exp: ${new Date(user.expires_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}` 
+                                                        : 'Belum Digunakan'}
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             )) : (
@@ -546,7 +553,9 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-sm font-bold text-emerald-600">+Rp {formatPrice(tx.amount)}</p>
-                                        <p className="text-[10px] text-gray-500 mt-1">{new Date(tx.created_at).toLocaleDateString('id-ID')}</p>
+                                        <p className="text-[10px] text-gray-500 mt-1 font-medium">
+                                            {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
