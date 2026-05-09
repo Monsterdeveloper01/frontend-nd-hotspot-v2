@@ -24,27 +24,10 @@ const CheckVoucher = () => {
             })
             setVoucher(response.data)
         } catch (err) {
-            setError(err.response?.data?.message || 'Voucher tidak ditemukan atau sudah tidak berlaku.')
+            setError(err.response?.data?.message || 'Voucher tidak ditemukan di sistem maupun router.')
         } finally {
             setLoading(false)
         }
-    }
-
-    const calculateRemainingTime = (expiresAt) => {
-        if (!expiresAt) return null
-        const now = new Date()
-        const end = new Date(expiresAt)
-        const diff = end - now
-
-        if (diff <= 0) return 'Habis'
-
-        const hours = Math.floor(diff / (1000 * 60 * 60))
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-        
-        if (hours > 24) {
-            return `${Math.floor(hours / 24)} Hari`
-        }
-        return `${hours} Jam ${minutes} Menit`
     }
 
     const FaIcon = ({ name, className = "" }) => <i className={`fas fa-${name} ${className}`}></i>
@@ -102,44 +85,63 @@ const CheckVoucher = () => {
                             <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 relative">
                                 {/* Status Banner */}
                                 <div className={`py-3 text-center text-[10px] font-black uppercase tracking-[0.3em] text-white ${
-                                    voucher.status === 'used' || voucher.status === 'active' ? 'bg-emerald-500' : 
-                                    voucher.status === 'sold' ? 'bg-blue-500' : 'bg-amber-500'
+                                    voucher.is_online ? 'bg-emerald-500' : 'bg-blue-500'
                                 }`}>
-                                    {voucher.status === 'used' || voucher.status === 'active' ? 'Sedang Digunakan' : 
-                                     voucher.status === 'sold' ? 'Belum Digunakan' : 'Voucher Ready'}
+                                    {voucher.is_online ? 'Sedang Online' : 'Offline / Standby'}
                                 </div>
 
                                 <div className="p-10 text-center">
                                     <div className="mb-8">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Sisa Waktu</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                            {voucher.source === 'mikrotik' ? 'Uptime Router' : 'Sisa Waktu'}
+                                        </p>
                                         <div className="text-4xl font-black text-slate-900 tracking-tighter">
-                                            {voucher.expires_at ? calculateRemainingTime(voucher.expires_at) : voucher.plan?.duration || '-'}
+                                            {voucher.source === 'mikrotik' ? voucher.uptime : (voucher.time_left || 'Ready')}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 border-t-2 border-dashed border-slate-100 pt-8 mt-4">
-                                        <div className="text-left">
-                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Mulai Pakai</p>
-                                            <p className="font-black text-slate-800 text-xs">
-                                                {voucher.used_at ? new Date(voucher.used_at).toLocaleString('id-ID', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '-'}
-                                            </p>
+                                    {voucher.source === 'database' ? (
+                                        <div className="grid grid-cols-2 gap-4 border-t-2 border-dashed border-slate-100 pt-8 mt-4">
+                                            <div className="text-left">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Mulai Pakai</p>
+                                                <p className="font-black text-slate-800 text-xs">
+                                                    {voucher.used_at || '-'}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Berakhir Pada</p>
+                                                <p className="font-black text-slate-800 text-xs text-red-500">
+                                                    {voucher.expires_at || '-'}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Berakhir Pada</p>
-                                            <p className="font-black text-slate-800 text-xs text-red-500">
-                                                {voucher.expires_at ? new Date(voucher.expires_at).toLocaleString('id-ID', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '-'}
-                                            </p>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-4 border-t-2 border-dashed border-slate-100 pt-8 mt-4">
+                                            <div className="text-left">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Limit Waktu</p>
+                                                <p className="font-black text-slate-800 text-xs">
+                                                    {voucher.limit_uptime || '-'}
+                                                </p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Router</p>
+                                                <p className="font-black text-blue-600 text-xs">
+                                                    OK
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     <div className="mt-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 text-left">
                                         <div className="flex justify-between items-center mb-2">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paket</span>
-                                            <span className="font-black text-purple-600 text-[10px] uppercase">{voucher.plan?.name}</span>
+                                            <span className="font-black text-purple-600 text-[10px] uppercase">{voucher.plan_name}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Limit Kecepatan</span>
-                                            <span className="font-black text-slate-900 text-[10px] uppercase">UP TO {voucher.plan?.speed_limit || 'Full Speed'}</span>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Keterangan</span>
+                                            <span className="font-black text-slate-900 text-[10px] uppercase">
+                                                {voucher.source === 'database' ? 'Terdaftar di Billing' : 'Hanya di MikroTik'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
