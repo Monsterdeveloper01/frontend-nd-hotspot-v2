@@ -12,7 +12,9 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         edit: <path d="M11 5H6a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />,
         delete: <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />,
         check: <path d="M5 13l4 4L19 7" />,
-        clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
+        close: <path d="M6 18L18 6M6 6l12 12" />,
+        info: <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     };
 
     return (
@@ -38,6 +40,23 @@ const CustomerManagement = () => {
         due_date: ''
     })
     const [submitting, setSubmitting] = useState(false)
+
+    // Modal State
+    const [modalConfig, setModalConfig] = useState({
+        isOpen: false,
+        type: 'confirm', // 'confirm', 'success', 'error', 'warning'
+        title: '',
+        message: '',
+        onConfirm: null
+    })
+
+    const showModal = (type, title, message, onConfirm = null) => {
+        setModalConfig({ isOpen: true, type, title, message, onConfirm })
+    }
+
+    const closeModal = () => {
+        setModalConfig({ ...modalConfig, isOpen: false })
+    }
 
     const fetchCustomers = async (page = 1, q = searchTerm, link = filterLink, pay = filterPay, overdue = filterOverdue) => {
         try {
@@ -91,56 +110,61 @@ const CustomerManagement = () => {
         setFormData({ name: '', whatsapp: '', billing_amount: '', due_date: '' })
     }
 
-    const handleToggleStatus = async (id) => {
-        try {
-            const token = localStorage.getItem('token')
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/toggle-status`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            
-            if (response.data.mikrotik_synced) {
-                alert(response.data.message)
-            } else {
-                alert('⚠️ PERINGATAN: ' + response.data.message)
+    const handleToggleStatus = (id) => {
+        showModal('confirm', 'Ubah Status', 'Yakin ingin mengubah status router pelanggan ini?', async () => {
+            try {
+                const token = localStorage.getItem('token')
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/toggle-status`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                
+                if (response.data.mikrotik_synced) {
+                    showModal('success', 'Berhasil', response.data.message)
+                } else {
+                    showModal('warning', 'Peringatan', response.data.message)
+                }
+                
+                fetchCustomers(meta.current_page)
+            } catch (err) {
+                showModal('error', 'Gagal', 'Gagal memperbarui status')
             }
-            
-            fetchCustomers(meta.current_page)
-        } catch (err) {
-            alert('Gagal memperbarui status')
-        }
+        })
     }
 
-    const handleDelete = async (id) => {
-        if (!confirm('Yakin hapus data pelanggan ini?')) return
-        try {
-            const token = localStorage.getItem('token')
-            await axios.delete(`${import.meta.env.VITE_API_URL}/customers/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            fetchCustomers(meta.current_page)
-        } catch (err) {
-            alert('Gagal menghapus data')
-        }
+    const handleDelete = (id) => {
+        showModal('warning', 'Konfirmasi Hapus', 'Yakin hapus data pelanggan ini secara permanen?', async () => {
+            try {
+                const token = localStorage.getItem('token')
+                await axios.delete(`${import.meta.env.VITE_API_URL}/customers/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                fetchCustomers(meta.current_page)
+                showModal('success', 'Terhapus', 'Pelanggan berhasil dihapus')
+            } catch (err) {
+                showModal('error', 'Gagal', 'Gagal menghapus data')
+            }
+        })
     }
 
-    const handlePayManual = async (id) => {
-        if (!confirm('Konfirmasi pembayaran manual?')) return
-        try {
-            const token = localStorage.getItem('token')
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/pay-manual`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-            
-            if (response.data.mikrotik_synced) {
-                alert(response.data.message)
-            } else {
-                alert('⚠️ PERINGATAN: ' + response.data.message)
+    const handlePayManual = (id) => {
+        showModal('confirm', 'Bayar Manual', 'Konfirmasi pembayaran lunas secara manual?', async () => {
+            try {
+                const token = localStorage.getItem('token')
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers/${id}/pay-manual`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                
+                if (response.data.mikrotik_synced) {
+                    showModal('success', 'Pembayaran Sukses', response.data.message)
+                } else {
+                    showModal('warning', 'Peringatan Sistem', response.data.message)
+                }
+                
+                fetchCustomers(meta.current_page)
+            } catch (err) {
+                showModal('error', 'Gagal', 'Gagal memproses pembayaran')
             }
-            
-            fetchCustomers(meta.current_page)
-        } catch (err) {
-            alert('Gagal memproses pembayaran')
-        }
+        })
     }
 
     const handleSubmit = async (e) => {
@@ -158,11 +182,12 @@ const CustomerManagement = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
             
+            const isEdit = editingId
             handleCancelEdit()
             fetchCustomers(1)
-            alert(editingId ? 'Data berhasil diupdate' : 'Pelanggan berhasil ditambahkan')
+            showModal('success', isEdit ? 'Data Terupdate' : 'Berhasil', isEdit ? 'Perubahan data berhasil disimpan' : 'Pelanggan baru berhasil ditambahkan')
         } catch (err) {
-            alert('Terjadi kesalahan sistem')
+            showModal('error', 'Terjadi Kesalahan', 'Pastikan semua data yang dimasukkan valid.')
         } finally {
             setSubmitting(false)
         }
@@ -447,6 +472,63 @@ const CustomerManagement = () => {
             </div>
             
             <Pagination meta={meta} onPageChange={(page) => fetchCustomers(page)} />
+
+            {/* Global Modal */}
+            {modalConfig.isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100">
+                        <div className={`p-8 text-center ${
+                            modalConfig.type === 'error' ? 'bg-gradient-to-b from-rose-50/50 to-white' : 
+                            modalConfig.type === 'warning' ? 'bg-gradient-to-b from-amber-50/50 to-white' : 
+                            modalConfig.type === 'success' ? 'bg-gradient-to-b from-emerald-50/50 to-white' : 'bg-gradient-to-b from-blue-50/50 to-white'
+                        }`}>
+                            <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 shadow-xl ${
+                                modalConfig.type === 'error' ? 'bg-rose-500 text-white shadow-rose-200' : 
+                                modalConfig.type === 'warning' ? 'bg-amber-500 text-white shadow-amber-200' : 
+                                modalConfig.type === 'success' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-blue-600 text-white shadow-blue-200'
+                            }`}>
+                                <Icon name={
+                                    modalConfig.type === 'error' ? 'close' : 
+                                    modalConfig.type === 'warning' ? 'info' : 
+                                    modalConfig.type === 'success' ? 'check' : 'info'
+                                } className="w-10 h-10" />
+                            </div>
+                            <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-none mb-3">{modalConfig.title}</h3>
+                            <p className="text-sm font-bold text-slate-500 leading-relaxed px-4">{modalConfig.message}</p>
+                        </div>
+                        <div className="p-6 bg-white flex gap-3">
+                            {(modalConfig.type === 'confirm' || modalConfig.type === 'warning') ? (
+                                <>
+                                    <button 
+                                        onClick={closeModal}
+                                        className="flex-1 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors"
+                                    >
+                                        Batal
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            closeModal();
+                                            if (modalConfig.onConfirm) modalConfig.onConfirm();
+                                        }}
+                                        className={`flex-1 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-lg transition-all hover:scale-[0.98] ${
+                                            modalConfig.type === 'warning' ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-200' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
+                                        }`}
+                                    >
+                                        Ya, Lanjutkan
+                                    </button>
+                                </>
+                            ) : (
+                                <button 
+                                    onClick={closeModal}
+                                    className="w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-lg transition-all hover:scale-[0.98] bg-slate-800 hover:bg-slate-900 shadow-slate-200"
+                                >
+                                    Tutup Pesan
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
