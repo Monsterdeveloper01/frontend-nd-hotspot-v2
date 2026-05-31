@@ -68,6 +68,9 @@ const AdminDashboard = () => {
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyFilter, setHistoryFilter] = useState('all')
 
+  // Voucher Chart Modal State
+  const [voucherChartModalOpen, setVoucherChartModalOpen] = useState(false)
+
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
   const [isMaintenance, setIsMaintenance] = useState(false)
@@ -353,6 +356,12 @@ const AdminDashboard = () => {
                 <div className="bg-gradient-to-r from-emerald-50 to-white rounded-lg border border-emerald-200 p-3">
                     <div className="flex items-center justify-between mb-1">
                         <p className="text-xs text-gray-600">Pendapatan Voucher</p>
+                        <button 
+                            onClick={() => setVoucherChartModalOpen(true)}
+                            className="text-[10px] font-bold text-emerald-600 bg-emerald-100 hover:bg-emerald-200 px-2 py-1 rounded transition-colors flex items-center gap-1"
+                        >
+                            <Icon name="trend" className="w-3 h-3" /> Chart
+                        </button>
                     </div>
                     <p className="text-lg font-bold text-emerald-700">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
                     <div className="mt-1 flex items-center justify-between text-[10px]">
@@ -662,6 +671,61 @@ const AdminDashboard = () => {
                         </div>
                         <div className="mt-6">
                             <Pagination meta={historyData.meta} onPageChange={(p) => fetchHistory(p)} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* Modal Chart Voucher */}
+        {voucherChartModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-6 shrink-0">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-2xl font-bold flex items-center gap-2">
+                                    <Icon name="trend" className="w-6 h-6" /> 
+                                    Statistik Penjualan Voucher
+                                </h3>
+                                <p className="text-emerald-100 text-sm mt-1">Tren pendapatan dari penjualan voucher 30 hari terakhir</p>
+                            </div>
+                            <button onClick={() => setVoucherChartModalOpen(false)} className="p-2 hover:bg-emerald-700 rounded-xl transition-colors">
+                                <Icon name="close" className="w-6 h-6" />
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-[400px]">
+                            <Line 
+                                data={{
+                                    labels: data?.voucher_chart?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],
+                                    datasets: [{
+                                        label: 'Pendapatan Voucher (Rp)',
+                                        data: data?.voucher_chart?.map(c => c.total) || [],
+                                        fill: true,
+                                        borderColor: '#10b981',
+                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                        tension: 0.4,
+                                        pointRadius: 4,
+                                        pointHoverRadius: 6,
+                                        borderWidth: 3
+                                    }]
+                                }} 
+                                options={{
+                                    ...chartOptions,
+                                    plugins: {
+                                        ...chartOptions.plugins,
+                                        tooltip: {
+                                            ...chartOptions.plugins.tooltip,
+                                            callbacks: {
+                                                label: (ctx) => `Rp ${formatPrice(ctx.parsed.y)}`
+                                            }
+                                        }
+                                    }
+                                }} 
+                            />
                         </div>
                     </div>
                 </div>
