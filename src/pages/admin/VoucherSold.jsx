@@ -6,12 +6,13 @@ const VoucherSold = () => {
     const [soldVouchers, setSoldVouchers] = useState([])
     const [loading, setLoading] = useState(true)
     const [meta, setMeta] = useState(null)
+    const [search, setSearch] = useState('')
 
-    const fetchSoldVouchers = async (page = 1) => {
+    const fetchSoldVouchers = async (page = 1, searchQuery = search) => {
         try {
             setLoading(true)
             const token = localStorage.getItem('token')
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/sold-vouchers?page=${page}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/sold-vouchers?page=${page}&search=${searchQuery}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             setSoldVouchers(response.data.data)
@@ -29,11 +30,28 @@ const VoucherSold = () => {
     }
 
     useEffect(() => {
-        fetchSoldVouchers(1)
-    }, [])
+        const delayDebounceFn = setTimeout(() => {
+            fetchSoldVouchers(1, search)
+        }, 500)
+        return () => clearTimeout(delayDebounceFn)
+    }, [search])
 
     return (
         <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <h2 className="text-xl font-bold text-slate-800">Riwayat Voucher Terjual</h2>
+                <div className="relative">
+                    <input 
+                        type="text" 
+                        placeholder="Cari kode atau no WA..." 
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-10 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64 text-sm"
+                    />
+                    <i className="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+            </div>
+
             <div className="bg-white rounded-[32px] shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left min-w-[900px]">
