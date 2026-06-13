@@ -163,7 +163,7 @@ const NetworkCenter = () => {
       </div>
 
       {/* Main Monitoring Table */}
-      <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
@@ -276,7 +276,7 @@ const NetworkCenter = () => {
       {/* Add OLT Modal */}
       {showAddOlt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md">
-          <div className="bg-white w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="bg-slate-900 p-10 text-white">
               <h2 className="text-2xl font-black uppercase tracking-tight">Registrasi OLT Baru</h2>
               <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Konfigurasi akses SNMP & Telnet OLT</p>

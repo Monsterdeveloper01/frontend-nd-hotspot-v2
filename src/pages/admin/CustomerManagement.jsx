@@ -202,7 +202,7 @@ const CustomerManagement = () => {
             </div>
 
             {/* Form Card */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-white shadow-amber-200' : 'bg-blue-600 text-white shadow-blue-200'}`}>
@@ -303,7 +303,7 @@ const CustomerManagement = () => {
             </div>
 
             {/* List & Filter Card */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-8 bg-slate-50/50 border-b border-slate-100 flex flex-col xl:flex-row justify-between items-center gap-6">
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto">
                         <form onSubmit={handleSearch} className="relative w-full md:w-80 group">
@@ -476,7 +476,7 @@ const CustomerManagement = () => {
             {/* Global Modal */}
             {modalConfig.isOpen && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-100">
                         <div className={`p-8 text-center ${
                             modalConfig.type === 'error' ? 'bg-gradient-to-b from-rose-50/50 to-white' : 
                             modalConfig.type === 'warning' ? 'bg-gradient-to-b from-amber-50/50 to-white' : 

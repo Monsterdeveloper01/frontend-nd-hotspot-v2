@@ -13,7 +13,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     network: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
     logout: <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />,
     menu: <path d="M4 6h16M4 12h16M4 18h16" />,
-    close: <path d="M6 18L18 6M6 6l12 12" />
+    close: <path d="M6 18L18 6M6 6l12 12" />,
+    sync: <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
   };
 
   return (
@@ -88,7 +89,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
   }
 
   return (
-    <div className="flex bg-slate-50 min-h-screen">
+    <div className="flex bg-slate-50 min-h-screen font-sans">
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
         <div 
@@ -97,114 +98,118 @@ const AdminLayout = ({ children, title, subtitle }) => {
         ></div>
       )}
 
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-slate-950 border-r border-white/5 z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* Sidebar - Modern Dark Style */}
+      <aside className={`fixed inset-y-0 left-0 w-72 bg-slate-900 border-r border-slate-800 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="h-full flex flex-col">
           {/* Logo Section */}
-          <div className="p-8 flex items-center justify-between">
+          <div className="p-6 flex items-center justify-between border-b border-slate-800/60">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 text-white">
-                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3">
-                  <path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.59 16.11a6 6 0 016.82 0M12 20h.01" />
+              <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
+                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
               <div>
-                <h2 className="text-white font-black text-lg tracking-tighter leading-none uppercase">ND-Billing</h2>
-                <p className="text-[9px] text-slate-500 font-black tracking-widest mt-1 uppercase">Radius Core</p>
+                <h2 className="text-white font-bold text-lg tracking-tight leading-none">ND-Billing</h2>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">Admin Portal</p>
               </div>
             </div>
-            <button className="lg:hidden text-slate-400" onClick={() => setIsSidebarOpen(false)}>
+            <button className="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors" onClick={() => setIsSidebarOpen(false)}>
               <Icon name="close" />
             </button>
           </div>
 
           {/* Menu Section */}
-          <nav className="flex-1 overflow-y-auto px-6 py-4 space-y-1 custom-scrollbar">
+          <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 custom-scrollbar">
             {menuItems.map((item, index) => (
               <div key={index}>
                 {item.section && (
-                  <div className="px-4 pt-8 pb-3 text-[9px] font-black text-slate-600 tracking-widest uppercase">
+                  <div className="px-4 pt-6 pb-2 text-xs font-semibold text-slate-500 tracking-wider uppercase">
                     {item.section}
                   </div>
                 )}
                 <Link 
                   to={item.path} 
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl font-bold transition-all group
+                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200 group
                     ${location.pathname === item.path 
-                      ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
-                      : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
                 >
-                  <Icon name={item.icon} className={`w-5 h-5 transition-transform group-hover:scale-110 ${location.pathname === item.path ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'}`} />
-                  <span className="text-sm tracking-tight">{item.name}</span>
+                  <Icon name={item.icon} className={`w-5 h-5 transition-transform duration-200 ${location.pathname === item.path ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'}`} />
+                  <span className="text-sm">{item.name}</span>
                 </Link>
               </div>
             ))}
           </nav>
 
-          <div className="p-8 border-t border-white/5">
+          <div className="p-6 border-t border-slate-800/60">
             <button 
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white rounded-2xl font-black transition-all active:scale-95 group text-xs uppercase tracking-widest"
+              className="w-full flex items-center justify-center gap-2.5 py-3 bg-slate-800 hover:bg-rose-500 hover:text-white text-slate-300 rounded-xl font-semibold transition-all duration-200 active:scale-95 group text-sm"
             >
-              <Icon name="logout" className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <Icon name="logout" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               <span>Sign Out</span>
             </button>
           </div>
         </div>
       </aside>
 
+      {/* Main Content Area */}
       <main className="flex-1 lg:ml-72 flex flex-col min-h-screen">
-        <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-30 px-6 lg:px-12 py-6">
+        {/* Header - Glassmorphism */}
+        <header className="sticky top-0 bg-white/70 backdrop-blur-xl border-b border-slate-200 z-30 px-6 lg:px-10 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button 
-                className="lg:hidden p-2 bg-slate-100 rounded-xl text-slate-600"
+                className="lg:hidden p-2.5 bg-white border border-slate-200 shadow-sm rounded-xl text-slate-600 hover:bg-slate-50 transition-colors"
                 onClick={() => setIsSidebarOpen(true)}
               >
-                <Icon name="menu" />
+                <Icon name="menu" className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-2xl font-black text-slate-900 tracking-tighter uppercase leading-none">{title}</h1>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{subtitle}</p>
+                <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+                {subtitle && <p className="text-sm text-slate-500 font-medium mt-0.5">{subtitle}</p>}
               </div>
             </div>
             
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-5">
               <div className="hidden md:flex flex-col items-end">
-                <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">MikroTik Connectivity</span>
+                <span className="text-xs text-slate-500 font-semibold mb-0.5">Router Status</span>
                 <div className="flex items-center gap-2">
                     {routerConnected === null ? (
-                        <span className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-slate-300 rounded-full animate-pulse"></div>
-                            <span className="text-[9px] font-black text-slate-400 uppercase">Checking...</span>
-                        </span>
+                        <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-full">
+                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse"></div>
+                            <span className="text-xs font-semibold text-slate-600">Checking</span>
+                        </div>
                     ) : routerConnected ? (
-                        <span className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50"></div>
-                            <span className="text-[9px] font-black text-emerald-600 uppercase">Router Online</span>
-                        </span>
+                        <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-sm"></div>
+                            <span className="text-xs font-semibold text-emerald-700">Online</span>
+                        </div>
                     ) : (
-                        <span className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
-                            <span className="text-[9px] font-black text-rose-600 uppercase">Router Offline</span>
-                        </span>
+                        <div className="flex items-center gap-1.5 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-100">
+                            <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs font-semibold text-rose-700">Offline</span>
+                        </div>
                     )}
                 </div>
               </div>
               <button 
                 onClick={checkRouterStatus}
                 disabled={isSyncing}
-                className="p-3 bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-600 rounded-xl border border-slate-200 transition-all active:scale-90"
+                className="p-2.5 bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-600 rounded-xl border border-slate-200 transition-all active:scale-95 shadow-sm disabled:opacity-50"
+                title="Sync Router Status"
               >
-                <i className={`fas fa-sync-alt ${isSyncing ? 'animate-spin' : ''}`}></i>
+                <Icon name="sync" className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>
         </header>
 
-        {/* Content Area */}
-        <div className="p-6 lg:p-12 flex-1 max-w-7xl mx-auto w-full">
+        {/* Dynamic Content */}
+        <div className="p-6 lg:p-10 flex-1 max-w-7xl mx-auto w-full">
           {children}
         </div>
       </main>

@@ -172,7 +172,7 @@ const VoucherPlans = () => {
             </div>
 
             {/* Form Card */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="px-10 py-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-white shadow-amber-200' : 'bg-blue-600 text-white shadow-blue-200'}`}>
@@ -320,7 +320,7 @@ const VoucherPlans = () => {
             </div>
 
             {/* List Table Card */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left min-w-[900px]">
                         <thead>

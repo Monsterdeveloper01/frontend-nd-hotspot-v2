@@ -53,7 +53,7 @@ const WhatsAppSettings = () => {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* 1. Header & Connection Status at the Top */}
-      <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm overflow-hidden relative">
+      <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm overflow-hidden relative">
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
@@ -85,7 +85,7 @@ const WhatsAppSettings = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 2. QR Code Section */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm h-full">
+          <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm h-full">
             <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-2">
               <i className="fas fa-qrcode text-blue-500"></i> Autentikasi Perangkat
             </h3>
@@ -116,7 +116,7 @@ const WhatsAppSettings = () => {
 
         {/* 3. Activity Logs Section */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm flex flex-col overflow-hidden h-[500px]">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col overflow-hidden h-[500px]">
             <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
               <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
                 <i className="fas fa-stream text-indigo-500"></i> Gateway Activity Logs
@@ -150,7 +150,7 @@ const WhatsAppSettings = () => {
       </div>
 
       {/* 4. Test Message Section */}
-      <div className="bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm">
+      <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
         <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-8 flex items-center gap-2">
           <i className="fas fa-paper-plane text-purple-500"></i> Uji Coba Pengiriman
         </h3>

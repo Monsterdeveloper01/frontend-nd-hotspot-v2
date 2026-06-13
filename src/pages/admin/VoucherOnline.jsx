@@ -170,7 +170,7 @@ const VoucherOnline = () => {
             <div className="flex flex-col gap-10">
                 {/* Active Sessions Table */}
                 <div className="w-full">
-                    <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                         <div className="px-10 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
                             <div className="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
                                 <Icon name="wifi" className="w-5 h-5" />
@@ -266,7 +266,7 @@ const VoucherOnline = () => {
 
                 {/* Recent Activity Section */}
                 <div className="w-full">
-                    <div className="bg-white rounded-[40px] p-8 shadow-sm border border-slate-200">
+                    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center">
                                 <Icon name="history" className="w-5 h-5" />

@@ -94,7 +94,7 @@ const RadiusSettings = () => {
     return (
         <div className="space-y-10 animate-fadeIn pb-20">
             {/* Header Section Premium */}
-            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[40px] p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-[120px] opacity-20 -mr-32 -mt-32"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500 rounded-full blur-[100px] opacity-10 -ml-32 -mb-32"></div>
                 
@@ -146,7 +146,7 @@ const RadiusSettings = () => {
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
                 {/* Registration Form & Stats */}
                 <div className="xl:col-span-4 space-y-10">
-                    <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden sticky top-8">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden sticky top-8">
                         <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
                             <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
                                 <Icon name="plus" className="w-5 h-5" />
@@ -221,7 +221,7 @@ const RadiusSettings = () => {
                 {/* Clients Table & Logs */}
                 <div className="xl:col-span-8 space-y-10">
                     {/* Authorized Table */}
-                    <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                         <div className="px-8 py-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-slate-100 text-slate-500 rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
@@ -285,7 +285,7 @@ const RadiusSettings = () => {
             </div>
 
             {/* Protocol Logs - Full Width Section */}
-            <div className="bg-[#0b1120] rounded-[32px] border border-slate-800 shadow-2xl shadow-indigo-900/10 overflow-hidden flex flex-col h-[600px] relative mt-10">
+            <div className="bg-[#0b1120] rounded-3xl border border-slate-800 shadow-2xl shadow-indigo-900/10 overflow-hidden flex flex-col h-[600px] relative mt-10">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
                 <div className="px-8 py-6 bg-slate-900/50 border-b border-slate-800 flex justify-between items-center backdrop-blur-md relative z-10">
                     <div className="flex items-center gap-4">

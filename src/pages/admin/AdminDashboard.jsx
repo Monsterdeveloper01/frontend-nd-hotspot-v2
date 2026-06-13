@@ -250,7 +250,7 @@ const AdminDashboard = () => {
         {/* Statistik Atas (3 Kolom Besar) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
             {/* Kotak 1: Total Pendapatan */}
-            <div className="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-300 group">
                 <div className="flex items-start justify-between mb-4">
                     <div className="p-2.5 bg-blue-100 rounded-lg">
                         <Icon name="revenue" className="w-6 h-6 text-blue-600" />
@@ -289,7 +289,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Kotak 2: Total Pelanggan */}
-            <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-300 group">
                 <div className="flex items-start justify-between mb-4">
                     <div className="p-2.5 bg-gray-100 rounded-lg">
                         <Icon name="users" className="w-6 h-6 text-gray-700" />
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Kotak 3: Pendapatan Bill dan Voucher */}
-            <div className="bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-lg border border-purple-100 p-6 hover:shadow-xl transition-all duration-300 group">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-300 group">
                 <div className="flex items-start justify-between mb-4">
                     <div className="p-2.5 bg-purple-100 rounded-lg">
                         <Icon name="bill" className="w-6 h-6 text-purple-600" />
@@ -375,7 +375,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Chart Pendapatan Bulan Berjalan (Full Width) */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
                 <div>
                     <h3 className="text-xl font-bold text-gray-900">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
@@ -396,7 +396,7 @@ const AdminDashboard = () => {
         {/* Jam Ramai Grid */}
         <div className="grid grid-cols-1 gap-8 mb-8">
             {/* Peak Hours Chart */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
                     <div>
                         <h3 className="text-xl font-bold text-gray-900">Jam Ramai Pengunjung (Hari Ini)</h3>
@@ -439,8 +439,8 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Voucher Aktif & User Online */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="px-6 py-5 border-b border-slate-100 bg-white">
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-lg font-bold text-gray-900">Voucher Aktif & Online</h3>
@@ -519,8 +519,8 @@ const AdminDashboard = () => {
             </div>
 
             {/* Transaksi Terkini */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="px-6 py-5 border-b border-slate-100 bg-white">
                     <div className="flex items-center justify-between">
                         <div>
                             <h3 className="text-lg font-bold text-gray-900">Transaksi Terkini</h3>
@@ -581,7 +581,7 @@ const AdminDashboard = () => {
         {/* Modal Riwayat Transaksi */}
         {modalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
                     <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white px-8 py-6 shrink-0">
                         <div className="flex items-center justify-between">
                             <div>
@@ -680,7 +680,7 @@ const AdminDashboard = () => {
         {/* Modal Chart Voucher */}
         {voucherChartModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
                     <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-6 shrink-0">
                         <div className="flex items-center justify-between">
                             <div>
@@ -697,7 +697,7 @@ const AdminDashboard = () => {
                     </div>
                     
                     <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-[400px]">
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[400px]">
                             <Line 
                                 data={{
                                     labels: data?.voucher_chart?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],

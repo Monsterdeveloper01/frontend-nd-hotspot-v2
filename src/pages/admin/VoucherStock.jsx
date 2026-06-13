@@ -25,7 +25,7 @@ const VoucherDetailModal = ({ voucher, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-lg rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                 <div className="px-10 py-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
@@ -307,7 +307,7 @@ const VoucherStock = () => {
             </div>
 
             {/* Table Card */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left min-w-[900px]">
                         <thead>
@@ -392,7 +392,7 @@ const VoucherStock = () => {
             {/* Generate Modal */}
             {showGenerateModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div className="px-10 py-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
