@@ -86,13 +86,11 @@ const CustomerManagement = () => {
     }
 
     useEffect(() => {
-        fetchCustomers(1)
-    }, [filterLink, filterPay, filterOverdue])
-
-    const handleSearch = (e) => {
-        e.preventDefault()
-        fetchCustomers(1, searchTerm)
-    }
+        const delayDebounceFn = setTimeout(() => {
+            fetchCustomers(1, searchTerm, filterLink, filterPay, filterOverdue)
+        }, 500)
+        return () => clearTimeout(delayDebounceFn)
+    }, [searchTerm, filterLink, filterPay, filterOverdue])
 
     const handleEdit = (customer) => {
         setEditingId(customer.id)
@@ -306,19 +304,26 @@ const CustomerManagement = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-8 bg-slate-50/50 border-b border-slate-100 flex flex-col xl:flex-row justify-between items-center gap-6">
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto">
-                        <form onSubmit={handleSearch} className="relative w-full md:w-80 group">
+                        <div className="relative w-full md:w-96 group">
                             <input 
                                 type="text" 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm group-hover:border-blue-300" 
-                                placeholder="Cari Nama / WhatsApp..."
+                                className="w-full pl-14 pr-12 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm placeholder:text-slate-400" 
+                                placeholder="Cari Nama atau WhatsApp..."
                             />
-                            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                                <Icon name="search" className="w-5 h-5 text-slate-400" />
+                            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors">
+                                <Icon name="search" className="w-5 h-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
                             </div>
-                            <button type="submit" className="hidden">Search</button>
-                        </form>
+                            {searchTerm && (
+                                <button 
+                                    onClick={() => setSearchTerm('')} 
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-rose-500 transition-colors"
+                                >
+                                    <Icon name="close" className="w-4 h-4" />
+                                </button>
+                            )}
+                        </div>
 
                         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
                             <select 
