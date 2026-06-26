@@ -116,3 +116,24 @@
   50% { transform: translateY(-5px); }
 }
 .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
+
+/* Admin Theme Overrides (Enterprise Minimalist) */
+.admin-theme {
+  @apply bg-admin-base text-zinc-300 font-sans antialiased min-h-screen;
+}
+.admin-theme h1, .admin-theme h2, .admin-theme h3, .admin-theme h4, .admin-theme h5, .admin-theme h6 {
+  @apply text-white font-semibold tracking-tight;
+}
+.admin-theme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.admin-theme ::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.admin-theme ::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800 rounded-full border-[2px] border-admin-base;
+}
+.admin-theme ::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-700;
+}

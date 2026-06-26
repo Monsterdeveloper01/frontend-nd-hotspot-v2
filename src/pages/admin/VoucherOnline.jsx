@@ -92,12 +92,12 @@ const VoucherOnline = () => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">Voucher Online</h1>
-                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">Monitoring sesi aktif dan riwayat login hotspot</p>
+                    <h1 className="text-2xl font-black text-zinc-100 tracking-tight uppercase leading-none">Voucher Online</h1>
+                    <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-widest mt-2">Monitoring sesi aktif dan riwayat login hotspot</p>
                 </div>
                 <button 
                     onClick={fetchData} 
-                    className="flex items-center gap-3 px-6 py-4 bg-white border border-slate-200 rounded-2xl font-black text-[10px] uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
+                    className="flex items-center gap-3 px-6 py-4 bg-admin-card border border-admin-border rounded-2xl font-black text-[10px] uppercase tracking-widest text-zinc-300 hover:bg-zinc-900/50 transition-all shadow-sm active:scale-95"
                 >
                     <Icon name="refresh" className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     Refresh Data
@@ -106,18 +106,18 @@ const VoucherOnline = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-admin-card p-6 rounded-[24px] border border-admin-border shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Active</p>
-                        <h3 className="text-3xl font-black text-slate-900 tracking-tighter">{stats.total}</h3>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Total Active</p>
+                        <h3 className="text-3xl font-black text-zinc-100 tracking-tighter">{stats.total}</h3>
                     </div>
-                    <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-md">
+                    <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-sm shadow-black/10">
                         <Icon name="history" className="w-6 h-6" />
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-admin-card p-6 rounded-[24px] border border-admin-border shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Online</p>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Live Online</p>
                         <h3 className="text-3xl font-black text-emerald-600 tracking-tighter">{stats.online}</h3>
                     </div>
                     <div className="relative w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center border border-emerald-100 shadow-sm">
@@ -126,28 +126,28 @@ const VoucherOnline = () => {
                         <Icon name="wifi" className="w-6 h-6" />
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-admin-card p-6 rounded-[24px] border border-admin-border shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Offline (Jeda)</p>
-                        <h3 className="text-3xl font-black text-slate-400 tracking-tighter">{stats.offline}</h3>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Offline (Jeda)</p>
+                        <h3 className="text-3xl font-black text-zinc-500 tracking-tighter">{stats.offline}</h3>
                     </div>
-                    <div className="w-14 h-14 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm">
+                    <div className="w-14 h-14 bg-zinc-900/50 text-zinc-500 rounded-2xl flex items-center justify-center border border-admin-border shadow-sm">
                         <Icon name="clock" className="w-6 h-6" />
                     </div>
                 </div>
             </div>
 
             {/* Search and Filter */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-[24px] border border-slate-200 shadow-sm">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-admin-card p-4 rounded-[24px] border border-admin-border shadow-sm">
                 <div className="w-full md:w-1/2 relative">
                     <input 
                         type="text" 
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Cari kode voucher..." 
-                        className="w-full pl-6 pr-14 py-4 bg-slate-50 border border-slate-200 rounded-[20px] text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all placeholder:text-slate-400"
+                        className="w-full pl-6 pr-14 py-4 bg-zinc-900/50 border border-admin-border rounded-[20px] text-sm font-bold text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-admin-card transition-all placeholder:text-zinc-500"
                     />
-                    <div className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-slate-200 text-slate-500 rounded-2xl shadow-sm">
+                    <div className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-slate-200 text-zinc-400 rounded-2xl shadow-sm">
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
@@ -157,7 +157,7 @@ const VoucherOnline = () => {
                     <select 
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full md:w-64 px-6 py-4 bg-slate-50 border border-slate-200 rounded-[20px] text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all cursor-pointer uppercase tracking-widest appearance-none"
+                        className="w-full md:w-64 px-6 py-4 bg-zinc-900/50 border border-admin-border rounded-[20px] text-sm font-bold text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-admin-card transition-all cursor-pointer uppercase tracking-widest appearance-none"
                         style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: `right 1rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.5em 1.5em` }}
                     >
                         <option value="all">Semua Koneksi</option>
@@ -170,23 +170,23 @@ const VoucherOnline = () => {
             <div className="flex flex-col gap-10">
                 {/* Active Sessions Table */}
                 <div className="w-full">
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="px-10 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
+                    <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
+                        <div className="px-10 py-6 border-b border-admin-border bg-zinc-900/50/50 flex items-center gap-4">
                             <div className="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
                                 <Icon name="wifi" className="w-5 h-5" />
                             </div>
-                            <h2 className="text-sm font-black text-slate-900 uppercase tracking-widest">Active Vouchers</h2>
+                            <h2 className="text-sm font-black text-zinc-100 uppercase tracking-widest">Active Vouchers</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left min-w-[1000px]">
                                 <thead>
-                                    <tr className="bg-slate-50/50 border-b border-slate-100">
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Kode Voucher</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Profil Paket</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Waktu Pemakaian</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Sisa Waktu</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Device MAC</th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Aksi</th>
+                                    <tr className="bg-zinc-900/50/50 border-b border-admin-border">
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Kode Voucher</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Profil Paket</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Waktu Pemakaian</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Sisa Waktu</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Device MAC</th>
+                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
@@ -194,18 +194,18 @@ const VoucherOnline = () => {
                                         <tr key={v.id} className="hover:bg-blue-50/30 transition-colors group">
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-4">
-                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black transition-colors ${v.is_online ? 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-slate-500 group-hover:text-white'}`}>
+                                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black transition-colors ${v.is_online ? 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white' : 'bg-zinc-900/50 text-zinc-500 group-hover:bg-zinc-900/500 group-hover:text-white'}`}>
                                                         <Icon name="wifi" className="w-4 h-4" />
                                                     </div>
                                                     <div>
-                                                        <span className="font-black text-slate-900 text-lg tracking-widest uppercase block leading-none">{v.code}</span>
+                                                        <span className="font-black text-zinc-100 text-lg tracking-widest uppercase block leading-none">{v.code}</span>
                                                         {v.is_online ? (
                                                             <span className="text-[10px] text-emerald-500 font-black uppercase tracking-widest mt-1 flex items-center gap-1.5">
                                                                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                                                                 Connected
                                                             </span>
                                                         ) : (
-                                                            <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1 flex items-center gap-1.5">
+                                                            <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mt-1 flex items-center gap-1.5">
                                                                 <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
                                                                 Offline
                                                             </span>
@@ -214,16 +214,16 @@ const VoucherOnline = () => {
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6">
-                                                <span className="font-black text-slate-800 text-sm uppercase tracking-tight">{v.plan?.name}</span>
+                                                <span className="font-black text-zinc-200 text-sm uppercase tracking-tight">{v.plan?.name}</span>
                                             </td>
                                             <td className="px-8 py-6">
                                                 <div className="flex flex-col gap-1">
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-2">
-                                                        <span className="w-12 inline-block text-slate-400">Mulai:</span> 
+                                                    <span className="text-[10px] font-bold text-zinc-400 uppercase flex items-center gap-2">
+                                                        <span className="w-12 inline-block text-zinc-500">Mulai:</span> 
                                                         {v.used_at ? new Date(v.used_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}
                                                     </span>
                                                     <span className="text-[10px] font-bold text-rose-500 uppercase flex items-center gap-2">
-                                                        <span className="w-12 inline-block text-slate-400">Habis:</span>
+                                                        <span className="w-12 inline-block text-zinc-500">Habis:</span>
                                                         {v.expires_at ? new Date(v.expires_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Unlimited'}
                                                     </span>
                                                 </div>
@@ -235,7 +235,7 @@ const VoucherOnline = () => {
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6">
-                                                <code className="text-[10px] font-black bg-slate-100 px-3 py-1.5 rounded-lg text-slate-500 uppercase tracking-widest font-mono border border-slate-200">{v.mac_address || 'Unbound'}</code>
+                                                <code className="text-[10px] font-black bg-zinc-800 px-3 py-1.5 rounded-lg text-zinc-400 uppercase tracking-widest font-mono border border-admin-border">{v.mac_address || 'Unbound'}</code>
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 {v.is_online ? (
@@ -253,7 +253,7 @@ const VoucherOnline = () => {
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan="6" className="px-8 py-24 text-center text-slate-400 font-black italic uppercase tracking-[0.2em]">
+                                            <td colSpan="6" className="px-8 py-24 text-center text-zinc-500 font-black italic uppercase tracking-[0.2em]">
                                                 {loading ? 'Scanning Router...' : 'No active sessions detected.'}
                                             </td>
                                         </tr>
@@ -266,21 +266,21 @@ const VoucherOnline = () => {
 
                 {/* Recent Activity Section */}
                 <div className="w-full">
-                    <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+                    <div className="bg-admin-card rounded-2xl p-8 shadow-sm border border-admin-border">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center">
                                 <Icon name="history" className="w-5 h-5" />
                             </div>
-                            <h3 className="text-sm font-black text-slate-900 tracking-widest uppercase">Log Activity Terakhir</h3>
+                            <h3 className="text-sm font-black text-zinc-100 tracking-widest uppercase">Log Activity Terakhir</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {logs.length > 0 ? logs.map((log) => (
-                                <div key={log.id} className="relative pl-6 border-l-2 border-slate-100 py-2 group">
-                                    <div className={`absolute -left-[9px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-4 border-white shadow-md transition-transform group-hover:scale-125 ${new Date(log.expires_at) < new Date() ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
+                                <div key={log.id} className="relative pl-6 border-l-2 border-admin-border py-2 group">
+                                    <div className={`absolute -left-[9px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-4 border-white shadow-sm shadow-black/10 transition-transform group-hover:scale-125 ${new Date(log.expires_at) < new Date() ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
                                     <div className="flex flex-col">
-                                        <span className="font-black text-slate-900 text-sm tracking-widest uppercase leading-none">{log.code}</span>
+                                        <span className="font-black text-zinc-100 text-sm tracking-widest uppercase leading-none">{log.code}</span>
                                         <div className="flex items-center justify-between mt-3">
-                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                            <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">
                                                 {new Date(log.expires_at) < new Date() ? 'Session Ended' : 'Login Success'}
                                             </span>
                                             <span className="text-[9px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded-md">

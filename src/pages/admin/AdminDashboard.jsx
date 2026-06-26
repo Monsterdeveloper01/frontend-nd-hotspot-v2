@@ -165,27 +165,33 @@ const AdminDashboard = () => {
     datasets: [{
       label: 'Pendapatan (Rp)',
       data: data?.chart.map(c => c.total) || [],
-      fill: true,
-      borderColor: '#3b82f6',
-      backgroundColor: 'rgba(59, 130, 246, 0.1)',
-      tension: 0.4,
-      pointRadius: 4,
-      pointHoverRadius: 6,
-      borderWidth: 3
+      fill: false,
+      borderColor: '#0ea5e9', // admin-accent
+      backgroundColor: 'transparent',
+      tension: 0.3,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      pointHoverBackgroundColor: '#0ea5e9',
+      borderWidth: 2
     }]
   }
 
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#0f172a',
-        padding: 12,
-        titleFont: { size: 10, family: 'Inter', weight: '900' },
-        bodyFont: { size: 14, family: 'Inter', weight: '700' },
-        cornerRadius: 12,
+        backgroundColor: '#18181b', // admin-card
+        titleColor: '#a1a1aa', // zinc-400
+        bodyColor: '#f4f4f5', // zinc-100
+        borderColor: '#27272a', // admin-border
+        borderWidth: 1,
+        padding: 10,
         displayColors: false,
         callbacks: {
           label: (ctx) => `Rp ${formatPrice(ctx.parsed.y)}`
@@ -195,200 +201,151 @@ const AdminDashboard = () => {
     scales: {
       y: {
         beginAtZero: true,
-        grid: { display: true, color: '#f1f5f9' },
+        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+        border: { display: false },
         ticks: { 
-          font: { size: 10, family: 'Inter', weight: '700' },
-          callback: (v) => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : v >= 1000 ? (v/1000).toFixed(0) + 'K' : v
+          color: '#71717a', // zinc-500
+          font: { size: 11 },
+          callback: (v) => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : v >= 1000 ? (v/1000).toFixed(0) + 'K' : v,
+          padding: 10
         }
       },
       x: {
-        grid: { display: false }
+        grid: { display: false, drawBorder: false },
+        border: { display: false },
+        ticks: {
+          color: '#71717a',
+          font: { size: 11 },
+          padding: 10
+        }
       }
     }
   }
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-6 pb-20">
         {/* Header Dashboard */}
-        <div className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-                    <p className="text-gray-600 mt-1">Selamat datang kembali, Admin! 
-                        <span className="text-blue-600 font-medium ml-1">• Sistem Billing ND-Hotspot</span>
-                    </p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+            <div>
+                <h1 className="text-2xl font-semibold text-zinc-100 tracking-tight">Dashboard</h1>
+                <p className="text-zinc-500 text-sm mt-1">Sistem Billing ND-Hotspot</p>
+            </div>
+            <div className="flex items-center gap-3">
+                <div className="text-xs text-zinc-400 bg-zinc-800/50 px-3 py-1.5 rounded-md border border-admin-border flex items-center gap-2">
+                    <Icon name="clock" className="w-3.5 h-3.5" />
+                    <span>
+                        {time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })} • {time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                 </div>
-                <div className="flex items-center gap-3 mt-4 md:mt-0">
-                    <div className="text-sm text-gray-700 bg-gray-50 px-4 py-2.5 rounded-lg font-medium border border-gray-200 shadow-sm">
-                        <div className="flex items-center gap-2">
-                            <Icon name="clock" className="w-4 h-4 text-blue-600" />
-                            <span className="font-semibold">
-                                {time.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })},{' '}
-                                {time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                            </span>
-                        </div>
-                    </div>
-                    <button 
-                        onClick={handleRefresh} 
-                        disabled={refreshing}
-                        className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center gap-2 font-medium shadow-sm hover:shadow-md disabled:opacity-75"
-                    >
-                        <Icon name="refresh" className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                        {refreshing ? 'Memuat...' : 'Refresh Data'}
-                    </button>
-                    <button 
-                        onClick={toggleMaintenance}
-                        className={`px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-2 ${isMaintenance ? 'bg-rose-600 text-white hover:bg-rose-700' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
-                    >
-                        <div className={`w-2 h-2 rounded-full ${isMaintenance ? 'bg-white animate-pulse' : 'bg-gray-400'}`}></div>
-                        {isMaintenance ? 'Maint: ON' : 'Maint: OFF'}
-                    </button>
-                </div>
+                <button 
+                    onClick={handleRefresh} 
+                    disabled={refreshing}
+                    className="px-3 py-1.5 bg-admin-accent text-white text-xs font-medium rounded-md hover:bg-admin-accent/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+                >
+                    <Icon name="refresh" className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+                    {refreshing ? 'Memuat...' : 'Refresh'}
+                </button>
+                <button 
+                    onClick={toggleMaintenance}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors ${isMaintenance ? 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20' : 'bg-zinc-800 text-zinc-300 border-admin-border hover:bg-zinc-700'}`}
+                >
+                    <div className={`w-1.5 h-1.5 rounded-full ${isMaintenance ? 'bg-red-500 animate-pulse' : 'bg-zinc-500'}`}></div>
+                    Maint
+                </button>
             </div>
         </div>
 
         {/* Statistik Atas (3 Kolom Besar) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Kotak 1: Total Pendapatan */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="p-2.5 bg-blue-100 rounded-lg">
-                        <Icon name="revenue" className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div className="flex gap-2">
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">Bulan Ini</span>
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">Hari Ini</span>
+            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
+                <div>
+                    <p className="text-sm font-medium text-zinc-500 mb-1">Pendapatan Bulan Ini</p>
+                    <div className="flex items-baseline gap-2">
+                        <p className="text-3xl font-semibold text-zinc-100 tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
                     </div>
                 </div>
-                
-                <div className="space-y-4">
+                <div className="mt-6 pt-4 border-t border-admin-border flex items-center justify-between">
                     <div>
-                        <p className="text-sm text-gray-600 mb-1 font-medium">Total Pendapatan Bulan Ini</p>
-                        <p className="text-2xl font-bold text-gray-900">Rp {formatPrice(data.stats.monthly_revenue)}</p>
-                        <div className="mt-2 flex items-center text-xs text-blue-600">
-                            <Icon name="trend" className="w-3.5 h-3.5 mr-1" />
-                            <span>{data.stats.monthly_revenue > 0 ? (100).toFixed(1) : '0'}% dari target</span>
-                        </div>
+                        <p className="text-xs text-zinc-500">Omset Hari Ini</p>
+                        <p className="text-sm font-medium text-admin-success mt-0.5">Rp {formatPrice(data.stats.today_revenue)}</p>
                     </div>
-                    
-                    <div className="pt-4 border-t border-blue-100">
-                        <p className="text-sm text-gray-600 mb-1 font-medium">Total Omset Hari Ini</p>
-                        <p className="text-2xl font-bold text-emerald-700">Rp {formatPrice(data.stats.today_revenue)}</p>
-                        <div className="mt-2 flex items-center justify-between">
-                            <div className="flex items-center text-xs text-emerald-600">
-                                <Icon name="trend" className="w-3.5 h-3.5 mr-1" />
-                                <span>vs kemarin</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <span className="text-[10px] px-2 py-1 bg-blue-50 text-blue-700 rounded font-bold">Bill {data.stats.today_revenue > 0 ? ((data.stats.bill_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
-                                <span className="text-[10px] px-2 py-1 bg-emerald-50 text-emerald-700 rounded font-bold">VCR {data.stats.today_revenue > 0 ? ((data.stats.voucher_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
-                            </div>
-                        </div>
+                    <div className="flex gap-2">
+                        <span className="text-[10px] px-1.5 py-0.5 bg-zinc-800/50 text-zinc-400 rounded border border-zinc-700/50">Bill {data.stats.today_revenue > 0 ? ((data.stats.bill_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                        <span className="text-[10px] px-1.5 py-0.5 bg-zinc-800/50 text-zinc-400 rounded border border-zinc-700/50">Vcr {data.stats.today_revenue > 0 ? ((data.stats.voucher_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
                     </div>
                 </div>
             </div>
 
             {/* Kotak 2: Total Pelanggan */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="p-2.5 bg-gray-100 rounded-lg">
-                        <Icon name="users" className="w-6 h-6 text-gray-700" />
-                    </div>
-                    <div className="flex gap-2">
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-800">Total</span>
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800">Due</span>
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-800">Isolir</span>
-                    </div>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600 mb-1 font-medium">Total</p>
-                        <p className="text-2xl font-bold text-gray-900">{data.stats.total_customers.toLocaleString('id-ID')}</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600 mb-1 font-medium">Due</p>
-                        <p className="text-2xl font-bold text-yellow-600">{data.stats.due_customers.toLocaleString('id-ID')}</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-sm text-gray-600 mb-1 font-medium">Isolir</p>
-                        <p className="text-2xl font-bold text-red-600">{data.stats.isolated_customers.toLocaleString('id-ID')}</p>
-                    </div>
-                </div>
-                
-                <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>Statistik pelanggan terkini</span>
-                        <span className="text-emerald-600 font-bold flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
+                <div>
+                    <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-medium text-zinc-500">Pelanggan Aktif</p>
+                        <span className="flex items-center gap-1.5 px-2 py-0.5 bg-admin-success/10 text-admin-success text-[10px] font-medium rounded-full border border-admin-success/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-admin-success"></span>
                             {data.stats.online_count} Online
                         </span>
+                    </div>
+                    <p className="text-3xl font-semibold text-zinc-100 tracking-tight">{data.stats.total_customers.toLocaleString('id-ID')}</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-admin-border grid grid-cols-2 gap-4">
+                    <div>
+                        <p className="text-xs text-zinc-500">Tunggakan (Due)</p>
+                        <p className="text-sm font-medium text-amber-500 mt-0.5">{data.stats.due_customers.toLocaleString('id-ID')}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-zinc-500">Terisolir</p>
+                        <p className="text-sm font-medium text-red-500 mt-0.5">{data.stats.isolated_customers.toLocaleString('id-ID')}</p>
                     </div>
                 </div>
             </div>
 
-            {/* Kotak 3: Pendapatan Bill dan Voucher */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-md transition-all duration-300 group">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="p-2.5 bg-purple-100 rounded-lg">
-                        <Icon name="bill" className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">Hari Ini</span>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="bg-white rounded-lg border border-purple-200 p-3">
-                        <p className="text-xs text-gray-600 mb-1">Pendapatan Bill</p>
-                        <p className="text-lg font-bold text-purple-700">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
-                    </div>
-                    <div className="bg-white rounded-lg border border-emerald-200 p-3">
-                        <p className="text-xs text-gray-600 mb-1">Voucher Terjual</p>
-                        <p className="text-lg font-bold text-emerald-700">{data.stats.voucher_sold_today.toLocaleString('id-ID')}</p>
-                        <div className="mt-1 flex items-center justify-between text-[10px] text-emerald-600">
-                            <span>VCR</span>
-                            <span className="text-emerald-800 bg-emerald-100 px-1 py-0.5 rounded font-bold">
-                                {time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })}
-                            </span>
+            {/* Kotak 3: Detail Hari Ini */}
+            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
+                <div>
+                    <p className="text-sm font-medium text-zinc-500 mb-1">Performa Hari Ini</p>
+                    <div className="grid grid-cols-2 gap-4 mt-3">
+                        <div>
+                            <p className="text-xs text-zinc-500">Bill Masuk</p>
+                            <p className="text-lg font-semibold text-zinc-200 mt-0.5">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-zinc-500">Voucher Terjual</p>
+                            <p className="text-lg font-semibold text-zinc-200 mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-zinc-500 font-normal">tiket</span></p>
                         </div>
                     </div>
                 </div>
-                
-                <div className="bg-gradient-to-r from-emerald-50 to-white rounded-lg border border-emerald-200 p-3">
-                    <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs text-gray-600">Pendapatan Voucher</p>
+                <div className="mt-6 pt-4 border-t border-admin-border">
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs text-zinc-500">Pendapatan Voucher</p>
                         <button 
                             onClick={() => setVoucherChartModalOpen(true)}
-                            className="text-[10px] font-bold text-emerald-600 bg-emerald-100 hover:bg-emerald-200 px-2 py-1 rounded transition-colors flex items-center gap-1"
+                            className="text-[10px] text-admin-accent hover:text-admin-accent/80 transition-colors"
                         >
-                            <Icon name="trend" className="w-3 h-3" /> Chart
+                            Lihat Chart
                         </button>
                     </div>
-                    <p className="text-lg font-bold text-emerald-700">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
-                    <div className="mt-1 flex items-center justify-between text-[10px]">
-                        <span className="text-gray-500">Rata-rata/voucher:</span>
-                        <span className="font-semibold text-emerald-700">
-                            Rp {data.stats.voucher_sold_today > 0 ? formatPrice(data.stats.voucher_revenue_today/data.stats.voucher_sold_today) : '0'}
-                        </span>
-                    </div>
+                    <p className="text-sm font-medium text-admin-accent mt-0.5">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
                 </div>
             </div>
         </div>
 
         {/* Chart Pendapatan Bulan Berjalan (Full Width) */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div className="bg-admin-card rounded-xl border border-admin-border p-6 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-900">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-                    <p className="text-xs text-gray-500 mt-1">Analisis pendapatan harian Bill dan Voucher (Tanggal 1 - Akhir Bulan)</p>
+                    <h3 className="text-base font-semibold text-zinc-100 tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+                    <p className="text-xs text-zinc-500 mt-1">Analisis pendapatan harian (Tanggal 1 - Akhir Bulan)</p>
                 </div>
-                <div className="flex items-center gap-3 mt-4 md:mt-0">
-                    <span className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200">
+                <div className="flex items-center mt-4 md:mt-0">
+                    <span className="px-3 py-1.5 bg-zinc-800/50 text-zinc-300 text-xs font-medium rounded-md border border-admin-border">
                         Total: Rp {formatPrice(data.stats.monthly_revenue)}
                     </span>
                 </div>
             </div>
             
-            <div className="h-80 w-full">
+            <div className="h-72 w-full">
                 <Line data={chartConfig} options={chartOptions} />
             </div>
         </div>

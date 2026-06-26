@@ -7,6 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        'admin-base': '#09090b',
+        'admin-card': '#18181b',
+        'admin-border': '#27272a',
+        'admin-accent': '#0ea5e9',
+        'admin-success': '#10b981',
         'nd-blue': '#0084ff',
         'nd-purple': '#9333ea',
         'nd-green': '#10b981',

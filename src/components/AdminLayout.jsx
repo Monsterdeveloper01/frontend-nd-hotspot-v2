@@ -89,67 +89,66 @@ const AdminLayout = ({ children, title, subtitle }) => {
   }
 
   return (
-    <div className="flex bg-slate-50 min-h-screen font-sans">
+    <div className="flex admin-theme">
       {/* Mobile Backdrop */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
 
-      {/* Sidebar - Modern Dark Style */}
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-slate-900 border-r border-slate-800 z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      {/* Sidebar - Enterprise Minimalist Style */}
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-admin-base border-r border-admin-border z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="h-full flex flex-col">
           {/* Logo Section */}
-          <div className="p-6 flex items-center justify-between border-b border-slate-800/60">
+          <div className="h-16 px-6 flex items-center justify-between border-b border-admin-border">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 text-white">
-                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700 text-white">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
               <div>
-                <h2 className="text-white font-bold text-lg tracking-tight leading-none">ND-Billing</h2>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">Admin Portal</p>
+                <h2 className="text-zinc-100 font-semibold text-sm tracking-tight leading-none">ND-Billing</h2>
               </div>
             </div>
-            <button className="lg:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors" onClick={() => setIsSidebarOpen(false)}>
-              <Icon name="close" />
+            <button className="lg:hidden p-1.5 text-zinc-500 hover:text-zinc-300 transition-colors" onClick={() => setIsSidebarOpen(false)}>
+              <Icon name="close" className="w-5 h-5" />
             </button>
           </div>
 
           {/* Menu Section */}
-          <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1 custom-scrollbar">
+          <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 custom-scrollbar">
             {menuItems.map((item, index) => (
               <div key={index}>
                 {item.section && (
-                  <div className="px-4 pt-6 pb-2 text-xs font-semibold text-slate-500 tracking-wider uppercase">
+                  <div className="px-3 pt-5 pb-2 text-[10px] font-semibold text-zinc-500 tracking-wider uppercase">
                     {item.section}
                   </div>
                 )}
                 <Link 
                   to={item.path} 
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium transition-all duration-200 group
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors text-sm
                     ${location.pathname === item.path 
-                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20' 
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+                      ? 'bg-zinc-800/80 text-zinc-100' 
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'}`}
                 >
-                  <Icon name={item.icon} className={`w-5 h-5 transition-transform duration-200 ${location.pathname === item.path ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'}`} />
-                  <span className="text-sm">{item.name}</span>
+                  <Icon name={item.icon} className={`w-4 h-4 ${location.pathname === item.path ? 'text-zinc-200' : 'text-zinc-500'}`} />
+                  <span>{item.name}</span>
                 </Link>
               </div>
             ))}
           </nav>
 
-          <div className="p-6 border-t border-slate-800/60">
+          <div className="p-4 border-t border-admin-border">
             <button 
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2.5 py-3 bg-slate-800 hover:bg-rose-500 hover:text-white text-slate-300 rounded-xl font-semibold transition-all duration-200 active:scale-95 group text-sm"
+              className="w-full flex items-center gap-2 px-3 py-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 rounded-md font-medium transition-colors text-sm"
             >
-              <Icon name="logout" className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <Icon name="logout" className="w-4 h-4" />
               <span>Sign Out</span>
             </button>
           </div>
@@ -157,59 +156,55 @@ const AdminLayout = ({ children, title, subtitle }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 lg:ml-72 flex flex-col min-h-screen">
-        {/* Header - Glassmorphism */}
-        <header className="sticky top-0 bg-white/70 backdrop-blur-xl border-b border-slate-200 z-30 px-6 lg:px-10 py-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button 
-                className="lg:hidden p-2.5 bg-white border border-slate-200 shadow-sm rounded-xl text-slate-600 hover:bg-slate-50 transition-colors"
-                onClick={() => setIsSidebarOpen(true)}
-              >
-                <Icon name="menu" className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
-                {subtitle && <p className="text-sm text-slate-500 font-medium mt-0.5">{subtitle}</p>}
-              </div>
+      <main className="flex-1 lg:ml-64 flex flex-col min-h-screen">
+        {/* Header - Minimalist */}
+        <header className="sticky top-0 bg-admin-base/90 backdrop-blur-md border-b border-admin-border z-30 h-16 px-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button 
+              className="lg:hidden p-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Icon name="menu" className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-lg font-semibold text-zinc-100 tracking-tight">{title}</h1>
             </div>
-            
-            <div className="flex items-center gap-5">
-              <div className="hidden md:flex flex-col items-end">
-                <span className="text-xs text-slate-500 font-semibold mb-0.5">Router Status</span>
-                <div className="flex items-center gap-2">
-                    {routerConnected === null ? (
-                        <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-full">
-                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-pulse"></div>
-                            <span className="text-xs font-semibold text-slate-600">Checking</span>
-                        </div>
-                    ) : routerConnected ? (
-                        <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full shadow-sm"></div>
-                            <span className="text-xs font-semibold text-emerald-700">Online</span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-1.5 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-100">
-                            <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></div>
-                            <span className="text-xs font-semibold text-rose-700">Offline</span>
-                        </div>
-                    )}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-3">
+              <span className="text-xs text-zinc-500">Router</span>
+              {routerConnected === null ? (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-800/50 border border-zinc-700/50">
+                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wide">Checking</span>
                 </div>
-              </div>
-              <button 
-                onClick={checkRouterStatus}
-                disabled={isSyncing}
-                className="p-2.5 bg-white text-slate-500 hover:bg-blue-50 hover:text-blue-600 rounded-xl border border-slate-200 transition-all active:scale-95 shadow-sm disabled:opacity-50"
-                title="Sync Router Status"
-              >
-                <Icon name="sync" className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} />
-              </button>
+              ) : routerConnected ? (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-admin-success/10 border border-admin-success/20">
+                  <div className="w-1.5 h-1.5 bg-admin-success rounded-full"></div>
+                  <span className="text-[10px] font-medium text-admin-success uppercase tracking-wide">Online</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20">
+                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-medium text-red-500 uppercase tracking-wide">Offline</span>
+                </div>
+              )}
             </div>
+            <div className="h-4 w-px bg-admin-border hidden md:block"></div>
+            <button 
+              onClick={checkRouterStatus}
+              disabled={isSyncing}
+              className="text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-50"
+              title="Sync Router Status"
+            >
+              <Icon name="sync" className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            </button>
           </div>
         </header>
 
         {/* Dynamic Content */}
-        <div className="p-6 lg:p-10 flex-1 max-w-7xl mx-auto w-full">
+        <div className="p-6 flex-1 w-full max-w-7xl mx-auto">
           {children}
         </div>
       </main>

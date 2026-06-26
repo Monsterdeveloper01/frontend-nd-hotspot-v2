@@ -25,19 +25,19 @@ const VoucherDetailModal = ({ voucher, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                <div className="px-10 py-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <div className="bg-admin-card w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+                <div className="px-10 py-8 bg-zinc-900/50 border-b border-admin-border flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
                             <Icon name="info" className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Detail Voucher</h3>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Informasi penggunaan & riwayat</p>
+                            <h3 className="text-xl font-black text-zinc-100 uppercase tracking-tight leading-none">Detail Voucher</h3>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Informasi penggunaan & riwayat</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
-                        <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -52,14 +52,14 @@ const VoucherDetailModal = ({ voucher, onClose }) => {
 
                     <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</p>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Status</p>
                             <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest inline-block border ${voucher.status === 'available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
                                 {voucher.status}
                             </span>
                         </div>
                         <div className="space-y-1">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Price</p>
-                            <p className="font-black text-slate-900">Rp {voucher.price.toLocaleString('id-ID')}</p>
+                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Price</p>
+                            <p className="font-black text-zinc-100">Rp {voucher.price.toLocaleString('id-ID')}</p>
                         </div>
                     </div>
                     {voucher.customer_phone && (
@@ -73,29 +73,29 @@ const VoucherDetailModal = ({ voucher, onClose }) => {
                     )}
 
                     <div className="space-y-4">
-                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <Icon name="clock" className="w-5 h-5 text-slate-400" />
+                        <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-2xl border border-admin-border">
+                            <Icon name="clock" className="w-5 h-5 text-zinc-500" />
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Digunakan Pada</p>
-                                <p className="text-sm font-bold text-slate-700">
+                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Digunakan Pada</p>
+                                <p className="text-sm font-bold text-zinc-300">
                                     {voucher.used_at ? new Date(voucher.used_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'Belum Digunakan'}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <Icon name="calendar" className="w-5 h-5 text-slate-400" />
+                        <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-2xl border border-admin-border">
+                            <Icon name="calendar" className="w-5 h-5 text-zinc-500" />
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kadaluarsa</p>
-                                <p className="text-sm font-bold text-slate-700">
+                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Kadaluarsa</p>
+                                <p className="text-sm font-bold text-zinc-300">
                                     {voucher.expires_at ? new Date(voucher.expires_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'Belum Digunakan'}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <Icon name="device" className="w-5 h-5 text-slate-400" />
+                        <div className="flex items-center gap-4 p-4 bg-zinc-900/50 rounded-2xl border border-admin-border">
+                            <Icon name="device" className="w-5 h-5 text-zinc-500" />
                             <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">MAC Address</p>
-                                <p className="text-sm font-bold text-slate-700 font-mono">{voucher.mac_address || 'N/A'}</p>
+                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">MAC Address</p>
+                                <p className="text-sm font-bold text-zinc-300 font-mono">{voucher.mac_address || 'N/A'}</p>
                             </div>
                         </div>
                     </div>
@@ -229,8 +229,8 @@ const VoucherStock = () => {
             {/* Header Section */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">Stok Voucher</h1>
-                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mt-2">Monitoring inventaris voucher hotspot dan riwayat penggunaan</p>
+                    <h1 className="text-2xl font-black text-zinc-100 tracking-tight uppercase leading-none">Stok Voucher</h1>
+                    <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-widest mt-2">Monitoring inventaris voucher hotspot dan riwayat penggunaan</p>
                 </div>
                 <button 
                     onClick={() => setShowGenerateModal(true)}
@@ -243,27 +243,27 @@ const VoucherStock = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-admin-card p-6 rounded-[24px] border border-admin-border shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Voucher</p>
-                        <h3 className="text-3xl font-black text-slate-900 tracking-tighter">{stats.total}</h3>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Total Voucher</p>
+                        <h3 className="text-3xl font-black text-zinc-100 tracking-tighter">{stats.total}</h3>
                     </div>
-                    <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-md">
+                    <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-sm shadow-black/10">
                         <Icon name="code" className="w-6 h-6" />
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-admin-card p-6 rounded-[24px] border border-admin-border shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tersedia (Available)</p>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Tersedia (Available)</p>
                         <h3 className="text-3xl font-black text-emerald-600 tracking-tighter">{stats.available}</h3>
                     </div>
                     <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center border border-emerald-100 shadow-sm">
                         <Icon name="device" className="w-6 h-6" />
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-admin-card p-6 rounded-[24px] border border-admin-border shadow-sm flex items-center justify-between">
                     <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Terpakai (Used)</p>
+                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Terpakai (Used)</p>
                         <h3 className="text-3xl font-black text-blue-600 tracking-tighter">{stats.used}</h3>
                     </div>
                     <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center border border-blue-100 shadow-sm">
@@ -273,7 +273,7 @@ const VoucherStock = () => {
             </div>
 
             {/* Search and Filter */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-[24px] border border-slate-200 shadow-sm">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-admin-card p-4 rounded-[24px] border border-admin-border shadow-sm">
                 <div className="w-full md:w-1/2 relative">
                     <input 
                         type="text" 
@@ -281,7 +281,7 @@ const VoucherStock = () => {
                         onChange={(e) => setSearch(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && fetchVouchers(1)}
                         placeholder="Cari voucher code atau nomor WA..." 
-                        className="w-full pl-6 pr-14 py-4 bg-slate-50 border border-slate-200 rounded-[20px] text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all placeholder:text-slate-400"
+                        className="w-full pl-6 pr-14 py-4 bg-zinc-900/50 border border-admin-border rounded-[20px] text-sm font-bold text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-admin-card transition-all placeholder:text-zinc-500"
                     />
                     <button 
                         onClick={() => fetchVouchers(1)}
@@ -296,7 +296,7 @@ const VoucherStock = () => {
                     <select 
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full md:w-64 px-6 py-4 bg-slate-50 border border-slate-200 rounded-[20px] text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white transition-all cursor-pointer uppercase tracking-widest appearance-none"
+                        className="w-full md:w-64 px-6 py-4 bg-zinc-900/50 border border-admin-border rounded-[20px] text-sm font-bold text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-admin-card transition-all cursor-pointer uppercase tracking-widest appearance-none"
                         style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: `right 1rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.5em 1.5em` }}
                     >
                         <option value="all">Semua Status</option>
@@ -307,53 +307,53 @@ const VoucherStock = () => {
             </div>
 
             {/* Table Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left min-w-[900px]">
                         <thead>
-                            <tr className="bg-slate-50 border-b border-slate-200">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Credentials</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Pembeli</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Plan Info</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Price</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Status</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Actions</th>
+                            <tr className="bg-zinc-900/50 border-b border-admin-border">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Credentials</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Pembeli</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Plan Info</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Price</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-center">Status</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-admin-border">
                             {loading ? (
                                 <tr>
-                                    <td colSpan="6" className="px-8 py-20 text-center text-slate-400 font-bold italic">Synchronizing inventory...</td>
+                                    <td colSpan="6" className="px-8 py-20 text-center text-zinc-500 font-bold italic">Synchronizing inventory...</td>
                                 </tr>
                             ) : vouchers.length > 0 ? vouchers.map((v) => (
                                 <tr key={v.id} className="hover:bg-blue-50/30 transition-colors group">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                                            <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-500 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
                                                 <Icon name="code" className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <div className="font-black text-slate-900 text-lg leading-none uppercase tracking-[0.1em]">{v.code}</div>
-                                                <div className="text-[10px] font-black text-slate-400 uppercase mt-1.5 tracking-widest">Hotspot User</div>
+                                                <div className="font-black text-zinc-100 text-lg leading-none uppercase tracking-[0.1em]">{v.code}</div>
+                                                <div className="text-[10px] font-black text-zinc-500 uppercase mt-1.5 tracking-widest">Hotspot User</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="font-black text-slate-800 text-sm">{v.customer_phone || '-'}</div>
-                                        <div className="text-[10px] font-black text-slate-400 uppercase mt-1 tracking-widest">{v.customer_phone ? 'WhatsApp' : 'Tanpa Info'}</div>
+                                        <div className="font-black text-zinc-200 text-sm">{v.customer_phone || '-'}</div>
+                                        <div className="text-[10px] font-black text-zinc-500 uppercase mt-1 tracking-widest">{v.customer_phone ? 'WhatsApp' : 'Tanpa Info'}</div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="font-black text-slate-800 text-sm">{v.plan?.name}</div>
-                                        <div className="text-[10px] font-black text-slate-400 uppercase mt-1 tracking-widest">{v.plan?.duration || 'Standard'} Profile</div>
+                                        <div className="font-black text-zinc-200 text-sm">{v.plan?.name}</div>
+                                        <div className="text-[10px] font-black text-zinc-500 uppercase mt-1 tracking-widest">{v.plan?.duration || 'Standard'} Profile</div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="font-black text-slate-900 text-lg tracking-tighter italic">Rp {v.price.toLocaleString('id-ID')}</div>
+                                        <div className="font-black text-zinc-100 text-lg tracking-tighter italic">Rp {v.price.toLocaleString('id-ID')}</div>
                                     </td>
                                     <td className="px-8 py-6 text-center">
                                         <span className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border inline-flex items-center gap-2
                                             ${v.status === 'available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 
                                               v.status === 'sold' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                              'bg-slate-50 text-slate-400 border-slate-100'}`}>
+                                              'bg-zinc-900/50 text-zinc-500 border-admin-border'}`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${v.status === 'available' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}></span>
                                             {v.status}
                                         </span>
@@ -379,7 +379,7 @@ const VoucherStock = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="6" className="px-8 py-24 text-center text-slate-400 font-bold italic">Inventory is empty.</td>
+                                    <td colSpan="6" className="px-8 py-24 text-center text-zinc-500 font-bold italic">Inventory is empty.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -392,19 +392,19 @@ const VoucherStock = () => {
             {/* Generate Modal */}
             {showGenerateModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                        <div className="px-10 py-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <div className="bg-admin-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+                        <div className="px-10 py-8 bg-zinc-900/50 border-b border-admin-border flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
                                     <Icon name="code" className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Voucher Massal</h3>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Generate kode voucher fisik</p>
+                                    <h3 className="text-xl font-black text-zinc-100 uppercase tracking-tight leading-none">Voucher Massal</h3>
+                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Generate kode voucher fisik</p>
                                 </div>
                             </div>
                             <button onClick={() => setShowGenerateModal(false)} className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
-                                <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-6 h-6 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -412,11 +412,11 @@ const VoucherStock = () => {
 
                         <form onSubmit={handleGenerate} className="p-10 space-y-6">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Pilih Paket</label>
+                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Pilih Paket</label>
                                 <select 
                                     value={genData.voucher_plan_id}
                                     onChange={(e) => setGenData({...genData, voucher_plan_id: e.target.value})}
-                                    className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
+                                    className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
                                     required
                                 >
                                     <option value="">Pilih Master Voucher...</option>
@@ -428,23 +428,23 @@ const VoucherStock = () => {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Jumlah Voucher</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Jumlah Voucher</label>
                                     <input 
                                         type="number"
                                         min="1"
                                         max="100"
                                         value={genData.quantity}
                                         onChange={(e) => setGenData({...genData, quantity: e.target.value})}
-                                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 ml-1">Sistem</label>
+                                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Sistem</label>
                                     <select 
                                         value={genData.type}
                                         onChange={(e) => setGenData({...genData, type: e.target.value})}
-                                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
+                                        className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
                                     >
                                         <option value="radius">RADIUS (Rekomendasi)</option>
                                         <option value="mikrotik">LOCAL (Mikrotik API)</option>
@@ -464,7 +464,7 @@ const VoucherStock = () => {
                             <button 
                                 type="submit"
                                 disabled={genSubmitting}
-                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center justify-center gap-3 ${genSubmitting ? 'bg-slate-100 text-slate-400' : 'bg-blue-600 text-white shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center justify-center gap-3 ${genSubmitting ? 'bg-zinc-800 text-zinc-500' : 'bg-blue-600 text-white shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
                             >
                                 {genSubmitting ? <i className="fas fa-circle-notch animate-spin"></i> : <><Icon name="plus" className="w-4 h-4" /> Generate Voucher</>}
                             </button>
