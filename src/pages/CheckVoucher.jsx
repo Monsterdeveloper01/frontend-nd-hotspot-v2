@@ -39,7 +39,7 @@ const CheckVoucher = () => {
                     {/* Header */}
                     <div className="text-center mb-10">
                         <div className="inline-block mb-4">
-                            <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-[30px] shadow-xl flex items-center justify-center text-3xl text-white mb-4 mx-auto -rotate-3">
+                            <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-[30px] shadow-xl flex items-center justify-center text-3xl text-admin-text mb-4 mx-auto -rotate-3">
                                 <FaIcon name="ticket-alt" />
                             </div>
                         </div>
@@ -65,7 +65,7 @@ const CheckVoucher = () => {
                                 <button 
                                     type="submit"
                                     disabled={loading}
-                                    className="absolute right-3 top-3 bottom-3 bg-purple-600 text-white px-5 rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50"
+                                    className="absolute right-3 top-3 bottom-3 bg-purple-600 text-admin-text px-5 rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50"
                                 >
                                     {loading ? <FaIcon name="sync" className="animate-spin" /> : <FaIcon name="search" />}
                                 </button>
@@ -84,7 +84,7 @@ const CheckVoucher = () => {
                         <div className="animate-fadeIn space-y-6">
                             <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 relative">
                                 {/* Status Banner */}
-                                <div className={`py-3 text-center text-[10px] font-black uppercase tracking-[0.3em] text-white ${
+                                <div className={`py-3 text-center text-[10px] font-black uppercase tracking-[0.3em] text-admin-text ${
                                     voucher.is_online ? 'bg-emerald-500' : 'bg-blue-500'
                                 }`}>
                                     {voucher.is_online ? 'Sedang Online' : 'Offline / Standby'}
@@ -149,7 +149,7 @@ const CheckVoucher = () => {
 
                             <button 
                                 onClick={() => { setVoucher(null); setCode(''); }}
-                                className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                                className="w-full py-5 bg-slate-900 text-admin-text rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
                             >
                                 Cek Voucher Lain
                             </button>

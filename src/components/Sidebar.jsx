@@ -46,12 +46,12 @@ const Sidebar = () => {
     <div className="w-72 bg-slate-950 h-screen flex flex-col fixed left-0 top-0 z-40 border-r border-white/5">
       <div className="p-10 flex items-center gap-4">
         <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
-          <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="3">
+          <svg viewBox="0 0 24 24" className="w-6 h-6 text-admin-text" fill="none" stroke="currentColor" strokeWidth="3">
             <path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.59 16.11a6 6 0 016.82 0M12 20h.01" />
           </svg>
         </div>
         <div>
-          <h2 className="text-white font-black text-xl tracking-tighter leading-none">NDBilling</h2>
+          <h2 className="text-admin-text font-black text-xl tracking-tighter leading-none">NDBilling</h2>
           <p className="text-[10px] text-slate-500 font-black tracking-widest mt-1.5 uppercase">Network Core</p>
         </div>
       </div>
@@ -68,10 +68,10 @@ const Sidebar = () => {
               to={item.path} 
               className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl font-bold transition-all group
                 ${location.pathname === item.path 
-                  ? 'bg-blue-600 text-white shadow-xl shadow-blue-600/20' 
-                  : 'text-slate-500 hover:text-white hover:bg-white/5'}`}
+                  ? 'bg-blue-600 text-admin-text shadow-xl shadow-blue-600/20' 
+                  : 'text-slate-500 hover:text-admin-text hover:bg-white/5'}`}
             >
-              <Icon name={item.icon} className={`w-5 h-5 transition-transform group-hover:scale-110 ${location.pathname === item.path ? 'text-white' : 'text-slate-500 group-hover:text-blue-400'}`} />
+              <Icon name={item.icon} className={`w-5 h-5 transition-transform group-hover:scale-110 ${location.pathname === item.path ? 'text-admin-text' : 'text-slate-500 group-hover:text-blue-400'}`} />
               <span className="text-sm tracking-tight">{item.name}</span>
             </Link>
           </div>
@@ -84,7 +84,7 @@ const Sidebar = () => {
             localStorage.removeItem('token')
             window.location.href = '/'
           }}
-          className="w-full flex items-center justify-center gap-3 py-4 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-white rounded-2xl font-black transition-all active:scale-95 group"
+          className="w-full flex items-center justify-center gap-3 py-4 bg-red-500/5 hover:bg-red-500 text-red-500 hover:text-admin-text rounded-2xl font-black transition-all active:scale-95 group"
         >
           <Icon name="logout" className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           <span>Logout Session</span>

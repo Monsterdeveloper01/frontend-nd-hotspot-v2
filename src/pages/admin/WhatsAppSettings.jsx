@@ -57,18 +57,18 @@ const WhatsAppSettings = () => {
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50 -mr-16 -mt-16"></div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
-            <h1 className="text-2xl font-black text-zinc-200 tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl font-black text-admin-text tracking-tight flex items-center gap-3">
               <i className="fab fa-whatsapp text-emerald-500 text-3xl"></i>
               WHATSAPP GATEWAY
             </h1>
-            <p className="text-zinc-400 font-bold text-xs mt-1 uppercase tracking-widest">Manajemen Notifikasi & Otomatisasi</p>
+            <p className="text-admin-muted font-bold text-xs mt-1 uppercase tracking-widest">Manajemen Notifikasi & Otomatisasi</p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className={`px-6 py-3 rounded-2xl flex items-center gap-3 border-2 transition-all ${
               status === 'connected' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 
               status === 'disconnected' ? 'bg-rose-50 border-rose-100 text-rose-700' : 
-              'bg-zinc-900/50 border-admin-border text-zinc-400'
+              'bg-admin-base border-admin-border text-admin-muted'
             }`}>
               <div className={`w-3 h-3 rounded-full ${
                 status === 'connected' ? 'bg-emerald-500 animate-pulse' : 
@@ -86,7 +86,7 @@ const WhatsAppSettings = () => {
         {/* 2. QR Code Section */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-admin-card rounded-2xl p-8 border border-admin-border shadow-sm h-full">
-            <h3 className="text-sm font-black text-zinc-200 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h3 className="text-sm font-black text-admin-text uppercase tracking-widest mb-6 flex items-center gap-2">
               <i className="fas fa-qrcode text-blue-500"></i> Autentikasi Perangkat
             </h3>
             
@@ -95,20 +95,20 @@ const WhatsAppSettings = () => {
                 <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6 shadow-inner">
                   <i className="fas fa-check-circle text-4xl"></i>
                 </div>
-                <p className="text-zinc-300 font-black uppercase text-xs tracking-widest">Perangkat Terhubung</p>
-                <p className="text-zinc-500 text-[10px] mt-2 leading-relaxed">Sistem siap mengirimkan notifikasi voucher dan tagihan secara otomatis.</p>
+                <p className="text-admin-text font-black uppercase text-xs tracking-widest">Perangkat Terhubung</p>
+                <p className="text-admin-muted text-[10px] mt-2 leading-relaxed">Sistem siap mengirimkan notifikasi voucher dan tagihan secara otomatis.</p>
               </div>
             ) : qr ? (
               <div className="text-center">
-                <div className="bg-zinc-900/50 p-6 rounded-3xl border-2 border-dashed border-admin-border inline-block mb-6">
+                <div className="bg-admin-base p-6 rounded-3xl border-2 border-dashed border-admin-border inline-block mb-6">
                   <img src={qr} alt="WA QR Code" className="w-48 h-48 mx-auto" />
                 </div>
-                <p className="text-zinc-300 font-bold text-xs leading-relaxed">Scan kode QR di atas menggunakan WhatsApp di ponsel Anda untuk menghubungkan.</p>
+                <p className="text-admin-text font-bold text-xs leading-relaxed">Scan kode QR di atas menggunakan WhatsApp di ponsel Anda untuk menghubungkan.</p>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center opacity-40">
                 <div className="w-16 h-16 border-4 border-admin-border border-t-blue-500 rounded-full animate-spin mb-4"></div>
-                <p className="text-zinc-400 font-black uppercase text-[10px] tracking-widest">Menunggu QR Code...</p>
+                <p className="text-admin-muted font-black uppercase text-[10px] tracking-widest">Menunggu QR Code...</p>
               </div>
             )}
           </div>
@@ -117,12 +117,12 @@ const WhatsAppSettings = () => {
         {/* 3. Activity Logs Section */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-admin-card rounded-2xl border border-admin-border shadow-sm flex flex-col overflow-hidden h-[500px]">
-            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-zinc-900/50/50">
-              <h3 className="text-sm font-black text-zinc-200 uppercase tracking-widest flex items-center gap-2">
+            <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-admin-base/50">
+              <h3 className="text-sm font-black text-admin-text uppercase tracking-widest flex items-center gap-2">
                 <i className="fas fa-stream text-indigo-500"></i> Gateway Activity Logs
               </h3>
               <div className="flex gap-2">
-                <span className="px-3 py-1 bg-admin-card border border-admin-border rounded-full text-[9px] font-black text-zinc-400 uppercase">Realtime</span>
+                <span className="px-3 py-1 bg-admin-card border border-admin-border rounded-full text-[9px] font-black text-admin-muted uppercase">Realtime</span>
               </div>
             </div>
             
@@ -131,7 +131,7 @@ const WhatsAppSettings = () => {
                 <div key={log.id} className="flex gap-4 group hover:bg-admin-card/5 p-2 rounded-lg transition-colors border-l-2" style={{ 
                   borderColor: log.status === 'success' ? '#10b981' : log.status === 'error' ? '#f43f5e' : '#3b82f6' 
                 }}>
-                  <span className="text-zinc-400 flex-shrink-0">[{log.time}]</span>
+                  <span className="text-admin-muted flex-shrink-0">[{log.time}]</span>
                   <span className={`flex-shrink-0 uppercase font-black tracking-widest w-16 ${
                     log.status === 'success' ? 'text-emerald-400' : log.status === 'error' ? 'text-rose-400' : 'text-blue-400'
                   }`}>
@@ -140,7 +140,7 @@ const WhatsAppSettings = () => {
                   <span className="text-slate-300 break-all">{log.message}</span>
                 </div>
               )) : (
-                <div className="h-full flex items-center justify-center text-zinc-300 italic">
+                <div className="h-full flex items-center justify-center text-admin-text italic">
                   Belum ada aktivitas yang tercatat...
                 </div>
               )}
@@ -151,38 +151,38 @@ const WhatsAppSettings = () => {
 
       {/* 4. Test Message Section */}
       <div className="bg-admin-card rounded-2xl p-8 border border-admin-border shadow-sm">
-        <h3 className="text-sm font-black text-zinc-200 uppercase tracking-widest mb-8 flex items-center gap-2">
+        <h3 className="text-sm font-black text-admin-text uppercase tracking-widest mb-8 flex items-center gap-2">
           <i className="fas fa-paper-plane text-purple-500"></i> Uji Coba Pengiriman
         </h3>
         
         <form onSubmit={handleSendTest} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
           <div className="md:col-span-4 space-y-3">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Nomor WhatsApp</label>
+            <label className="text-[10px] font-black text-admin-muted uppercase tracking-widest ml-1">Nomor WhatsApp</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-black text-sm">62</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-admin-muted font-black text-sm">62</span>
               <input 
                 type="text" 
                 value={testNumber}
                 onChange={(e) => setTestNumber(e.target.value.replace(/\D/g, ''))}
                 placeholder="81234567890"
-                className="w-full bg-zinc-900/50 border-2 border-admin-border rounded-2xl pl-10 pr-4 py-4 outline-none focus:border-blue-400 transition-all font-bold text-sm"
+                className="w-full bg-admin-base border-2 border-admin-border rounded-2xl pl-10 pr-4 py-4 outline-none focus:border-blue-400 transition-all font-bold text-sm"
               />
             </div>
           </div>
           <div className="md:col-span-6 space-y-3">
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Isi Pesan Tes</label>
+            <label className="text-[10px] font-black text-admin-muted uppercase tracking-widest ml-1">Isi Pesan Tes</label>
             <input 
               type="text" 
               value={testMessage}
               onChange={(e) => setTestMessage(e.target.value)}
-              className="w-full bg-zinc-900/50 border-2 border-admin-border rounded-2xl px-4 py-4 outline-none focus:border-blue-400 transition-all font-bold text-sm"
+              className="w-full bg-admin-base border-2 border-admin-border rounded-2xl px-4 py-4 outline-none focus:border-blue-400 transition-all font-bold text-sm"
             />
           </div>
           <div className="md:col-span-2">
             <button 
               type="submit"
               disabled={sending || status !== 'connected'}
-              className="w-full py-4 bg-slate-900 hover:bg-blue-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-slate-200"
+              className="w-full py-4 bg-slate-900 hover:bg-blue-600 text-admin-text rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-slate-200"
             >
               {sending ? <i className="fas fa-circle-notch fa-spin"></i> : 'Kirim Tes'}
             </button>

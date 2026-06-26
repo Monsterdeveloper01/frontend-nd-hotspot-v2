@@ -195,26 +195,26 @@ const CustomerManagement = () => {
         <div className="space-y-10">
             {/* Header Section */}
             <div>
-                <h1 className="text-2xl font-black text-zinc-100 tracking-tight uppercase leading-none">Data Pelanggan</h1>
-                <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-widest mt-2">Kelola database pelanggan, tagihan bulanan, dan status isolasi</p>
+                <h1 className="text-2xl font-black text-admin-text tracking-tight uppercase leading-none">Data Pelanggan</h1>
+                <p className="text-admin-muted font-bold text-[10px] uppercase tracking-widest mt-2">Kelola database pelanggan, tagihan bulanan, dan status isolasi</p>
             </div>
 
             {/* Form Card */}
             <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
-                <div className="px-10 py-8 border-b border-admin-border bg-zinc-900/50/50 flex items-center justify-between">
+                <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-white shadow-amber-200' : 'bg-blue-600 text-white shadow-blue-200'}`}>
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-admin-text shadow-amber-200' : 'bg-blue-600 text-admin-text shadow-blue-200'}`}>
                             <Icon name={editingId ? "edit" : "plus"} className="w-7 h-7" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-black text-zinc-100 leading-tight uppercase tracking-tight">
+                            <h2 className="text-xl font-black text-admin-text leading-tight uppercase tracking-tight">
                                 {editingId ? 'Edit Data Pelanggan' : 'Tambah Pelanggan Baru'}
                             </h2>
-                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Lengkapi data identitas dan detail penagihan</p>
+                            <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest mt-1">Lengkapi data identitas dan detail penagihan</p>
                         </div>
                     </div>
                     {editingId && (
-                        <button onClick={handleCancelEdit} className="text-[10px] font-black text-zinc-500 hover:text-rose-500 uppercase tracking-widest transition-colors">Batal Edit</button>
+                        <button onClick={handleCancelEdit} className="text-[10px] font-black text-admin-muted hover:text-rose-500 uppercase tracking-widest transition-colors">Batal Edit</button>
                     )}
                 </div>
 
@@ -222,22 +222,22 @@ const CustomerManagement = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                         {/* Group 1 */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-admin-border pb-3 flex items-center gap-2">
+                            <h3 className="text-[10px] font-black text-admin-muted uppercase tracking-widest border-b border-admin-border pb-3 flex items-center gap-2">
                                 <Icon name="user" className="w-3 h-3" /> Identitas Personal
                             </h3>
                             <div>
-                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
                                 <input 
                                     type="text" 
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
+                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
                                     placeholder="Username MikroTik"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Nomor WhatsApp</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2 ml-1">Nomor WhatsApp</label>
                                 <input 
                                     type="text" 
                                     value={formData.whatsapp}
@@ -247,7 +247,7 @@ const CustomerManagement = () => {
                                         else if (val.length > 0 && !val.startsWith('62')) val = '62' + val;
                                         setFormData({...formData, whatsapp: val});
                                     }}
-                                    className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
+                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-300" 
                                     placeholder="628..."
                                     required
                                 />
@@ -256,30 +256,30 @@ const CustomerManagement = () => {
 
                         {/* Group 2 */}
                         <div className="space-y-6">
-                            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-admin-border pb-3 flex items-center gap-2">
+                            <h3 className="text-[10px] font-black text-admin-muted uppercase tracking-widest border-b border-admin-border pb-3 flex items-center gap-2">
                                 <Icon name="calendar" className="w-3 h-3" /> Detail Tagihan
                             </h3>
                             <div>
-                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Jumlah Tagihan (IDR)</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2 ml-1">Jumlah Tagihan (IDR)</label>
                                 <div className="relative">
-                                    <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-zinc-500 text-sm">Rp</span>
+                                    <span className="absolute left-5 top-1/2 -translate-y-1/2 font-black text-admin-muted text-sm">Rp</span>
                                     <input 
                                         type="number" 
                                         value={formData.billing_amount}
                                         onChange={(e) => setFormData({...formData, billing_amount: e.target.value})}
-                                        className="w-full pl-12 pr-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                                        className="w-full pl-12 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
                                         placeholder="0"
                                         required
                                     />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 ml-1">Tanggal Jatuh Tempo</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2 ml-1">Tanggal Jatuh Tempo</label>
                                 <input 
                                     type="date" 
                                     value={formData.due_date}
                                     onChange={(e) => setFormData({...formData, due_date: e.target.value})}
-                                    className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
+                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
                                     required
                                 />
                             </div>
@@ -290,7 +290,7 @@ const CustomerManagement = () => {
                             <button 
                                 type="submit" 
                                 disabled={submitting}
-                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-3 ${submitting ? 'bg-zinc-800 text-zinc-500' : editingId ? 'bg-amber-500 text-white shadow-lg shadow-amber-200 hover:bg-amber-600' : 'bg-blue-600 text-white shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-3 ${submitting ? 'bg-admin-base text-admin-muted' : editingId ? 'bg-amber-500 text-admin-text shadow-lg shadow-amber-200 hover:bg-amber-600' : 'bg-blue-600 text-admin-text shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
                             >
                                 <Icon name="check" className="w-4 h-4" />
                                 {submitting ? 'Processing...' : editingId ? 'Simpan Perubahan' : 'Daftarkan Pelanggan'}
@@ -302,23 +302,23 @@ const CustomerManagement = () => {
 
             {/* List & Filter Card */}
             <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
-                <div className="p-8 bg-zinc-900/50/50 border-b border-admin-border flex flex-col xl:flex-row justify-between items-center gap-6">
+                <div className="p-8 bg-admin-base/50 border-b border-admin-border flex flex-col xl:flex-row justify-between items-center gap-6">
                     <div className="flex flex-col md:flex-row items-center gap-4 w-full xl:w-auto">
                         <div className="relative w-full md:w-96 group">
                             <input 
                                 type="text" 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-14 pr-12 py-4 bg-admin-card border border-admin-border rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm placeholder:text-zinc-500" 
+                                className="w-full pl-14 pr-12 py-4 bg-admin-card border border-admin-border rounded-2xl font-bold text-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm placeholder:text-admin-muted" 
                                 placeholder="Cari Nama atau WhatsApp..."
                             />
                             <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors">
-                                <Icon name="search" className="w-5 h-5 text-zinc-500 group-focus-within:text-indigo-500 transition-colors" />
+                                <Icon name="search" className="w-5 h-5 text-admin-muted group-focus-within:text-indigo-500 transition-colors" />
                             </div>
                             {searchTerm && (
                                 <button 
                                     onClick={() => setSearchTerm('')} 
-                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-rose-500 transition-colors"
+                                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-admin-muted hover:text-rose-500 transition-colors"
                                 >
                                     <Icon name="close" className="w-4 h-4" />
                                 </button>
@@ -348,15 +348,15 @@ const CustomerManagement = () => {
 
                             <button 
                                 onClick={() => setFilterOverdue(!filterOverdue)}
-                                className={`px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-sm flex items-center gap-2 whitespace-nowrap ${filterOverdue ? 'bg-rose-500 text-white border-rose-500 shadow-rose-200' : 'bg-admin-card border border-admin-border text-zinc-400 hover:border-rose-300'}`}
+                                className={`px-6 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all shadow-sm flex items-center gap-2 whitespace-nowrap ${filterOverdue ? 'bg-rose-500 text-admin-text border-rose-500 shadow-rose-200' : 'bg-admin-card border border-admin-border text-admin-muted hover:border-rose-300'}`}
                             >
-                                <Icon name="clock" className={`w-3 h-3 ${filterOverdue ? 'text-white' : 'text-rose-500'}`} />
+                                <Icon name="clock" className={`w-3 h-3 ${filterOverdue ? 'text-admin-text' : 'text-rose-500'}`} />
                                 {filterOverdue ? 'JATUH TEMPO ON' : 'CEK JATUH TEMPO'}
                             </button>
                         </div>
                     </div>
                     
-                    <div className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] bg-admin-card px-5 py-3 rounded-xl border border-admin-border shadow-inner">
+                    <div className="text-[10px] font-black text-admin-muted uppercase tracking-[0.2em] bg-admin-card px-5 py-3 rounded-xl border border-admin-border shadow-inner">
                         Total: {meta?.total || 0} Records
                     </div>
                 </div>
@@ -364,40 +364,40 @@ const CustomerManagement = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left min-w-[900px]">
                         <thead>
-                            <tr className="bg-zinc-900/50 border-b border-admin-border">
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Pelanggan</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Info Tagihan</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-center">Status Link</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-center">Status Bayar</th>
-                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Aksi</th>
+                            <tr className="bg-admin-base border-b border-admin-border">
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Pelanggan</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Info Tagihan</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-center">Status Link</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-center">Status Bayar</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-admin-border">
                             {loading ? (
                                 <tr>
-                                    <td colSpan="5" className="px-8 py-20 text-center text-zinc-500 font-bold italic">Loading records...</td>
+                                    <td colSpan="5" className="px-8 py-20 text-center text-admin-muted font-bold italic">Loading records...</td>
                                 </tr>
                             ) : customers.length > 0 ? customers.map((c) => (
                                 <tr key={c.id} className={`hover:bg-blue-50/30 transition-colors group ${c.is_isolated ? 'bg-rose-50/70' : ''}`}>
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-black text-sm shadow-sm shadow-black/10 ${c.is_isolated ? 'bg-rose-600' : 'bg-gradient-to-br from-blue-600 to-indigo-700'}`}>
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-admin-text font-black text-sm shadow-sm shadow-black/10 ${c.is_isolated ? 'bg-rose-600' : 'bg-gradient-to-br from-blue-600 to-indigo-700'}`}>
                                                 {c.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
-                                                <div className="font-black text-zinc-100 text-lg leading-none uppercase tracking-tight">
+                                                <div className="font-black text-admin-text text-lg leading-none uppercase tracking-tight">
                                                     {c.name}
-                                                    {c.is_isolated && <span className="ml-2 text-[8px] bg-rose-600 text-white px-2 py-0.5 rounded-full align-middle">ISOLATED</span>}
+                                                    {c.is_isolated && <span className="ml-2 text-[8px] bg-rose-600 text-admin-text px-2 py-0.5 rounded-full align-middle">ISOLATED</span>}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1.5">
-                                                    <Icon name="phone" className="w-3 h-3 text-zinc-500" />
-                                                    <span className="text-zinc-500 font-bold text-[11px]">{c.whatsapp}</span>
+                                                    <Icon name="phone" className="w-3 h-3 text-admin-muted" />
+                                                    <span className="text-admin-muted font-bold text-[11px]">{c.whatsapp}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="font-black text-zinc-200 text-sm">Rp {Number(c.billing_amount).toLocaleString('id-ID')}</div>
+                                        <div className="font-black text-admin-text text-sm">Rp {Number(c.billing_amount).toLocaleString('id-ID')}</div>
                                         <div className={`text-[10px] font-black uppercase mt-1 tracking-widest flex items-center gap-2 ${c.is_isolated ? 'text-rose-600' : 'text-blue-500'}`}>
                                             <Icon name="clock" className="w-3 h-3" />
                                             Due: {new Date(c.due_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -409,7 +409,7 @@ const CustomerManagement = () => {
                                             className="focus:outline-none"
                                         >
                                             {c.is_isolated ? (
-                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200 hover:bg-rose-700 transition-all">
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-admin-text rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200 hover:bg-rose-700 transition-all">
                                                     <span className="w-1.5 h-1.5 bg-admin-card rounded-full animate-pulse"></span>
                                                     Terisolir
                                                 </span>
@@ -426,7 +426,7 @@ const CustomerManagement = () => {
                                                     </span>
                                                 )
                                             ) : (
-                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-800 text-zinc-500 rounded-xl text-[9px] font-black uppercase tracking-widest border border-admin-border hover:bg-slate-200 transition-all">
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-admin-base text-admin-muted rounded-xl text-[9px] font-black uppercase tracking-widest border border-admin-border hover:bg-slate-200 transition-all">
                                                     <span className="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
                                                     Not Found
                                                 </span>
@@ -435,30 +435,30 @@ const CustomerManagement = () => {
                                     </td>
                                     <td className="px-8 py-6 text-center">
                                         {c.status_bayar === 'paid' ? (
-                                            <span className="px-4 py-2 bg-emerald-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20">Lunas</span>
+                                            <span className="px-4 py-2 bg-emerald-500 text-admin-text rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20">Lunas</span>
                                         ) : (
-                                            <span className="px-4 py-2 bg-amber-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">Tempo</span>
+                                            <span className="px-4 py-2 bg-amber-500 text-admin-text rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">Tempo</span>
                                         )}
                                     </td>
                                     <td className="px-8 py-6 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button 
                                                 onClick={() => handlePayManual(c.id)}
-                                                className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-admin-text transition-all shadow-sm"
                                                 title="Bayar Manual"
                                             >
                                                 <Icon name="check" className="w-4 h-4" />
                                             </button>
                                             <button 
                                                 onClick={() => handleEdit(c)}
-                                                className="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                                className="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-admin-text transition-all shadow-sm"
                                                 title="Edit"
                                             >
                                                 <Icon name="edit" className="w-4 h-4" />
                                             </button>
                                             <button 
                                                 onClick={() => handleDelete(c.id)}
-                                                className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                                                className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-500 hover:text-admin-text transition-all shadow-sm"
                                                 title="Hapus"
                                             >
                                                 <Icon name="delete" className="w-4 h-4" />
@@ -468,7 +468,7 @@ const CustomerManagement = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="5" className="px-8 py-24 text-center text-zinc-500 font-bold italic">No subscribers found.</td>
+                                    <td colSpan="5" className="px-8 py-24 text-center text-admin-muted font-bold italic">No subscribers found.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -488,9 +488,9 @@ const CustomerManagement = () => {
                             modalConfig.type === 'success' ? 'bg-gradient-to-b from-emerald-50/50 to-white' : 'bg-gradient-to-b from-blue-50/50 to-white'
                         }`}>
                             <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 shadow-xl ${
-                                modalConfig.type === 'error' ? 'bg-rose-500 text-white shadow-rose-200' : 
-                                modalConfig.type === 'warning' ? 'bg-amber-500 text-white shadow-amber-200' : 
-                                modalConfig.type === 'success' ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-blue-600 text-white shadow-blue-200'
+                                modalConfig.type === 'error' ? 'bg-rose-500 text-admin-text shadow-rose-200' : 
+                                modalConfig.type === 'warning' ? 'bg-amber-500 text-admin-text shadow-amber-200' : 
+                                modalConfig.type === 'success' ? 'bg-emerald-500 text-admin-text shadow-emerald-200' : 'bg-blue-600 text-admin-text shadow-blue-200'
                             }`}>
                                 <Icon name={
                                     modalConfig.type === 'error' ? 'close' : 
@@ -498,15 +498,15 @@ const CustomerManagement = () => {
                                     modalConfig.type === 'success' ? 'check' : 'info'
                                 } className="w-10 h-10" />
                             </div>
-                            <h3 className="text-2xl font-black text-zinc-100 tracking-tight leading-none mb-3">{modalConfig.title}</h3>
-                            <p className="text-sm font-bold text-zinc-400 leading-relaxed px-4">{modalConfig.message}</p>
+                            <h3 className="text-2xl font-black text-admin-text tracking-tight leading-none mb-3">{modalConfig.title}</h3>
+                            <p className="text-sm font-bold text-admin-muted leading-relaxed px-4">{modalConfig.message}</p>
                         </div>
                         <div className="p-6 bg-admin-card flex gap-3">
                             {(modalConfig.type === 'confirm' || modalConfig.type === 'warning') ? (
                                 <>
                                     <button 
                                         onClick={closeModal}
-                                        className="flex-1 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-zinc-400 bg-zinc-800 hover:bg-slate-200 transition-colors"
+                                        className="flex-1 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-admin-muted bg-admin-base hover:bg-slate-200 transition-colors"
                                     >
                                         Batal
                                     </button>
@@ -515,7 +515,7 @@ const CustomerManagement = () => {
                                             closeModal();
                                             if (modalConfig.onConfirm) modalConfig.onConfirm();
                                         }}
-                                        className={`flex-1 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-lg transition-all hover:scale-[0.98] ${
+                                        className={`flex-1 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-admin-text shadow-lg transition-all hover:scale-[0.98] ${
                                             modalConfig.type === 'warning' ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-200' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
                                         }`}
                                     >
@@ -525,7 +525,7 @@ const CustomerManagement = () => {
                             ) : (
                                 <button 
                                     onClick={closeModal}
-                                    className="w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-lg transition-all hover:scale-[0.98] bg-slate-800 hover:bg-slate-900 shadow-slate-200"
+                                    className="w-full py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-admin-text shadow-lg transition-all hover:scale-[0.98] bg-slate-800 hover:bg-slate-900 shadow-slate-200"
                                 >
                                     Tutup Pesan
                                 </button>

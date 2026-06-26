@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const AdminBadge = ({ status, text, className = "" }) => {
-  let colorClass = "bg-zinc-800 text-zinc-400 border-zinc-700";
+  let colorClass = "bg-admin-base text-admin-muted border-admin-border";
   let dotClass = "bg-zinc-500";
   
   const statusLower = status?.toLowerCase();

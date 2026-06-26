@@ -101,10 +101,10 @@ const RadiusSettings = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     <div>
                         <div className="flex items-center gap-4 mb-3">
-                            <div className="p-3 bg-admin-card/10 backdrop-blur-xl rounded-2xl border border-white/10 text-white shadow-xl">
+                            <div className="p-3 bg-admin-card/10 backdrop-blur-xl rounded-2xl border border-white/10 text-admin-text shadow-xl">
                                 <Icon name="shield" className="w-6 h-6" />
                             </div>
-                            <h1 className="text-3xl font-black text-white tracking-tight uppercase">Radius Operations</h1>
+                            <h1 className="text-3xl font-black text-admin-text tracking-tight uppercase">Radius Operations</h1>
                         </div>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
@@ -147,59 +147,59 @@ const RadiusSettings = () => {
                 {/* Registration Form & Stats */}
                 <div className="xl:col-span-4 space-y-10">
                     <div className="bg-admin-card rounded-2xl border border-admin-border shadow-sm overflow-hidden sticky top-8">
-                        <div className="p-8 border-b border-admin-border bg-zinc-900/50/50 flex items-center gap-4">
+                        <div className="p-8 border-b border-admin-border bg-admin-base/50 flex items-center gap-4">
                             <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
                                 <Icon name="plus" className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-zinc-100 uppercase tracking-widest">NAS Registration</h2>
-                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">Add Router Client</p>
+                                <h2 className="text-sm font-black text-admin-text uppercase tracking-widest">NAS Registration</h2>
+                                <p className="text-[10px] text-admin-muted font-bold uppercase tracking-widest mt-1">Add Router Client</p>
                             </div>
                         </div>
                         <form onSubmit={handleSubmit} className="p-8 space-y-6">
                             <div className="space-y-3">
-                                <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] ml-1">Identity Name</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-[0.2em] ml-1">Identity Name</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-500">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-admin-muted">
                                         <Icon name="router" className="w-5 h-5" />
                                     </div>
                                     <input 
                                         type="text" 
                                         value={formData.name}
                                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        className="w-full pl-14 pr-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm" 
+                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm" 
                                         placeholder="Main Router LT 1"
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] ml-1">IP Address</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-[0.2em] ml-1">IP Address</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-500">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-admin-muted">
                                         <Icon name="ip" className="w-5 h-5" />
                                     </div>
                                     <input 
                                         type="text" 
                                         value={formData.ip_address}
                                         onChange={(e) => setFormData({...formData, ip_address: e.target.value})}
-                                        className="w-full pl-14 pr-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono" 
+                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono" 
                                         placeholder="192.168.x.x"
                                         required
                                     />
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] ml-1">Shared Secret</label>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-[0.2em] ml-1">Shared Secret</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-500">
+                                    <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-admin-muted">
                                         <Icon name="secret" className="w-5 h-5" />
                                     </div>
                                     <input 
                                         type="password" 
                                         value={formData.shared_secret}
                                         onChange={(e) => setFormData({...formData, shared_secret: e.target.value})}
-                                        className="w-full pl-14 pr-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono tracking-widest" 
+                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono tracking-widest" 
                                         placeholder="••••••••"
                                         required
                                     />
@@ -209,7 +209,7 @@ const RadiusSettings = () => {
                                 <button 
                                     type="submit" 
                                     disabled={submitting}
-                                    className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-white rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+                                    className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-admin-text rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
                                 >
                                     {submitting ? <Icon name="refresh" className="animate-spin w-5 h-5" /> : <><Icon name="check" className="w-5 h-5" /> Authorize NAS</>}
                                 </button>
@@ -222,41 +222,41 @@ const RadiusSettings = () => {
                 <div className="xl:col-span-8 space-y-10">
                     {/* Authorized Table */}
                     <div className="bg-admin-card rounded-2xl border border-admin-border shadow-sm overflow-hidden">
-                        <div className="px-8 py-8 border-b border-admin-border flex justify-between items-center bg-zinc-900/50/30">
+                        <div className="px-8 py-8 border-b border-admin-border flex justify-between items-center bg-admin-base/30">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-zinc-800 text-zinc-400 rounded-2xl flex items-center justify-center border border-admin-border shadow-sm">
+                                <div className="w-12 h-12 bg-admin-base text-admin-muted rounded-2xl flex items-center justify-center border border-admin-border shadow-sm">
                                     <Icon name="router" className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h2 className="text-sm font-black text-zinc-100 uppercase tracking-widest">Network Access Servers</h2>
-                                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Authorized to communicate</p>
+                                    <h2 className="text-sm font-black text-admin-text uppercase tracking-widest">Network Access Servers</h2>
+                                    <p className="text-[10px] font-bold text-admin-muted uppercase tracking-widest mt-1">Authorized to communicate</p>
                                 </div>
                             </div>
                             <div className="flex flex-col items-end">
-                                <span className="text-2xl font-black text-zinc-100 tracking-tighter leading-none">{clients.length}</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mt-1">Active Nodes</span>
+                                <span className="text-2xl font-black text-admin-text tracking-tighter leading-none">{clients.length}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-admin-muted mt-1">Active Nodes</span>
                             </div>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
-                                    <tr className="bg-zinc-900/50 border-b border-admin-border">
-                                        <th className="px-10 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Identity & IP</th>
-                                        <th className="px-10 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Status</th>
-                                        <th className="px-10 py-5 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] text-right">Actions</th>
+                                    <tr className="bg-admin-base border-b border-admin-border">
+                                        <th className="px-10 py-5 text-[10px] font-black text-admin-muted uppercase tracking-[0.2em]">Identity & IP</th>
+                                        <th className="px-10 py-5 text-[10px] font-black text-admin-muted uppercase tracking-[0.2em]">Status</th>
+                                        <th className="px-10 py-5 text-[10px] font-black text-admin-muted uppercase tracking-[0.2em] text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-admin-border">
                                     {clients.length > 0 ? clients.map((client) => (
-                                        <tr key={client.id} className="hover:bg-zinc-900/50/50 transition-colors group">
+                                        <tr key={client.id} className="hover:bg-admin-base/50 transition-colors group">
                                             <td className="px-10 py-6">
                                                 <div className="flex items-center gap-5">
-                                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-admin-text transition-all shadow-sm">
                                                         <Icon name="router" className="w-5 h-5" />
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="font-black text-zinc-100 text-sm uppercase tracking-tight">{client.name}</span>
-                                                        <span className="font-mono text-[11px] font-bold text-zinc-400 mt-1">{client.ip_address}</span>
+                                                        <span className="font-black text-admin-text text-sm uppercase tracking-tight">{client.name}</span>
+                                                        <span className="font-mono text-[11px] font-bold text-admin-muted mt-1">{client.ip_address}</span>
                                                     </div>
                                                 </div>
                                             </td>
@@ -267,14 +267,14 @@ const RadiusSettings = () => {
                                                 </span>
                                             </td>
                                             <td className="px-10 py-6 text-right">
-                                                <button onClick={() => handleDelete(client.id)} className="p-3 bg-admin-card border border-admin-border text-zinc-500 rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all shadow-sm" title="Revoke Access">
+                                                <button onClick={() => handleDelete(client.id)} className="p-3 bg-admin-card border border-admin-border text-admin-muted rounded-xl hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all shadow-sm" title="Revoke Access">
                                                     <Icon name="delete" className="w-5 h-5" />
                                                 </button>
                                             </td>
                                         </tr>
                                     )) : (
                                         <tr>
-                                            <td colSpan="3" className="px-10 py-20 text-center text-zinc-500 font-black italic uppercase tracking-[0.2em]">No NAS Registered.</td>
+                                            <td colSpan="3" className="px-10 py-20 text-center text-admin-muted font-black italic uppercase tracking-[0.2em]">No NAS Registered.</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -293,8 +293,8 @@ const RadiusSettings = () => {
                             <Icon name="terminal" className="w-5 h-5 text-emerald-400" />
                         </div>
                         <div>
-                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Protocol Telemetry</h2>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mt-1">Live AAA Event Stream</p>
+                            <h2 className="text-sm font-black text-admin-text uppercase tracking-widest">Protocol Telemetry</h2>
+                            <p className="text-[10px] font-bold text-admin-muted uppercase tracking-[0.2em] mt-1">Live AAA Event Stream</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
@@ -309,7 +309,7 @@ const RadiusSettings = () => {
                     {logs.length > 0 ? logs.map((log) => (
                         <div key={log.id} className="flex gap-4 items-start group hover:bg-admin-card/[0.02] p-2 rounded-lg transition-colors" >
                             <div className="flex flex-col mt-0.5">
-                                <span className="text-zinc-300 font-bold whitespace-nowrap">
+                                <span className="text-admin-text font-bold whitespace-nowrap">
                                     {new Date(log.created_at).toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit'})}
                                 </span>
                             </div>
@@ -331,9 +331,9 @@ const RadiusSettings = () => {
                     )) : (
                         <div className="h-full flex flex-col items-center justify-center opacity-40">
                             <div className="w-16 h-16 border border-slate-700 rounded-2xl flex items-center justify-center mb-6">
-                                <Icon name="terminal" className="w-8 h-8 text-zinc-400" />
+                                <Icon name="terminal" className="w-8 h-8 text-admin-muted" />
                             </div>
-                            <span className="text-xs font-black uppercase tracking-[0.4em] text-zinc-300">Awaiting Auth Requests</span>
+                            <span className="text-xs font-black uppercase tracking-[0.4em] text-admin-text">Awaiting Auth Requests</span>
                         </div>
                     )}
                 </div>

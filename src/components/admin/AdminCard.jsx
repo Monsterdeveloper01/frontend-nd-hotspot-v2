@@ -5,7 +5,7 @@ export const AdminCard = ({ children, className = "", noPadding = false, title, 
     <div className={`bg-admin-card border border-admin-border rounded-xl flex flex-col overflow-hidden ${className}`}>
       {(title || action) && (
         <div className="px-6 py-4 border-b border-admin-border flex items-center justify-between bg-admin-card/50">
-          {title && <h3 className="text-sm font-semibold text-zinc-100">{title}</h3>}
+          {title && <h3 className="text-sm font-semibold text-admin-text">{title}</h3>}
           {action && <div>{action}</div>}
         </div>
       )}

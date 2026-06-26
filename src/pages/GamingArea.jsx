@@ -26,7 +26,7 @@ const GamingArea = () => {
     }, [])
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-purple-600 selection:text-white overflow-x-hidden">
+        <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-purple-600 selection:text-admin-text overflow-x-hidden">
             {/* Soft Grid Background */}
             <div className="fixed inset-0 z-0 opacity-40 pointer-events-none" 
                  style={{ backgroundImage: 'linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
@@ -79,7 +79,7 @@ const GamingArea = () => {
                                 
                                 <div className="relative z-10">
                                     <div className="flex justify-between items-start mb-10">
-                                        <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-700 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 group-hover:rotate-6 shadow-inner">
+                                        <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-700 group-hover:bg-purple-600 group-hover:text-admin-text transition-all duration-500 group-hover:rotate-6 shadow-inner">
                                             <FaIcon name="gamepad" className="text-2xl" />
                                         </div>
                                         <div className="text-right">
@@ -122,7 +122,7 @@ const GamingArea = () => {
 
                                     <button 
                                         onClick={() => navigate('/gaming-checkout', { state: { plan } })}
-                                        className="w-full py-5 bg-purple-600 text-white font-black uppercase tracking-[0.2em] text-xs rounded-2xl hover:bg-purple-700 transition-all active:scale-95 shadow-xl shadow-purple-200"
+                                        className="w-full py-5 bg-purple-600 text-admin-text font-black uppercase tracking-[0.2em] text-xs rounded-2xl hover:bg-purple-700 transition-all active:scale-95 shadow-xl shadow-purple-200"
                                     >
                                         Beli Sekarang
                                     </button>

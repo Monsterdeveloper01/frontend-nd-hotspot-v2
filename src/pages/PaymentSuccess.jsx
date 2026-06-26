@@ -124,7 +124,7 @@ const PaymentSuccess = () => {
                     <h1 className="text-3xl font-black text-slate-800 mb-4 uppercase tracking-tighter">System Alert</h1>
                     <p className="text-slate-600 font-bold mb-10 leading-relaxed px-4">{error}</p>
                     <div className="space-y-4">
-                        <button onClick={() => window.location.reload()} className="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition-all uppercase tracking-widest text-xs"><i className="fas fa-sync-alt mr-2"></i> Refresh Halaman</button>
+                        <button onClick={() => window.location.reload()} className="w-full bg-blue-600 text-admin-text font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition-all uppercase tracking-widest text-xs"><i className="fas fa-sync-alt mr-2"></i> Refresh Halaman</button>
                         <Link to="/" className="block w-full bg-slate-100 text-slate-700 font-black py-5 rounded-2xl hover:bg-slate-200 transition-all uppercase tracking-widest text-xs">Kembali ke Beranda</Link>
                     </div>
                     <div className="mt-12 pt-8 border-t border-slate-100">
@@ -147,7 +147,7 @@ const PaymentSuccess = () => {
                             <div className="w-28 h-28 bg-emerald-100 rounded-full flex items-center justify-center mx-auto shadow-xl border-4 border-white">
                                 <i className="fas fa-check-circle text-6xl text-emerald-500"></i>
                             </div>
-                            <div className="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
+                            <div className="absolute -top-1 -right-1 bg-blue-500 text-admin-text rounded-full w-12 h-12 flex items-center justify-center shadow-lg border-2 border-white animate-bounce">
                                 <i className="fas fa-star text-lg"></i>
                             </div>
                         </div>
@@ -165,7 +165,7 @@ const PaymentSuccess = () => {
                             </p>
                             <div className="flex flex-col items-center gap-6">
                                 <div className="bg-white/5 border-2 border-white/10 rounded-3xl p-6 w-full shadow-inner">
-                                    <code className="text-4xl md:text-5xl font-black text-white tracking-[0.2em] select-all uppercase">
+                                    <code className="text-4xl md:text-5xl font-black text-admin-text tracking-[0.2em] select-all uppercase">
                                         {voucherData?.voucher_code || 'XXXXXX'}
                                     </code>
                                 </div>
@@ -173,7 +173,7 @@ const PaymentSuccess = () => {
                                 <button
                                     onClick={copyVoucherCode}
                                     className={`w-full py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-2xl active:scale-95 ${
-                                        copyStatus ? 'bg-emerald-500 text-white' : 'bg-white text-slate-900 hover:bg-emerald-50'
+                                        copyStatus ? 'bg-emerald-500 text-admin-text' : 'bg-white text-slate-900 hover:bg-emerald-50'
                                     }`}
                                 >
                                     {copyStatus ? <><i className="fas fa-check"></i> Kode Disalin!</> : <><i className="fas fa-copy"></i> Salin Kode Voucher</>}
@@ -229,7 +229,7 @@ const PaymentSuccess = () => {
 
                     {/* Action Buttons */}
                     <div className="space-y-4">
-                        <a href="http://ndnet.login/login" target="_blank" rel="noopener noreferrer" className="block w-full bg-blue-600 text-white font-black py-5 rounded-2xl transition-all shadow-xl text-center active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
+                        <a href="http://ndnet.login/login" target="_blank" rel="noopener noreferrer" className="block w-full bg-blue-600 text-admin-text font-black py-5 rounded-2xl transition-all shadow-xl text-center active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
                             <i className="fas fa-sign-in-alt"></i> Login ke Hotspot
                         </a>
                         <Link to="/" className="block w-full bg-white border-2 border-slate-200 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-50 transition-all active:scale-95 text-center uppercase tracking-widest text-xs">
@@ -241,7 +241,7 @@ const PaymentSuccess = () => {
 
             {/* Toast Success */}
             {copyStatus && (
-                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl z-50 flex items-center gap-4 animate-bounce-in border border-white/10">
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-admin-text px-8 py-4 rounded-2xl shadow-2xl z-50 flex items-center gap-4 animate-bounce-in border border-white/10">
                     <i className="fas fa-check-circle text-emerald-500 text-xl"></i>
                     <p className="font-black text-xs uppercase tracking-widest">Kode Voucher Disalin!</p>
                 </div>

@@ -108,7 +108,7 @@ const GamingSuccess = () => {
                     <h1 className="text-3xl font-black italic uppercase tracking-tighter text-slate-900 mb-4">Kesalahan Transmisi</h1>
                     <p className="text-slate-500 font-bold mb-12 uppercase tracking-widest text-[10px] leading-relaxed px-4">{error}</p>
                     <div className="space-y-4">
-                        <button onClick={() => window.location.reload()} className="w-full bg-slate-900 text-white font-black py-5 rounded-2xl shadow-xl uppercase tracking-[0.2em] text-xs italic"><FaIcon name="sync-alt" className="mr-2" /> Coba Lagi</button>
+                        <button onClick={() => window.location.reload()} className="w-full bg-slate-900 text-admin-text font-black py-5 rounded-2xl shadow-xl uppercase tracking-[0.2em] text-xs italic"><FaIcon name="sync-alt" className="mr-2" /> Coba Lagi</button>
                         <Link to="/gaming-area" className="block w-full border-2 border-slate-200 text-slate-600 font-black py-5 rounded-2xl hover:bg-slate-50 transition-all uppercase tracking-[0.2em] text-xs italic">Kembali ke Base</Link>
                     </div>
                 </div>
@@ -117,7 +117,7 @@ const GamingSuccess = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 py-20 px-4 selection:bg-purple-600 selection:text-white">
+        <div className="min-h-screen bg-slate-50 py-20 px-4 selection:bg-purple-600 selection:text-admin-text">
             {/* Background Effects */}
             <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-100/40 blur-[120px] rounded-full z-0"></div>
             <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-50/40 blur-[120px] rounded-full z-0"></div>
@@ -129,7 +129,7 @@ const GamingSuccess = () => {
                         <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto shadow-2xl border-4 border-purple-100">
                             <FaIcon name="check-circle" className="text-7xl text-purple-600" />
                         </div>
-                        <div className="absolute -top-1 -right-1 bg-emerald-500 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-slate-50 animate-bounce">
+                        <div className="absolute -top-1 -right-1 bg-emerald-500 text-admin-text rounded-full w-14 h-14 flex items-center justify-center shadow-lg border-4 border-slate-50 animate-bounce">
                             <FaIcon name="trophy" className="text-lg" />
                         </div>
                     </div>
@@ -155,7 +155,7 @@ const GamingSuccess = () => {
                             <button
                                 onClick={copyVoucherCode}
                                 className={`w-full py-6 rounded-2xl font-black text-xs uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 shadow-xl active:scale-95 italic ${
-                                    copyStatus ? 'bg-emerald-600 text-white' : 'bg-purple-600 text-white hover:bg-purple-700 shadow-purple-200'
+                                    copyStatus ? 'bg-emerald-600 text-admin-text' : 'bg-purple-600 text-admin-text hover:bg-purple-700 shadow-purple-200'
                                 }`}
                             >
                                 {copyStatus ? <><FaIcon name="check" /> Kunci Disalin</> : <><FaIcon name="copy" /> Salin Kode Voucher</>}
@@ -207,7 +207,7 @@ const GamingSuccess = () => {
 
                 {/* Final Mission Buttons */}
                 <div className="space-y-6">
-                    <a href="http://ndnet.login/login" target="_blank" rel="noopener noreferrer" className="block w-full bg-slate-900 text-white font-black italic py-6 rounded-2xl transition-all shadow-xl text-center active:scale-95 flex items-center justify-center gap-4 uppercase tracking-[0.2em] text-xs">
+                    <a href="http://ndnet.login/login" target="_blank" rel="noopener noreferrer" className="block w-full bg-slate-900 text-admin-text font-black italic py-6 rounded-2xl transition-all shadow-xl text-center active:scale-95 flex items-center justify-center gap-4 uppercase tracking-[0.2em] text-xs">
                         <FaIcon name="sign-in-alt" /> Mulai Koneksi (Login)
                     </a>
                     <Link to="/gaming-area" className="block w-full border-2 border-slate-200 text-slate-500 font-black py-5 rounded-2xl hover:bg-white transition-all active:scale-95 text-center uppercase tracking-[0.2em] text-[10px] italic">
@@ -218,7 +218,7 @@ const GamingSuccess = () => {
 
             {/* Success Toast */}
             {copyStatus && (
-                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-10 py-5 rounded-2xl shadow-2xl z-50 flex items-center gap-4 animate-bounce-in">
+                <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-admin-text px-10 py-5 rounded-2xl shadow-2xl z-50 flex items-center gap-4 animate-bounce-in">
                     <FaIcon name="check-circle" className="text-emerald-400 text-xl" />
                     <p className="font-black text-[10px] uppercase tracking-widest">Kode Berhasil Disalin!</p>
                 </div>

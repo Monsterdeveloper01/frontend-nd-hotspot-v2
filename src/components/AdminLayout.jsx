@@ -99,22 +99,22 @@ const AdminLayout = ({ children, title, subtitle }) => {
       )}
 
       {/* Sidebar - Enterprise Minimalist Style */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-admin-base border-r border-admin-border z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-admin-card border-r border-admin-border z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="h-full flex flex-col">
           {/* Logo Section */}
           <div className="h-16 px-6 flex items-center justify-between border-b border-admin-border">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center border border-zinc-700 text-white">
+              <div className="w-8 h-8 bg-admin-base rounded-lg flex items-center justify-center border border-admin-border text-admin-text">
                 <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </div>
               <div>
-                <h2 className="text-zinc-100 font-semibold text-sm tracking-tight leading-none">ND-Billing</h2>
+                <h2 className="text-admin-text font-semibold text-sm tracking-tight leading-none">ND-Billing</h2>
               </div>
             </div>
-            <button className="lg:hidden p-1.5 text-zinc-500 hover:text-zinc-300 transition-colors" onClick={() => setIsSidebarOpen(false)}>
+            <button className="lg:hidden p-1.5 text-admin-muted hover:text-admin-text transition-colors" onClick={() => setIsSidebarOpen(false)}>
               <Icon name="close" className="w-5 h-5" />
             </button>
           </div>
@@ -124,7 +124,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
             {menuItems.map((item, index) => (
               <div key={index}>
                 {item.section && (
-                  <div className="px-3 pt-5 pb-2 text-[10px] font-semibold text-zinc-500 tracking-wider uppercase">
+                  <div className="px-3 pt-5 pb-2 text-[10px] font-semibold text-admin-muted tracking-wider uppercase">
                     {item.section}
                   </div>
                 )}
@@ -133,10 +133,10 @@ const AdminLayout = ({ children, title, subtitle }) => {
                   onClick={() => setIsSidebarOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2 rounded-md font-medium transition-colors text-sm
                     ${location.pathname === item.path 
-                      ? 'bg-zinc-800/80 text-zinc-100' 
-                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'}`}
+                      ? 'bg-admin-base text-admin-text shadow-sm border border-admin-border' 
+                      : 'text-admin-muted hover:text-admin-text hover:bg-admin-base/50'}`}
                 >
-                  <Icon name={item.icon} className={`w-4 h-4 ${location.pathname === item.path ? 'text-zinc-200' : 'text-zinc-500'}`} />
+                  <Icon name={item.icon} className={`w-4 h-4 ${location.pathname === item.path ? 'text-admin-accent' : 'text-admin-muted'}`} />
                   <span>{item.name}</span>
                 </Link>
               </div>
@@ -146,7 +146,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
           <div className="p-4 border-t border-admin-border">
             <button 
               onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-3 py-2 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 rounded-md font-medium transition-colors text-sm"
+              className="w-full flex items-center gap-2 px-3 py-2 text-admin-muted hover:text-admin-text hover:bg-admin-base/50 rounded-md font-medium transition-colors text-sm"
             >
               <Icon name="logout" className="w-4 h-4" />
               <span>Sign Out</span>
@@ -158,26 +158,26 @@ const AdminLayout = ({ children, title, subtitle }) => {
       {/* Main Content Area */}
       <main className="flex-1 lg:ml-64 flex flex-col min-h-screen">
         {/* Header - Minimalist */}
-        <header className="sticky top-0 bg-admin-base/90 backdrop-blur-md border-b border-admin-border z-30 h-16 px-6 flex items-center justify-between">
+        <header className="sticky top-0 bg-admin-card/90 backdrop-blur-md border-b border-admin-border z-30 h-16 px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
-              className="lg:hidden p-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+              className="lg:hidden p-2 text-admin-muted hover:text-admin-text transition-colors"
               onClick={() => setIsSidebarOpen(true)}
             >
               <Icon name="menu" className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-zinc-100 tracking-tight">{title}</h1>
+              <h1 className="text-lg font-semibold text-admin-text tracking-tight">{title}</h1>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-3">
-              <span className="text-xs text-zinc-500">Router</span>
+              <span className="text-xs text-admin-muted">Router</span>
               {routerConnected === null ? (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-800/50 border border-zinc-700/50">
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-admin-base/50 border border-admin-border">
                   <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wide">Checking</span>
+                  <span className="text-[10px] font-medium text-admin-muted uppercase tracking-wide">Checking</span>
                 </div>
               ) : routerConnected ? (
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-admin-success/10 border border-admin-success/20">
@@ -195,7 +195,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
             <button 
               onClick={checkRouterStatus}
               disabled={isSyncing}
-              className="text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-50"
+              className="text-admin-muted hover:text-admin-text transition-colors disabled:opacity-50"
               title="Sync Router Status"
             >
               <Icon name="sync" className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />

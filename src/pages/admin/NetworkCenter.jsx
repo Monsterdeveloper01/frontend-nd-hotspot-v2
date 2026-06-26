@@ -125,20 +125,20 @@ const NetworkCenter = () => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-zinc-100 tracking-tight uppercase leading-none">Network Monitoring Center</h1>
-          <p className="text-zinc-500 font-bold text-[10px] uppercase tracking-widest mt-2">Remote management ONU/ONT via GPON OLT Core</p>
+          <h1 className="text-3xl font-black text-admin-text tracking-tight uppercase leading-none">Network Monitoring Center</h1>
+          <p className="text-admin-muted font-bold text-[10px] uppercase tracking-widest mt-2">Remote management ONU/ONT via GPON OLT Core</p>
         </div>
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setShowAddOlt(true)}
-            className="bg-admin-card text-zinc-100 border border-admin-border px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-zinc-900/50 transition-all flex items-center gap-2"
+            className="bg-admin-card text-admin-text border border-admin-border px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-admin-base transition-all flex items-center gap-2"
           >
             <Icon name="plus" className="w-4 h-4" /> Tambah OLT
           </button>
           <button 
             onClick={handleSync}
             disabled={syncing}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-200 flex items-center gap-2 hover:bg-indigo-700 transition-all disabled:opacity-50"
+            className="bg-indigo-600 text-admin-text px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-200 flex items-center gap-2 hover:bg-indigo-700 transition-all disabled:opacity-50"
           >
             <Icon name="sync" className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Scan ONU Baru
           </button>
@@ -151,12 +151,12 @@ const NetworkCenter = () => {
           <button
             key={olt.id}
             onClick={() => setSelectedOlt(olt)}
-            className={`flex items-center gap-4 px-8 py-5 rounded-3xl border-2 transition-all shrink-0 ${selectedOlt?.id === olt.id ? 'bg-indigo-600 border-indigo-600 text-white shadow-xl shadow-indigo-200' : 'bg-admin-card border-admin-border text-zinc-400 hover:border-indigo-200'}`}
+            className={`flex items-center gap-4 px-8 py-5 rounded-3xl border-2 transition-all shrink-0 ${selectedOlt?.id === olt.id ? 'bg-indigo-600 border-indigo-600 text-admin-text shadow-xl shadow-indigo-200' : 'bg-admin-card border-admin-border text-admin-muted hover:border-indigo-200'}`}
           >
             <Icon name="olt" />
             <div className="text-left">
               <p className="text-xs font-black uppercase tracking-tight leading-none">{olt.name}</p>
-              <p className={`text-[9px] font-bold mt-1 ${selectedOlt?.id === olt.id ? 'text-indigo-100' : 'text-zinc-500'}`}>{olt.ip_address}</p>
+              <p className={`text-[9px] font-bold mt-1 ${selectedOlt?.id === olt.id ? 'text-indigo-100' : 'text-admin-muted'}`}>{olt.ip_address}</p>
             </div>
           </button>
         ))}
@@ -164,14 +164,14 @@ const NetworkCenter = () => {
 
       {/* Main Monitoring Table */}
       <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
-        <div className="px-10 py-8 border-b border-admin-border bg-zinc-900/50/50 flex items-center justify-between">
+        <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
+            <div className="w-12 h-12 bg-indigo-600 text-admin-text rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
               <Icon name="onu" className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-zinc-100 leading-tight uppercase tracking-tight">Daftar Perangkat Pelanggan</h2>
-              <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">Total ONU: {nodes.length} | Terhubung ke {selectedOlt?.name}</p>
+              <h2 className="text-xl font-black text-admin-text leading-tight uppercase tracking-tight">Daftar Perangkat Pelanggan</h2>
+              <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest mt-1">Total ONU: {nodes.length} | Terhubung ke {selectedOlt?.name}</p>
             </div>
           </div>
         </div>
@@ -179,55 +179,55 @@ const NetworkCenter = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-zinc-900/50 border-b border-admin-border">
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Identitas / Alias</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Index OLT</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Kesehatan (Sinyal/Suhu)</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Status & Client</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Aksi Remote</th>
+              <tr className="bg-admin-base border-b border-admin-border">
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Identitas / Alias</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Index OLT</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Kesehatan (Sinyal/Suhu)</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Status & Client</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-right">Aksi Remote</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {loading ? (
-                <tr><td colSpan="5" className="px-10 py-20 text-center font-bold text-zinc-500">Loading network telemetry...</td></tr>
+                <tr><td colSpan="5" className="px-10 py-20 text-center font-bold text-admin-muted">Loading network telemetry...</td></tr>
               ) : nodes.length > 0 ? nodes.map(node => (
-                <tr key={node.id} className="hover:bg-zinc-900/50/80 transition-colors group">
+                <tr key={node.id} className="hover:bg-admin-base/80 transition-colors group">
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${node.status === 'online' ? 'bg-indigo-50 text-indigo-600' : 'bg-zinc-800 text-zinc-500'}`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${node.status === 'online' ? 'bg-indigo-50 text-indigo-600' : 'bg-admin-base text-admin-muted'}`}>
                         {node.alias ? node.alias.charAt(0).toUpperCase() : '?'}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-black text-zinc-100 uppercase tracking-tight">{node.alias || 'Tanpa Nama'}</p>
-                          <button onClick={() => handleRename(node.id, node.alias)} className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-indigo-600 transition-all">
+                          <p className="text-sm font-black text-admin-text uppercase tracking-tight">{node.alias || 'Tanpa Nama'}</p>
+                          <button onClick={() => handleRename(node.id, node.alias)} className="opacity-0 group-hover:opacity-100 text-admin-muted hover:text-indigo-600 transition-all">
                             <Icon name="edit" className="w-3 h-3" />
                           </button>
                         </div>
-                        <p className="text-[9px] font-mono font-bold text-zinc-500 uppercase tracking-widest mt-1">SN: {node.serial_number}</p>
+                        <p className="text-[9px] font-mono font-bold text-admin-muted uppercase tracking-widest mt-1">SN: {node.serial_number}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-10 py-6">
-                    <span className="bg-zinc-800 text-zinc-300 px-3 py-1 rounded-lg text-[10px] font-mono font-black border border-admin-border">
+                    <span className="bg-admin-base text-admin-text px-3 py-1 rounded-lg text-[10px] font-mono font-black border border-admin-border">
                       {node.onu_index}
                     </span>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-8">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-zinc-500 font-black text-[9px] uppercase">
+                        <div className="flex items-center gap-2 text-admin-muted font-black text-[9px] uppercase">
                           <Icon name="signal" className="w-3 h-3 text-indigo-500" /> Sinyal
                         </div>
-                        <p className={`text-sm font-black italic tracking-tighter ${node.last_signal < -27 ? 'text-rose-500' : 'text-zinc-100'}`}>
+                        <p className={`text-sm font-black italic tracking-tighter ${node.last_signal < -27 ? 'text-rose-500' : 'text-admin-text'}`}>
                           {node.last_signal} <span className="text-[9px]">dBm</span>
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-zinc-500 font-black text-[9px] uppercase">
+                        <div className="flex items-center gap-2 text-admin-muted font-black text-[9px] uppercase">
                           <Icon name="temp" className="w-3 h-3 text-rose-500" /> Suhu
                         </div>
-                        <p className="text-sm font-black italic tracking-tighter text-zinc-100">
+                        <p className="text-sm font-black italic tracking-tighter text-admin-text">
                           {node.last_temp} <span className="text-[9px]">°C</span>
                         </p>
                       </div>
@@ -236,11 +236,11 @@ const NetworkCenter = () => {
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-2 mb-2">
                       <div className={`w-1.5 h-1.5 rounded-full ${node.status === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}></div>
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${node.status === 'online' ? 'text-emerald-600' : 'text-zinc-500'}`}>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${node.status === 'online' ? 'text-emerald-600' : 'text-admin-muted'}`}>
                         {node.status === 'online' ? 'Connected' : 'Dying Gasp / LOS'}
                       </span>
                     </div>
-                    <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                    <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest">
                       {node.client_count} Perangkat Terhubung
                     </p>
                   </td>
@@ -251,14 +251,14 @@ const NetworkCenter = () => {
                           href={`http://${node.ip_address}`} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm border border-indigo-100"
+                          className="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-admin-text transition-all shadow-sm border border-indigo-100"
                         >
                           <Icon name="onu" className="w-4 h-4" />
                         </a>
                       )}
                       <button 
                         onClick={() => handleReboot(node.id)}
-                        className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm border border-rose-100"
+                        className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-500 hover:text-admin-text transition-all shadow-sm border border-rose-100"
                       >
                         <Icon name="reboot" className="w-4 h-4" />
                       </button>
@@ -266,7 +266,7 @@ const NetworkCenter = () => {
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan="5" className="px-10 py-32 text-center text-zinc-500 font-bold italic uppercase tracking-widest">Belum ada data ONU. Klik "Scan ONU Baru" untuk sinkronisasi.</td></tr>
+                <tr><td colSpan="5" className="px-10 py-32 text-center text-admin-muted font-bold italic uppercase tracking-widest">Belum ada data ONU. Klik "Scan ONU Baru" untuk sinkronisasi.</td></tr>
               )}
             </tbody>
           </table>
@@ -277,33 +277,33 @@ const NetworkCenter = () => {
       {showAddOlt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md">
           <div className="bg-admin-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="bg-slate-900 p-10 text-white">
+            <div className="bg-slate-900 p-10 text-admin-text">
               <h2 className="text-2xl font-black uppercase tracking-tight">Registrasi OLT Baru</h2>
-              <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-1">Konfigurasi akses SNMP & Telnet OLT</p>
+              <p className="text-admin-muted text-[10px] font-black uppercase tracking-widest mt-1">Konfigurasi akses SNMP & Telnet OLT</p>
             </div>
             <form onSubmit={handleAddOlt} className="p-10 space-y-6">
               <div className="grid grid-cols-1 gap-6">
                 <div>
-                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">Nama / Lokasi OLT</label>
-                  <input type="text" value={newOlt.name} onChange={e => setNewOlt({...newOlt, name: e.target.value})} className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="OLT Pusat - Rack 1" required />
+                  <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Nama / Lokasi OLT</label>
+                  <input type="text" value={newOlt.name} onChange={e => setNewOlt({...newOlt, name: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="OLT Pusat - Rack 1" required />
                 </div>
                 <div>
-                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">IP Management Address</label>
-                  <input type="text" value={newOlt.ip_address} onChange={e => setNewOlt({...newOlt, ip_address: e.target.value})} className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none font-mono" placeholder="10.10.10.1" required />
+                  <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">IP Management Address</label>
+                  <input type="text" value={newOlt.ip_address} onChange={e => setNewOlt({...newOlt, ip_address: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none font-mono" placeholder="10.10.10.1" required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">Username OLT</label>
-                    <input type="text" value={newOlt.username} onChange={e => setNewOlt({...newOlt, username: e.target.value})} className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold outline-none" required />
+                    <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Username OLT</label>
+                    <input type="text" value={newOlt.username} onChange={e => setNewOlt({...newOlt, username: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none" required />
                   </div>
                   <div>
-                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">Password</label>
-                    <input type="password" value={newOlt.password} onChange={e => setNewOlt({...newOlt, password: e.target.value})} className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold outline-none" required />
+                    <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Password</label>
+                    <input type="password" value={newOlt.password} onChange={e => setNewOlt({...newOlt, password: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none" required />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[9px] font-black text-zinc-500 uppercase tracking-widest block mb-2 ml-1">Tipe / Seri OLT</label>
-                  <select value={newOlt.type} onChange={e => setNewOlt({...newOlt, type: e.target.value})} className="w-full px-5 py-4 bg-zinc-900/50 border border-admin-border rounded-2xl font-bold outline-none">
+                  <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Tipe / Seri OLT</label>
+                  <select value={newOlt.type} onChange={e => setNewOlt({...newOlt, type: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none">
                     <option value="global">Global GPON (GL-Series)</option>
                     <option value="ad">AD-Series OLT</option>
                     <option value="vsol">V-SOL (OEM)</option>
@@ -311,8 +311,8 @@ const NetworkCenter = () => {
                 </div>
               </div>
               <div className="flex gap-4 pt-4">
-                <button type="button" onClick={() => setShowAddOlt(false)} className="flex-1 py-4 text-zinc-500 font-black uppercase text-[10px] tracking-widest">Batal</button>
-                <button type="submit" className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-indigo-200">Simpan OLT</button>
+                <button type="button" onClick={() => setShowAddOlt(false)} className="flex-1 py-4 text-admin-muted font-black uppercase text-[10px] tracking-widest">Batal</button>
+                <button type="submit" className="flex-1 py-4 bg-indigo-600 text-admin-text rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-indigo-200">Simpan OLT</button>
               </div>
             </form>
           </div>

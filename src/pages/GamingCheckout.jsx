@@ -84,7 +84,7 @@ const GamingCheckout = () => {
     if (!plan) return null
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center p-4 selection:bg-purple-600 selection:text-white">
+        <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center p-4 selection:bg-purple-600 selection:text-admin-text">
             {/* Soft Grid Background */}
             <div className="fixed inset-0 z-0 opacity-40 pointer-events-none" 
                  style={{ backgroundImage: 'linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
@@ -112,7 +112,7 @@ const GamingCheckout = () => {
                                 </div>
                                 <div className="flex gap-4">
                                     <button onClick={() => setShowConfirmModal(false)} className="flex-1 py-4 border border-slate-200 rounded-xl font-black uppercase tracking-widest text-[10px] text-slate-500 hover:bg-slate-50 transition-all">Batal</button>
-                                    <button onClick={confirmPayment} className="flex-1 py-4 bg-purple-600 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-purple-200">Konfirmasi</button>
+                                    <button onClick={confirmPayment} className="flex-1 py-4 bg-purple-600 text-admin-text rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-purple-200">Konfirmasi</button>
                                 </div>
                             </div>
                         </div>
@@ -255,7 +255,7 @@ const GamingCheckout = () => {
                             <button 
                                 type="submit" 
                                 disabled={loading || !phone}
-                                className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-white font-black italic uppercase tracking-[0.2em] text-sm rounded-2xl shadow-xl shadow-purple-200 transition-all active:scale-95 flex items-center justify-center gap-4"
+                                className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-admin-text font-black italic uppercase tracking-[0.2em] text-sm rounded-2xl shadow-xl shadow-purple-200 transition-all active:scale-95 flex items-center justify-center gap-4"
                             >
                                 {loading ? <i className="fas fa-circle-notch fa-spin text-lg"></i> : <><i className="fas fa-rocket"></i> Luncurkan Pembayaran</>}
                             </button>

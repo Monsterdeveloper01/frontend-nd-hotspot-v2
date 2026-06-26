@@ -79,7 +79,7 @@ const Maintenance = () => {
                         className="w-28 h-28 bg-white border border-slate-100 rounded-[40px] flex items-center justify-center mx-auto mb-12 shadow-xl shadow-blue-100 group cursor-pointer active:scale-90 transition-all hover:rotate-3"
                     >
                         <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-[30px] flex items-center justify-center shadow-lg">
-                            <FaIcon name="tools" className="text-white text-4xl animate-pulse" />
+                            <FaIcon name="tools" className="text-admin-text text-4xl animate-pulse" />
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@ const Maintenance = () => {
                             <button 
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-5 bg-slate-900 hover:bg-blue-600 text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] transition-all active:scale-95 disabled:opacity-50 shadow-xl"
+                                className="w-full py-5 bg-slate-900 hover:bg-blue-600 text-admin-text rounded-2xl font-black uppercase text-xs tracking-[0.3em] transition-all active:scale-95 disabled:opacity-50 shadow-xl"
                             >
                                 {loading ? 'Authenticating...' : 'Authorize Session'}
                             </button>

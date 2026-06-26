@@ -186,10 +186,10 @@ const AdminDashboard = () => {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#18181b', // admin-card
-        titleColor: '#a1a1aa', // zinc-400
-        bodyColor: '#f4f4f5', // zinc-100
-        borderColor: '#27272a', // admin-border
+        backgroundColor: '#ffffff', // admin-card
+        titleColor: '#64748b', // zinc-400
+        bodyColor: '#0f172a', // zinc-100
+        borderColor: '#e2e8f0', // admin-border
         borderWidth: 1,
         padding: 10,
         displayColors: false,
@@ -201,10 +201,10 @@ const AdminDashboard = () => {
     scales: {
       y: {
         beginAtZero: true,
-        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+        grid: { color: '#f1f5f9', drawBorder: false },
         border: { display: false },
         ticks: { 
-          color: '#71717a', // zinc-500
+          color: '#64748b', // zinc-500
           font: { size: 11 },
           callback: (v) => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : v >= 1000 ? (v/1000).toFixed(0) + 'K' : v,
           padding: 10
@@ -214,7 +214,7 @@ const AdminDashboard = () => {
         grid: { display: false, drawBorder: false },
         border: { display: false },
         ticks: {
-          color: '#71717a',
+          color: '#64748b',
           font: { size: 11 },
           padding: 10
         }
@@ -227,11 +227,11 @@ const AdminDashboard = () => {
         {/* Header Dashboard */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
             <div>
-                <h1 className="text-2xl font-semibold text-zinc-100 tracking-tight">Dashboard</h1>
-                <p className="text-zinc-500 text-sm mt-1">Sistem Billing ND-Hotspot</p>
+                <h1 className="text-2xl font-semibold text-admin-text tracking-tight">Dashboard</h1>
+                <p className="text-admin-muted text-sm mt-1">Sistem Billing ND-Hotspot</p>
             </div>
             <div className="flex items-center gap-3">
-                <div className="text-xs text-zinc-400 bg-zinc-800/50 px-3 py-1.5 rounded-md border border-admin-border flex items-center gap-2">
+                <div className="text-xs text-admin-muted bg-admin-base/50 px-3 py-1.5 rounded-md border border-admin-border flex items-center gap-2">
                     <Icon name="clock" className="w-3.5 h-3.5" />
                     <span>
                         {time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })} • {time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
@@ -240,14 +240,14 @@ const AdminDashboard = () => {
                 <button 
                     onClick={handleRefresh} 
                     disabled={refreshing}
-                    className="px-3 py-1.5 bg-admin-accent text-white text-xs font-medium rounded-md hover:bg-admin-accent/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+                    className="px-3 py-1.5 bg-admin-accent text-admin-text text-xs font-medium rounded-md hover:bg-admin-accent/90 transition-colors flex items-center gap-2 disabled:opacity-50"
                 >
                     <Icon name="refresh" className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
                     {refreshing ? 'Memuat...' : 'Refresh'}
                 </button>
                 <button 
                     onClick={toggleMaintenance}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors ${isMaintenance ? 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20' : 'bg-zinc-800 text-zinc-300 border-admin-border hover:bg-zinc-700'}`}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors ${isMaintenance ? 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20' : 'bg-admin-base text-admin-text border-admin-border hover:bg-zinc-700'}`}
                 >
                     <div className={`w-1.5 h-1.5 rounded-full ${isMaintenance ? 'bg-red-500 animate-pulse' : 'bg-zinc-500'}`}></div>
                     Maint
@@ -260,19 +260,19 @@ const AdminDashboard = () => {
             {/* Kotak 1: Total Pendapatan */}
             <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
                 <div>
-                    <p className="text-sm font-medium text-zinc-500 mb-1">Pendapatan Bulan Ini</p>
+                    <p className="text-sm font-medium text-admin-muted mb-1">Pendapatan Bulan Ini</p>
                     <div className="flex items-baseline gap-2">
-                        <p className="text-3xl font-semibold text-zinc-100 tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
+                        <p className="text-3xl font-semibold text-admin-text tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
                     </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-admin-border flex items-center justify-between">
                     <div>
-                        <p className="text-xs text-zinc-500">Omset Hari Ini</p>
+                        <p className="text-xs text-admin-muted">Omset Hari Ini</p>
                         <p className="text-sm font-medium text-admin-success mt-0.5">Rp {formatPrice(data.stats.today_revenue)}</p>
                     </div>
                     <div className="flex gap-2">
-                        <span className="text-[10px] px-1.5 py-0.5 bg-zinc-800/50 text-zinc-400 rounded border border-zinc-700/50">Bill {data.stats.today_revenue > 0 ? ((data.stats.bill_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
-                        <span className="text-[10px] px-1.5 py-0.5 bg-zinc-800/50 text-zinc-400 rounded border border-zinc-700/50">Vcr {data.stats.today_revenue > 0 ? ((data.stats.voucher_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                        <span className="text-[10px] px-1.5 py-0.5 bg-admin-base/50 text-admin-muted rounded border border-admin-border">Bill {data.stats.today_revenue > 0 ? ((data.stats.bill_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                        <span className="text-[10px] px-1.5 py-0.5 bg-admin-base/50 text-admin-muted rounded border border-admin-border">Vcr {data.stats.today_revenue > 0 ? ((data.stats.voucher_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
                     </div>
                 </div>
             </div>
@@ -281,21 +281,21 @@ const AdminDashboard = () => {
             <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
                 <div>
                     <div className="flex items-center justify-between mb-1">
-                        <p className="text-sm font-medium text-zinc-500">Pelanggan Aktif</p>
+                        <p className="text-sm font-medium text-admin-muted">Pelanggan Aktif</p>
                         <span className="flex items-center gap-1.5 px-2 py-0.5 bg-admin-success/10 text-admin-success text-[10px] font-medium rounded-full border border-admin-success/20">
                             <span className="w-1.5 h-1.5 rounded-full bg-admin-success"></span>
                             {data.stats.online_count} Online
                         </span>
                     </div>
-                    <p className="text-3xl font-semibold text-zinc-100 tracking-tight">{data.stats.total_customers.toLocaleString('id-ID')}</p>
+                    <p className="text-3xl font-semibold text-admin-text tracking-tight">{data.stats.total_customers.toLocaleString('id-ID')}</p>
                 </div>
                 <div className="mt-6 pt-4 border-t border-admin-border grid grid-cols-2 gap-4">
                     <div>
-                        <p className="text-xs text-zinc-500">Tunggakan (Due)</p>
+                        <p className="text-xs text-admin-muted">Tunggakan (Due)</p>
                         <p className="text-sm font-medium text-amber-500 mt-0.5">{data.stats.due_customers.toLocaleString('id-ID')}</p>
                     </div>
                     <div>
-                        <p className="text-xs text-zinc-500">Terisolir</p>
+                        <p className="text-xs text-admin-muted">Terisolir</p>
                         <p className="text-sm font-medium text-red-500 mt-0.5">{data.stats.isolated_customers.toLocaleString('id-ID')}</p>
                     </div>
                 </div>
@@ -304,21 +304,21 @@ const AdminDashboard = () => {
             {/* Kotak 3: Detail Hari Ini */}
             <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
                 <div>
-                    <p className="text-sm font-medium text-zinc-500 mb-1">Performa Hari Ini</p>
+                    <p className="text-sm font-medium text-admin-muted mb-1">Performa Hari Ini</p>
                     <div className="grid grid-cols-2 gap-4 mt-3">
                         <div>
-                            <p className="text-xs text-zinc-500">Bill Masuk</p>
-                            <p className="text-lg font-semibold text-zinc-200 mt-0.5">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
+                            <p className="text-xs text-admin-muted">Bill Masuk</p>
+                            <p className="text-lg font-semibold text-admin-text mt-0.5">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-500">Voucher Terjual</p>
-                            <p className="text-lg font-semibold text-zinc-200 mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-zinc-500 font-normal">tiket</span></p>
+                            <p className="text-xs text-admin-muted">Voucher Terjual</p>
+                            <p className="text-lg font-semibold text-admin-text mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-admin-muted font-normal">tiket</span></p>
                         </div>
                     </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-admin-border">
                     <div className="flex items-center justify-between">
-                        <p className="text-xs text-zinc-500">Pendapatan Voucher</p>
+                        <p className="text-xs text-admin-muted">Pendapatan Voucher</p>
                         <button 
                             onClick={() => setVoucherChartModalOpen(true)}
                             className="text-[10px] text-admin-accent hover:text-admin-accent/80 transition-colors"
@@ -335,11 +335,11 @@ const AdminDashboard = () => {
         <div className="bg-admin-card rounded-xl border border-admin-border p-6 mb-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-base font-semibold text-zinc-100 tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-                    <p className="text-xs text-zinc-500 mt-1">Analisis pendapatan harian (Tanggal 1 - Akhir Bulan)</p>
+                    <h3 className="text-base font-semibold text-admin-text tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+                    <p className="text-xs text-admin-muted mt-1">Analisis pendapatan harian (Tanggal 1 - Akhir Bulan)</p>
                 </div>
                 <div className="flex items-center mt-4 md:mt-0">
-                    <span className="px-3 py-1.5 bg-zinc-800/50 text-zinc-300 text-xs font-medium rounded-md border border-admin-border">
+                    <span className="px-3 py-1.5 bg-admin-base/50 text-admin-text text-xs font-medium rounded-md border border-admin-border">
                         Total: Rp {formatPrice(data.stats.monthly_revenue)}
                     </span>
                 </div>
@@ -353,11 +353,11 @@ const AdminDashboard = () => {
         {/* Jam Ramai Grid */}
         <div className="grid grid-cols-1 gap-8 mb-8">
             {/* Peak Hours Chart */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border p-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
                     <div>
-                        <h3 className="text-xl font-bold text-gray-900">Jam Ramai Pengunjung (Hari Ini)</h3>
-                        <p className="text-xs text-gray-500 mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
+                        <h3 className="text-xl font-bold text-admin-text">Jam Ramai Pengunjung (Hari Ini)</h3>
+                        <p className="text-xs text-admin-muted mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
                     </div>
                     <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
                         <Icon name="clock" className="w-4 h-4" />
@@ -396,12 +396,12 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Voucher Aktif & User Online */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="px-6 py-5 border-b border-slate-100 bg-white">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
+                <div className="px-6 py-5 border-b border-admin-border bg-admin-card">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900">Voucher Aktif & Online</h3>
-                            <p className="text-xs text-gray-500 mt-1">Gabungan sesi aktif</p>
+                            <h3 className="text-lg font-bold text-admin-text">Voucher Aktif & Online</h3>
+                            <p className="text-xs text-admin-muted mt-1">Gabungan sesi aktif</p>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="relative flex items-center justify-center w-6 h-6">
@@ -416,17 +416,17 @@ const AdminDashboard = () => {
                 </div>
                 
                 <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50 sticky top-0 z-10">
+                    <table className="min-w-full divide-y divide-admin-border">
+                        <thead className="bg-admin-base sticky top-0 z-10">
                             <tr>
-                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Voucher</th>
-                                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Uptime</th>
+                                <th className="px-6 py-3 text-left text-[10px] font-bold text-admin-muted uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-[10px] font-bold text-admin-muted uppercase tracking-wider">Voucher</th>
+                                <th className="px-6 py-3 text-left text-[10px] font-bold text-admin-muted uppercase tracking-wider">Uptime</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-100">
+                        <tbody className="bg-admin-card divide-y divide-admin-border">
                             {data.combined_users.length > 0 ? data.combined_users.map((user, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50 transition-colors duration-150">
+                                <tr key={idx} className="hover:bg-admin-base transition-colors duration-150">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {user.is_online ? (
                                             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-50 text-emerald-700 border border-emerald-200">
@@ -434,27 +434,27 @@ const AdminDashboard = () => {
                                                 Online
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 border border-gray-200">
+                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-zinc-100 text-admin-muted border border-admin-border">
                                                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></div>
                                                 Offline
                                             </span>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <p className="text-sm font-bold text-gray-900 uppercase">{user.code}</p>
+                                        <p className="text-sm font-bold text-admin-text uppercase">{user.code}</p>
                                         <p className="text-[10px] text-blue-600 font-bold uppercase">{user.plan_name || 'VOUCHER'}</p>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex flex-col">
                                             {user.is_online ? (
                                                 <>
-                                                    <span className="font-mono text-xs font-bold text-gray-700">Uptime: {user.uptime}</span>
+                                                    <span className="font-mono text-xs font-bold text-admin-muted">Uptime: {user.uptime}</span>
                                                     <span className="text-[9px] text-rose-600 font-bold mt-0.5">
                                                         Exp: {user.expires_at ? new Date(user.expires_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
                                                     </span>
                                                 </>
                                             ) : (
-                                                <span className="text-[10px] text-gray-400 italic">
+                                                <span className="text-[10px] text-admin-muted italic">
                                                     {user.expires_at 
                                                         ? `Exp: ${new Date(user.expires_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}` 
                                                         : 'Belum Digunakan'}
@@ -465,7 +465,7 @@ const AdminDashboard = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="3" className="px-6 py-8 text-center text-gray-400 text-sm italic">
+                                    <td colSpan="3" className="px-6 py-8 text-center text-admin-muted text-sm italic">
                                         Tidak ada sesi aktif
                                     </td>
                                 </tr>
@@ -476,27 +476,27 @@ const AdminDashboard = () => {
             </div>
 
             {/* Transaksi Terkini */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="px-6 py-5 border-b border-slate-100 bg-white">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
+                <div className="px-6 py-5 border-b border-admin-border bg-admin-card">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900">Transaksi Terkini</h3>
-                            <p className="text-xs text-gray-500 mt-1">Pembayaran terbaru yang berhasil</p>
+                            <h3 className="text-lg font-bold text-admin-text">Transaksi Terkini</h3>
+                            <p className="text-xs text-admin-muted mt-1">Pembayaran terbaru yang berhasil</p>
                         </div>
                         <button 
                             onClick={() => setModalOpen(true)}
-                            className="px-4 py-2 text-[11px] font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm"
+                            className="px-4 py-2 text-[11px] font-bold text-admin-text bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm"
                         >
                             Lihat Semua
                         </button>
                     </div>
                 </div>
 
-                <div className="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+                <div className="divide-y divide-admin-border max-h-[400px] overflow-y-auto">
                     {data.recent_transactions.length > 0 ? data.recent_transactions.map((tx) => {
                         const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
                         return (
-                            <div key={tx.id} className="p-4 hover:bg-gray-50 transition-colors">
+                            <div key={tx.id} className="p-4 hover:bg-admin-base transition-colors">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-4">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${isBill ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-emerald-50 border-emerald-200 text-emerald-600'}`}>
@@ -504,11 +504,11 @@ const AdminDashboard = () => {
                                         </div>
                                         <div>
                                             {isBill ? (
-                                                <p className="font-bold text-sm text-gray-900">{tx.customer?.name || tx.external_id}</p>
+                                                <p className="font-bold text-sm text-admin-text">{tx.customer?.name || tx.external_id}</p>
                                             ) : (
                                                 <div className="flex flex-col">
-                                                    <p className="font-bold text-sm text-gray-900">{tx.voucher?.code || 'ND-VOUCHER'}</p>
-                                                    <p className="text-[10px] text-gray-500 font-bold">{tx.customer_phone || '-'}</p>
+                                                    <p className="font-bold text-sm text-admin-text">{tx.voucher?.code || 'ND-VOUCHER'}</p>
+                                                    <p className="text-[10px] text-admin-muted font-bold">{tx.customer_phone || '-'}</p>
                                                 </div>
                                             )}
                                             <div className="flex items-center gap-2 mt-1">
@@ -519,7 +519,7 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="text-sm font-bold text-emerald-600">+Rp {formatPrice(tx.amount)}</p>
-                                        <p className="text-[10px] text-gray-500 mt-1 font-medium">
+                                        <p className="text-[10px] text-admin-muted mt-1 font-medium">
                                             {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
                                         </p>
                                     </div>
@@ -528,7 +528,7 @@ const AdminDashboard = () => {
                         )
                     }) : (
                         <div className="text-center py-10">
-                            <p className="text-gray-400 text-sm italic">Belum ada transaksi</p>
+                            <p className="text-admin-muted text-sm italic">Belum ada transaksi</p>
                         </div>
                     )}
                 </div>
@@ -538,8 +538,8 @@ const AdminDashboard = () => {
         {/* Modal Riwayat Transaksi */}
         {modalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white px-8 py-6 shrink-0">
+                <div className="bg-admin-card rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-admin-text px-8 py-6 shrink-0">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="text-2xl font-bold">Riwayat Transaksi</h3>
@@ -554,7 +554,7 @@ const AdminDashboard = () => {
                                 <button 
                                     key={f}
                                     onClick={() => setHistoryFilter(f)}
-                                    className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors ${historyFilter === f ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                                    className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors ${historyFilter === f ? 'bg-blue-600 text-admin-text' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
                                 >
                                     {f === 'all' ? 'Semua' : f === 'bill' ? 'Tagihan' : 'Voucher'}
                                 </button>
@@ -562,41 +562,41 @@ const AdminDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto relative p-6 bg-gray-50">
+                    <div className="flex-1 overflow-y-auto relative p-6 bg-admin-base">
                         {historyLoading && (
-                            <div className="absolute inset-0 bg-white/80 z-10 flex flex-col items-center justify-center">
+                            <div className="absolute inset-0 bg-admin-card/80 z-10 flex flex-col items-center justify-center">
                                 <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                                <p className="text-sm font-bold text-gray-600">Memuat data...</p>
+                                <p className="text-sm font-bold text-admin-muted">Memuat data...</p>
                             </div>
                         )}
-                        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div className="bg-admin-card border border-admin-border rounded-xl overflow-hidden shadow-sm">
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b border-gray-200">
+                                <thead className="bg-admin-base border-b border-admin-border">
                                     <tr>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">ID Transaksi</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Pelanggan / Detail</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipe</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Jumlah</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Waktu</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Metode</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">ID Transaksi</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Pelanggan / Detail</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Tipe</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Jumlah</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Waktu</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Metode</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-admin-border">
                                     {historyData?.data?.map((tx) => {
                                         const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
                                         return (
-                                            <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4 font-mono text-sm font-bold text-gray-900">{tx.external_id}</td>
+                                            <tr key={tx.id} className="hover:bg-admin-base transition-colors">
+                                                <td className="px-6 py-4 font-mono text-sm font-bold text-admin-text">{tx.external_id}</td>
                                                 <td className="px-6 py-4">
                                                     {isBill ? (
                                                         <div>
-                                                            <p className="text-sm font-bold text-gray-900">{tx.customer?.name || '-'}</p>
-                                                            <p className="text-[10px] text-gray-500">{tx.customer_phone || '-'}</p>
+                                                            <p className="text-sm font-bold text-admin-text">{tx.customer?.name || '-'}</p>
+                                                            <p className="text-[10px] text-admin-muted">{tx.customer_phone || '-'}</p>
                                                         </div>
                                                     ) : (
                                                         <div>
                                                             <p className="text-sm font-bold text-blue-600 uppercase">{tx.voucher?.code || 'VOUCHER'}</p>
-                                                            <p className="text-[10px] text-gray-500">WA: {tx.customer_phone || '-'}</p>
+                                                            <p className="text-[10px] text-admin-muted">WA: {tx.customer_phone || '-'}</p>
                                                             <p className="text-[9px] bg-blue-50 text-blue-600 px-1 rounded inline-block font-bold">{tx.plan?.name || 'Voucher Plan'}</p>
                                                         </div>
                                                     )}
@@ -606,8 +606,8 @@ const AdminDashboard = () => {
                                                         {isBill ? 'Tagihan' : 'Voucher'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 font-bold text-gray-900 text-base">Rp {formatPrice(tx.amount)}</td>
-                                                <td className="px-6 py-4 text-xs text-gray-500 font-medium">
+                                                <td className="px-6 py-4 font-bold text-admin-text text-base">Rp {formatPrice(tx.amount)}</td>
+                                                <td className="px-6 py-4 text-xs text-admin-muted font-medium">
                                                     {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                                                 </td>
                                                 <td className="px-6 py-4">
@@ -622,7 +622,7 @@ const AdminDashboard = () => {
                             </table>
                             {!historyLoading && historyData?.data?.length === 0 && (
                                 <div className="text-center py-16">
-                                    <p className="text-gray-400 font-medium">Belum ada transaksi untuk filter ini.</p>
+                                    <p className="text-admin-muted font-medium">Belum ada transaksi untuk filter ini.</p>
                                 </div>
                             )}
                         </div>
@@ -637,8 +637,8 @@ const AdminDashboard = () => {
         {/* Modal Chart Voucher */}
         {voucherChartModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-6 shrink-0">
+                <div className="bg-admin-card rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-admin-text px-8 py-6 shrink-0">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h3 className="text-2xl font-bold flex items-center gap-2">
@@ -653,8 +653,8 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                     
-                    <div className="flex-1 p-6 bg-gray-50 overflow-y-auto">
-                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 h-[400px]">
+                    <div className="flex-1 p-6 bg-admin-base overflow-y-auto">
+                        <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border p-6 h-[400px]">
                             <Line 
                                 data={{
                                     labels: data?.voucher_chart?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],

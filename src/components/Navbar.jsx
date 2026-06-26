@@ -11,7 +11,7 @@ const Navbar = ({ toggleMenu }) => {
                             <img src="/logo-wifi.png" alt="Logo" className="w-full h-full object-contain" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-bold text-white text-base tracking-wide flex items-center">
+                            <span className="font-bold text-admin-text text-base tracking-wide flex items-center">
                                 <span>ND</span>
                                 <span className="mx-0.5">-</span>
                                 <span className="text-orange-300">H</span>
@@ -25,7 +25,7 @@ const Navbar = ({ toggleMenu }) => {
                             <span className="text-[11px] text-blue-100 font-medium">Voucher Internet</span>
                         </div>
                     </div>
-                    <button onClick={toggleMenu} className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center text-white active:scale-90 transition-transform">
+                    <button onClick={toggleMenu} className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center text-admin-text active:scale-90 transition-transform">
                         <i className="fas fa-bars text-xl" />
                     </button>
                 </div>

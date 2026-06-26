@@ -119,7 +119,7 @@ const BillLookup = () => {
                     {/* Header */}
                     <div className="text-center mb-10">
                         <div className="inline-block mb-4">
-                            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[30px] shadow-xl flex items-center justify-center text-3xl text-white mb-4 mx-auto rotate-3">
+                            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[30px] shadow-xl flex items-center justify-center text-3xl text-admin-text mb-4 mx-auto rotate-3">
                                 <FaIcon name="credit-card" />
                             </div>
                         </div>
@@ -155,7 +155,7 @@ const BillLookup = () => {
                                     <button 
                                         type="submit"
                                         disabled={loading}
-                                        className="absolute right-3 top-3 bottom-3 bg-blue-600 text-white px-5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                        className="absolute right-3 top-3 bottom-3 bg-blue-600 text-admin-text px-5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
                                     >
                                         {loading ? <FaIcon name="sync" className="animate-spin" /> : <FaIcon name="arrow-right" />}
                                     </button>
@@ -195,7 +195,7 @@ const BillLookup = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-200">
+                                            <button className="w-10 h-10 rounded-xl bg-emerald-500 text-admin-text flex items-center justify-center shadow-lg shadow-emerald-200">
                                                 <FaIcon name="wallet" />
                                             </button>
                                         </div>
@@ -214,10 +214,10 @@ const BillLookup = () => {
                     {activeView === 'detail' && selectedCustomer && (
                         <div className="space-y-6 animate-fadeIn">
                             <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100">
-                                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-10 text-white relative">
+                                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-10 text-admin-text relative">
                                     <button 
                                         onClick={() => setActiveView('search')}
-                                        className="absolute left-6 top-6 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-all"
+                                        className="absolute left-6 top-6 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-admin-text flex items-center justify-center transition-all"
                                     >
                                         <FaIcon name="arrow-left" />
                                     </button>
@@ -253,7 +253,7 @@ const BillLookup = () => {
                                     <button 
                                         onClick={handlePay}
                                         disabled={paymentLoading}
-                                        className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black py-6 rounded-2xl shadow-xl shadow-emerald-200 uppercase tracking-[0.2em] text-xs transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                                        className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-admin-text font-black py-6 rounded-2xl shadow-xl shadow-emerald-200 uppercase tracking-[0.2em] text-xs transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
                                     >
                                         {paymentLoading ? (
                                             <FaIcon name="circle-notch" className="animate-spin text-lg" />
@@ -305,7 +305,7 @@ const BillLookup = () => {
                                         </div>
                                         <div className="flex justify-between items-center border-t border-slate-200 pt-4 mt-4">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</span>
-                                            <span className="px-3 py-1 bg-emerald-500 text-white rounded-full text-[9px] font-black uppercase tracking-widest">LUNAS</span>
+                                            <span className="px-3 py-1 bg-emerald-500 text-admin-text rounded-full text-[9px] font-black uppercase tracking-widest">LUNAS</span>
                                         </div>
                                     </div>
                                 </div>
@@ -324,7 +324,7 @@ const BillLookup = () => {
                                 </button>
                                 <Link
                                     to="/"
-                                    className="flex-1 py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2"
+                                    className="flex-1 py-5 bg-slate-900 text-admin-text rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2"
                                 >
                                     <FaIcon name="home" /> Beranda
                                 </Link>

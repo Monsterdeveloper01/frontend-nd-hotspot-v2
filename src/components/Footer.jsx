@@ -10,7 +10,7 @@ const Footer = () => {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-12">
                     {/* Brand */}
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-200">
+                        <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center text-admin-text text-2xl shadow-lg shadow-blue-200">
                             <FaIcon name="wifi" />
                         </div>
                         <div>

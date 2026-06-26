@@ -191,8 +191,8 @@ const Checkout = () => {
                                     </div>
                                 </div>
                                 <div className="px-6 pb-6 flex gap-3">
-                                    <button onClick={() => setShowConfirmModal(false)} className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors">Batal</button>
-                                    <button onClick={confirmPayment} className={`flex-1 ${theme.primary.gradient} text-white font-semibold py-3 rounded-xl shadow-lg`}>Konfirmasi</button>
+                                    <button onClick={() => setShowConfirmModal(false)} className="flex-1 bg-red-500 hover:bg-red-600 text-admin-text font-semibold py-3 rounded-xl transition-colors">Batal</button>
+                                    <button onClick={confirmPayment} className={`flex-1 ${theme.primary.gradient} text-admin-text font-semibold py-3 rounded-xl shadow-lg`}>Konfirmasi</button>
                                 </div>
                             </div>
                         </div>
@@ -202,7 +202,7 @@ const Checkout = () => {
                         <div className="bg-white rounded-2xl md:rounded-[30px] shadow-lg border border-gray-200 p-6 md:p-8 text-center relative overflow-hidden">
                             <div className="mb-6">
                                 <div className={`w-16 h-16 ${theme.primary.gradient} rounded-xl flex items-center justify-center mx-auto mb-4`}>
-                                    <i className="fas fa-qrcode text-white text-2xl"></i>
+                                    <i className="fas fa-qrcode text-admin-text text-2xl"></i>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2 uppercase tracking-tight">Scan QR Code</h3>
                                 <p className="text-gray-600 text-sm font-medium">Scan dengan aplikasi e-wallet atau mobile banking</p>
@@ -277,11 +277,11 @@ const Checkout = () => {
                         </div>
                     ) : (
                         <div className="bg-white rounded-[25px] md:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
-                            <div className={`${theme.primary.gradient} p-6 md:p-8 text-white relative`}>
+                            <div className={`${theme.primary.gradient} p-6 md:p-8 text-admin-text relative`}>
                                 <div className="flex items-center justify-between mb-6">
                                     <div>
                                         <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter">Checkout</h1>
-                                        <p className="text-white/80 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">Konfirmasi pembelian voucher</p>
+                                        <p className="text-admin-text/80 text-[10px] md:text-xs font-bold mt-1 uppercase tracking-widest">Konfirmasi pembelian voucher</p>
                                     </div>
                                     <div className="text-3xl opacity-50">
                                         <i className="fas fa-shopping-basket"></i>
@@ -290,12 +290,12 @@ const Checkout = () => {
                                 <div className="bg-white/20 backdrop-blur-md rounded-2xl p-5 border border-white/30">
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <p className="text-white text-xs md:text-sm font-black uppercase tracking-widest">{plan.name}</p>
+                                            <p className="text-admin-text text-xs md:text-sm font-black uppercase tracking-widest">{plan.name}</p>
                                             <div className="flex gap-3 mt-1.5 opacity-80">
-                                                <div className="flex items-center gap-1 text-[8px] font-black text-white uppercase">
+                                                <div className="flex items-center gap-1 text-[8px] font-black text-admin-text uppercase">
                                                     <i className="fas fa-arrow-up"></i> {plan.upload_limit} Mbps
                                                 </div>
-                                                <div className="flex items-center gap-1 text-[8px] font-black text-white uppercase">
+                                                <div className="flex items-center gap-1 text-[8px] font-black text-admin-text uppercase">
                                                     <i className="fas fa-arrow-down"></i> {plan.download_limit} Mbps
                                                 </div>
                                             </div>
@@ -347,7 +347,7 @@ const Checkout = () => {
                                                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">All E-Wallets & Banks</p>
                                             </div>
                                         </div>
-                                        <div className={`w-6 h-6 ${theme.primary.gradient} rounded-full flex items-center justify-center text-white text-[10px]`}>
+                                        <div className={`w-6 h-6 ${theme.primary.gradient} rounded-full flex items-center justify-center text-admin-text text-[10px]`}>
                                             <i className="fas fa-check"></i>
                                         </div>
                                     </div>
@@ -356,7 +356,7 @@ const Checkout = () => {
                                 <button 
                                     type="submit" 
                                     disabled={loading || !phone}
-                                    className={`w-full ${theme.primary.gradient} text-white font-black py-5 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 disabled:opacity-50 uppercase tracking-[0.2em] text-xs`}
+                                    className={`w-full ${theme.primary.gradient} text-admin-text font-black py-5 rounded-2xl shadow-xl transition-all flex justify-center items-center gap-3 disabled:opacity-50 uppercase tracking-[0.2em] text-xs`}
                                 >
                                     {loading ? <i className="fas fa-circle-notch animate-spin text-lg"></i> : <><i className="fas fa-bolt"></i> Bayar Sekarang</>}
                                 </button>
