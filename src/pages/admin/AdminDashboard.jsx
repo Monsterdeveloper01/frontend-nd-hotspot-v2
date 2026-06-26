@@ -312,7 +312,7 @@ const AdminDashboard = () => {
                         </div>
                         <div>
                             <p className="text-xs text-admin-muted">Voucher Terjual</p>
-                            <p className="text-lg font-semibold text-admin-text mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-admin-muted font-normal">tiket</span></p>
+                            <p className="text-lg font-semibold text-admin-text mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-admin-muted font-normal">voucher</span></p>
                         </div>
                     </div>
                 </div>
@@ -467,7 +467,7 @@ const AdminDashboard = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-4">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${isBill ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-emerald-50 border-emerald-200 text-emerald-600'}`}>
-                                            <Icon name={isBill ? "user" : "ticket"} className="w-5 h-5" />
+                                            <Icon name={isBill ? "bill" : "voucher"} className="w-5 h-5" />
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-admin-text">{tx.customer_name || 'Voucher Hotspot'}</p>
