@@ -155,7 +155,7 @@ const BillLookup = () => {
                                     <button 
                                         type="submit"
                                         disabled={loading}
-                                        className="absolute right-3 top-3 bottom-3 bg-blue-600 text-admin-text px-5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                        className="absolute right-3 top-3 bottom-3 bg-admin-accent text-white px-5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
                                     >
                                         {loading ? <FaIcon name="sync" className="animate-spin" /> : <FaIcon name="arrow-right" />}
                                     </button>

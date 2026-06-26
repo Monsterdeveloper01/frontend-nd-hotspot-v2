@@ -234,7 +234,7 @@ const VoucherStock = () => {
                 </div>
                 <button 
                     onClick={() => setShowGenerateModal(true)}
-                    className="px-6 py-4 bg-blue-600 text-admin-text rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3"
+                    className="px-6 py-4 bg-admin-accent text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3"
                 >
                     <Icon name="plus" className="w-4 h-4" />
                     Buat Voucher Massal
@@ -285,7 +285,7 @@ const VoucherStock = () => {
                     />
                     <button 
                         onClick={() => fetchVouchers(1)}
-                        className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-blue-600 text-admin-text rounded-2xl hover:bg-blue-700 transition-colors shadow-sm"
+                        className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center bg-admin-accent text-white rounded-2xl hover:bg-blue-700 transition-colors shadow-sm"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -464,7 +464,7 @@ const VoucherStock = () => {
                             <button 
                                 type="submit"
                                 disabled={genSubmitting}
-                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center justify-center gap-3 ${genSubmitting ? 'bg-admin-base text-admin-muted' : 'bg-blue-600 text-admin-text shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg flex items-center justify-center gap-3 ${genSubmitting ? 'bg-admin-base text-admin-muted' : 'bg-admin-accent text-white shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
                             >
                                 {genSubmitting ? <i className="fas fa-circle-notch animate-spin"></i> : <><Icon name="plus" className="w-4 h-4" /> Generate Voucher</>}
                             </button>

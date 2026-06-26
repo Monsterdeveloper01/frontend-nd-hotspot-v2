@@ -153,7 +153,7 @@ const Maintenance = () => {
                             <button 
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-5 bg-slate-900 hover:bg-blue-600 text-admin-text rounded-2xl font-black uppercase text-xs tracking-[0.3em] transition-all active:scale-95 disabled:opacity-50 shadow-xl"
+                                className="w-full py-5 bg-slate-900 hover:bg-admin-accent text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] transition-all active:scale-95 disabled:opacity-50 shadow-xl"
                             >
                                 {loading ? 'Authenticating...' : 'Authorize Session'}
                             </button>

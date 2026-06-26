@@ -182,7 +182,7 @@ const WhatsAppSettings = () => {
             <button 
               type="submit"
               disabled={sending || status !== 'connected'}
-              className="w-full py-4 bg-slate-900 hover:bg-blue-600 text-admin-text rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-slate-200"
+              className="w-full py-4 bg-slate-900 hover:bg-admin-accent text-white rounded-2xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 disabled:opacity-50 shadow-xl shadow-slate-200"
             >
               {sending ? <i className="fas fa-circle-notch fa-spin"></i> : 'Kirim Tes'}
             </button>

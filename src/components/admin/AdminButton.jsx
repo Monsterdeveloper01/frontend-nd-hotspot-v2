@@ -6,7 +6,7 @@ export const AdminButton = ({ children, onClick, variant = 'primary', className 
 
   switch (variant) {
     case 'primary':
-      variantClass = "bg-admin-accent text-admin-text hover:bg-admin-accent/90 shadow-sm";
+      variantClass = "bg-admin-accent text-white hover:bg-admin-accent/90 shadow-sm";
       break;
     case 'secondary':
       variantClass = "bg-admin-base text-admin-text border border-admin-border hover:bg-zinc-700";
@@ -18,7 +18,7 @@ export const AdminButton = ({ children, onClick, variant = 'primary', className 
       variantClass = "text-admin-muted hover:text-admin-text hover:bg-admin-base";
       break;
     default:
-      variantClass = "bg-admin-accent text-admin-text hover:bg-admin-accent/90 shadow-sm";
+      variantClass = "bg-admin-accent text-white hover:bg-admin-accent/90 shadow-sm";
   }
 
   return (

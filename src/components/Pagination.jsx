@@ -47,7 +47,7 @@ const Pagination = ({ meta, onPageChange }) => {
                             className={`
                                 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all
                                 ${link.active 
-                                    ? 'bg-blue-600 text-admin-text shadow-lg shadow-blue-600/20' 
+                                    ? 'bg-admin-accent text-white shadow-lg shadow-blue-600/20' 
                                     : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-400 hover:text-blue-600'}
                                 ${!link.url ? 'opacity-50 cursor-not-allowed grayscale' : 'active:scale-95'}
                             `}

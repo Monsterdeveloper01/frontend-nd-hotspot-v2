@@ -68,7 +68,7 @@ const Sidebar = () => {
               to={item.path} 
               className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl font-bold transition-all group
                 ${location.pathname === item.path 
-                  ? 'bg-blue-600 text-admin-text shadow-xl shadow-blue-600/20' 
+                  ? 'bg-admin-accent text-white shadow-xl shadow-blue-600/20' 
                   : 'text-slate-500 hover:text-admin-text hover:bg-white/5'}`}
             >
               <Icon name={item.icon} className={`w-5 h-5 transition-transform group-hover:scale-110 ${location.pathname === item.path ? 'text-admin-text' : 'text-slate-500 group-hover:text-blue-400'}`} />

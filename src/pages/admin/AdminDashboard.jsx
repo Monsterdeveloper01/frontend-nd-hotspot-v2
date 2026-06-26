@@ -240,7 +240,7 @@ const AdminDashboard = () => {
                 <button 
                     onClick={handleRefresh} 
                     disabled={refreshing}
-                    className="px-3 py-1.5 bg-admin-accent text-admin-text text-xs font-medium rounded-md hover:bg-admin-accent/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+                    className="px-3 py-1.5 bg-admin-accent text-white text-xs font-medium rounded-md hover:bg-admin-accent/90 transition-colors flex items-center gap-2 disabled:opacity-50"
                 >
                     <Icon name="refresh" className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
                     {refreshing ? 'Memuat...' : 'Refresh'}
@@ -318,30 +318,30 @@ const AdminDashboard = () => {
                 </div>
                 <div className="mt-6 pt-4 border-t border-admin-border">
                     <div className="flex items-center justify-between">
-                        <p className="text-xs text-admin-muted">Pendapatan Voucher</p>
-                        <button 
-                            onClick={() => setVoucherChartModalOpen(true)}
-                            className="text-[10px] text-admin-accent hover:text-admin-accent/80 transition-colors"
-                        >
-                            Lihat Chart
-                        </button>
+                        <div className="text-right">
+                            <p className="text-xs text-admin-muted">Pendapatan Voucher</p>
+                            <button 
+                                onClick={() => setVoucherChartModalOpen(true)}
+                                className="mt-1 px-3 py-1 bg-admin-base border border-admin-border text-[10px] font-semibold text-admin-text rounded-md hover:bg-slate-100 transition-colors flex items-center gap-1"
+                            >
+                                <Icon name="trend" className="w-3 h-3 text-admin-accent" />
+                                Lihat Chart
+                            </button>
+                        </div>
+                        <p className="text-lg font-bold text-admin-text mt-0.5">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
                     </div>
-                    <p className="text-sm font-medium text-admin-accent mt-0.5">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
                 </div>
             </div>
         </div>
 
-        {/* Chart Pendapatan Bulan Berjalan (Full Width) */}
         <div className="bg-admin-card rounded-xl border border-admin-border p-6 mb-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
                     <h3 className="text-base font-semibold text-admin-text tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-                    <p className="text-xs text-admin-muted mt-1">Analisis pendapatan harian (Tanggal 1 - Akhir Bulan)</p>
+                    <p className="text-xs text-admin-muted mt-1">Statistik pendapatan harian bulan ini</p>
                 </div>
-                <div className="flex items-center mt-4 md:mt-0">
-                    <span className="px-3 py-1.5 bg-admin-base/50 text-admin-text text-xs font-medium rounded-md border border-admin-border">
-                        Total: Rp {formatPrice(data.stats.monthly_revenue)}
-                    </span>
+                <div className="flex items-center gap-2 mt-4 md:mt-0">
+                    <span className="flex items-center text-[10px] text-admin-muted font-medium"><span className="w-2 h-2 rounded-full bg-admin-accent mr-1.5"></span> Total Pendapatan</span>
                 </div>
             </div>
             
@@ -350,13 +350,11 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        {/* Jam Ramai Grid */}
-        <div className="grid grid-cols-1 gap-8 mb-8">
-            {/* Peak Hours Chart */}
-            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border p-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div className="grid grid-cols-1 gap-6 mb-6">
+            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-xl font-bold text-admin-text">Jam Ramai Pengunjung (Hari Ini)</h3>
+                        <h3 className="text-base font-semibold text-admin-text">Jam Ramai Pengunjung (Hari Ini)</h3>
                         <p className="text-xs text-admin-muted mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
                     </div>
                     <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
@@ -370,8 +368,8 @@ const AdminDashboard = () => {
                             datasets: [{
                                 label: 'Visitor Hits',
                                 data: peakHours.map(p => p.count),
-                                backgroundColor: 'rgba(79, 70, 229, 0.6)',
-                                hoverBackgroundColor: 'rgba(79, 70, 229, 1)',
+                                backgroundColor: '#2563eb',
+                                hoverBackgroundColor: '#1d4ed8',
                                 borderRadius: 4,
                             }]
                         }} 
@@ -392,106 +390,58 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        {/* Voucher Aktif & Transaksi Terkini */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* Voucher Aktif & User Online */}
-            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
-                <div className="px-6 py-5 border-b border-admin-border bg-admin-card">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border overflow-hidden">
+                <div className="px-6 py-4 border-b border-admin-border bg-admin-card">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-lg font-bold text-admin-text">Voucher Aktif & Online</h3>
+                            <h3 className="text-base font-semibold text-admin-text">Voucher Aktif & Online</h3>
                             <p className="text-xs text-admin-muted mt-1">Gabungan sesi aktif</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <div className="relative flex items-center justify-center w-6 h-6">
-                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
-                                <div className="w-2.5 h-2.5 bg-green-500 rounded-full absolute animate-ping"></div>
+                            <div className="relative flex items-center justify-center w-5 h-5">
+                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <div className="w-2 h-2 bg-emerald-500 rounded-full absolute animate-ping"></div>
                             </div>
-                            <span className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-800 font-bold">
+                            <span className="text-xs px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-medium border border-emerald-200">
                                 {data.stats.online_count} Online
                             </span>
                         </div>
                     </div>
                 </div>
-                
-                <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-                    <table className="min-w-full divide-y divide-admin-border">
-                        <thead className="bg-admin-base sticky top-0 z-10">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-[10px] font-bold text-admin-muted uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-[10px] font-bold text-admin-muted uppercase tracking-wider">Voucher</th>
-                                <th className="px-6 py-3 text-left text-[10px] font-bold text-admin-muted uppercase tracking-wider">Uptime</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-admin-card divide-y divide-admin-border">
-                            {data.combined_users.length > 0 ? data.combined_users.map((user, idx) => (
-                                <tr key={idx} className="hover:bg-admin-base transition-colors duration-150">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {user.is_online ? (
-                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-50 text-emerald-700 border border-emerald-200">
-                                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5 animate-pulse"></div>
-                                                Online
-                                            </span>
-                                        ) : (
-                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-zinc-100 text-admin-muted border border-admin-border">
-                                                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1.5"></div>
-                                                Offline
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <p className="text-sm font-bold text-admin-text uppercase">{user.code}</p>
-                                        <p className="text-[10px] text-blue-600 font-bold uppercase">{user.plan_name || 'VOUCHER'}</p>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex flex-col">
-                                            {user.is_online ? (
-                                                <>
-                                                    <span className="font-mono text-xs font-bold text-admin-muted">Uptime: {user.uptime}</span>
-                                                    <span className="text-[9px] text-rose-600 font-bold mt-0.5">
-                                                        Exp: {user.expires_at ? new Date(user.expires_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }) : '-'}
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                <span className="text-[10px] text-admin-muted italic">
-                                                    {user.expires_at 
-                                                        ? `Exp: ${new Date(user.expires_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}` 
-                                                        : 'Belum Digunakan'}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="3" className="px-6 py-8 text-center text-admin-muted text-sm italic">
-                                        Tidak ada sesi aktif
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                <div className="divide-y divide-admin-border max-h-[400px] overflow-y-auto">
+                    {data.active_vouchers?.length > 0 ? data.active_vouchers.map((v, i) => (
+                        <div key={i} className="p-4 hover:bg-admin-base transition-colors flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-bold text-admin-text">{v.username}</p>
+                                <p className="text-[10px] text-admin-muted uppercase mt-0.5">{v.profile}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xs font-mono text-admin-text">{v.uptime}</p>
+                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">Exp: {new Date(v.expiration).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</p>
+                            </div>
+                        </div>
+                    )) : (
+                        <div className="p-8 text-center text-admin-muted text-sm">Tidak ada voucher aktif.</div>
+                    )}
                 </div>
             </div>
 
-            {/* Transaksi Terkini */}
-            <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
-                <div className="px-6 py-5 border-b border-admin-border bg-admin-card">
+            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border overflow-hidden">
+                <div className="px-6 py-4 border-b border-admin-border bg-admin-card">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-lg font-bold text-admin-text">Transaksi Terkini</h3>
+                            <h3 className="text-base font-semibold text-admin-text">Pembayaran Terbaru</h3>
                             <p className="text-xs text-admin-muted mt-1">Pembayaran terbaru yang berhasil</p>
                         </div>
                         <button 
                             onClick={() => setModalOpen(true)}
-                            className="px-4 py-2 text-[11px] font-bold text-admin-text bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm"
+                            className="px-3 py-1.5 text-xs font-semibold text-admin-text bg-admin-base border border-admin-border rounded-md hover:bg-slate-100 transition-colors shadow-sm"
                         >
                             Lihat Semua
                         </button>
                     </div>
                 </div>
-
                 <div className="divide-y divide-admin-border max-h-[400px] overflow-y-auto">
                     {data.recent_transactions.length > 0 ? data.recent_transactions.map((tx) => {
                         const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
@@ -500,53 +450,48 @@ const AdminDashboard = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-4">
                                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${isBill ? 'bg-purple-50 border-purple-200 text-purple-600' : 'bg-emerald-50 border-emerald-200 text-emerald-600'}`}>
-                                            <Icon name={isBill ? 'bill' : 'voucher'} className="w-5 h-5" />
+                                            <Icon name={isBill ? "user" : "ticket"} className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            {isBill ? (
-                                                <p className="font-bold text-sm text-admin-text">{tx.customer?.name || tx.external_id}</p>
-                                            ) : (
-                                                <div className="flex flex-col">
-                                                    <p className="font-bold text-sm text-admin-text">{tx.voucher?.code || 'ND-VOUCHER'}</p>
-                                                    <p className="text-[10px] text-admin-muted font-bold">{tx.customer_phone || '-'}</p>
-                                                </div>
-                                            )}
-                                            <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-[9px] bg-green-100 text-green-800 px-1.5 py-0.5 rounded font-bold uppercase">SUCCESS</span>
-                                                <span className="text-[9px] text-blue-600 font-mono tracking-tight">{tx.external_id}</span>
+                                            <p className="text-sm font-bold text-admin-text">{tx.customer_name || 'Voucher Hotspot'}</p>
+                                            <p className="text-[10px] text-admin-muted mt-0.5 font-mono">{tx.external_id}</p>
+                                            <div className="flex items-center gap-2 mt-1.5">
+                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                                    SUCCESS
+                                                </span>
+                                                <span className="text-[9px] text-admin-accent font-medium uppercase tracking-wider">{tx.reference_id || tx.id}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-bold text-emerald-600">+Rp {formatPrice(tx.amount)}</p>
-                                        <p className="text-[10px] text-admin-muted mt-1 font-medium">
-                                            {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                                        <p className={`text-sm font-bold ${isBill ? 'text-purple-600' : 'text-emerald-600'}`}>
+                                            +Rp {formatPrice(tx.amount)}
+                                        </p>
+                                        <p className="text-[10px] text-admin-muted mt-1">
+                                            {new Date(tx.paid_at || tx.created_at).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         )
                     }) : (
-                        <div className="text-center py-10">
-                            <p className="text-admin-muted text-sm italic">Belum ada transaksi</p>
-                        </div>
+                        <div className="p-8 text-center text-admin-muted text-sm">Belum ada transaksi hari ini.</div>
                     )}
                 </div>
             </div>
         </div>
 
-        {/* Modal Riwayat Transaksi */}
         {modalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-admin-card rounded-3xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-admin-text px-8 py-6 shrink-0">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-admin-border">
+                    <div className="bg-admin-card border-b border-admin-border px-8 py-6 shrink-0">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-2xl font-bold">Riwayat Transaksi</h3>
-                                <p className="text-gray-300 text-sm mt-1">Semua transaksi yang berhasil diproses</p>
+                                <h3 className="text-xl font-semibold text-admin-text">Riwayat Transaksi</h3>
+                                <p className="text-admin-muted text-xs mt-1">Semua transaksi yang berhasil diproses</p>
                             </div>
-                            <button onClick={() => setModalOpen(false)} className="p-2 hover:bg-gray-700 rounded-xl transition-colors">
-                                <Icon name="close" className="w-6 h-6" />
+                            <button onClick={() => setModalOpen(false)} className="p-2 text-admin-muted hover:bg-admin-base hover:text-admin-text rounded-xl transition-colors">
+                                <Icon name="close" className="w-5 h-5" />
                             </button>
                         </div>
                         <div className="flex space-x-2 mt-6">
@@ -554,107 +499,98 @@ const AdminDashboard = () => {
                                 <button 
                                     key={f}
                                     onClick={() => setHistoryFilter(f)}
-                                    className={`px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-lg transition-colors ${historyFilter === f ? 'bg-blue-600 text-admin-text' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                                    className={`px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md transition-colors border ${historyFilter === f ? 'bg-admin-text text-white border-admin-text' : 'bg-admin-base text-admin-muted border-admin-border hover:bg-slate-100'}`}
                                 >
                                     {f === 'all' ? 'Semua' : f === 'bill' ? 'Tagihan' : 'Voucher'}
                                 </button>
                             ))}
                         </div>
                     </div>
-
-                    <div className="flex-1 overflow-y-auto relative p-6 bg-admin-base">
-                        {historyLoading && (
-                            <div className="absolute inset-0 bg-admin-card/80 z-10 flex flex-col items-center justify-center">
-                                <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-                                <p className="text-sm font-bold text-admin-muted">Memuat data...</p>
-                            </div>
-                        )}
-                        <div className="bg-admin-card border border-admin-border rounded-xl overflow-hidden shadow-sm">
+                    
+                    <div className="flex-1 overflow-y-auto p-8 bg-admin-base">
+                        <div className="bg-admin-card rounded-xl border border-admin-border shadow-sm overflow-hidden">
                             <table className="w-full text-left">
-                                <thead className="bg-admin-base border-b border-admin-border">
-                                    <tr>
-                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">ID Transaksi</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Pelanggan / Detail</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Tipe</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Jumlah</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Waktu</th>
-                                        <th className="px-6 py-4 text-xs font-bold text-admin-muted uppercase tracking-wider">Metode</th>
+                                <thead>
+                                    <tr className="bg-admin-base border-b border-admin-border text-[10px] font-bold text-admin-muted uppercase tracking-wider">
+                                        <th className="px-6 py-4">Waktu</th>
+                                        <th className="px-6 py-4">Invoice / Ref</th>
+                                        <th className="px-6 py-4">Tipe & Nama</th>
+                                        <th className="px-6 py-4">Metode</th>
+                                        <th className="px-6 py-4 text-right">Nominal</th>
+                                        <th className="px-6 py-4 text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-admin-border">
-                                    {historyData?.data?.map((tx) => {
-                                        const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
-                                        return (
-                                            <tr key={tx.id} className="hover:bg-admin-base transition-colors">
-                                                <td className="px-6 py-4 font-mono text-sm font-bold text-admin-text">{tx.external_id}</td>
-                                                <td className="px-6 py-4">
-                                                    {isBill ? (
-                                                        <div>
-                                                            <p className="text-sm font-bold text-admin-text">{tx.customer?.name || '-'}</p>
-                                                            <p className="text-[10px] text-admin-muted">{tx.customer_phone || '-'}</p>
+                                    {historyLoading ? (
+                                        <tr><td colSpan="6" className="px-6 py-12 text-center text-admin-muted"><div className="w-6 h-6 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div></td></tr>
+                                    ) : historyData?.data?.length > 0 ? (
+                                        historyData.data.map((tx) => {
+                                            const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
+                                            return (
+                                                <tr key={tx.id} className="hover:bg-admin-base/50 transition-colors">
+                                                    <td className="px-6 py-4 text-xs font-medium text-admin-muted">
+                                                        {new Date(tx.paid_at || tx.created_at).toLocaleString('id-ID')}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <p className="text-xs font-mono font-bold text-admin-text">{tx.external_id}</p>
+                                                        <p className="text-[10px] text-admin-accent mt-0.5">{tx.reference_id || '-'}</p>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`p-2 rounded-lg ${isBill ? 'bg-purple-50 text-purple-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                                                <Icon name={isBill ? "user" : "ticket"} className="w-4 h-4" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs font-bold text-admin-text">{tx.customer_name || 'Voucher Hotspot'}</p>
+                                                                <p className="text-[10px] text-admin-muted">{isBill ? 'Tagihan Bulanan' : 'Voucher Eceran'}</p>
+                                                            </div>
                                                         </div>
-                                                    ) : (
-                                                        <div>
-                                                            <p className="text-sm font-bold text-blue-600 uppercase">{tx.voucher?.code || 'VOUCHER'}</p>
-                                                            <p className="text-[10px] text-admin-muted">WA: {tx.customer_phone || '-'}</p>
-                                                            <p className="text-[9px] bg-blue-50 text-blue-600 px-1 rounded inline-block font-bold">{tx.plan?.name || 'Voucher Plan'}</p>
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${isBill ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                                                        {isBill ? 'Tagihan' : 'Voucher'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 font-bold text-admin-text text-base">Rp {formatPrice(tx.amount)}</td>
-                                                <td className="px-6 py-4 text-xs text-admin-muted font-medium">
-                                                    {new Date(tx.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">
-                                                        {tx.payment_method || 'QRIS'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-xs font-medium text-admin-text uppercase">
+                                                        {tx.payment_method || 'MANUAL'}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right text-xs font-bold text-admin-text">
+                                                        Rp {formatPrice(tx.amount)}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        <span className="px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                                            {tx.status}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        })
+                                    ) : (
+                                        <tr><td colSpan="6" className="px-6 py-8 text-center text-admin-muted text-sm">Tidak ada data transaksi.</td></tr>
+                                    )}
                                 </tbody>
                             </table>
-                            {!historyLoading && historyData?.data?.length === 0 && (
-                                <div className="text-center py-16">
-                                    <p className="text-admin-muted font-medium">Belum ada transaksi untuk filter ini.</p>
-                                </div>
-                            )}
-                        </div>
-                        <div className="mt-6">
-                            <Pagination meta={historyData.meta} onPageChange={(p) => fetchHistory(p)} />
                         </div>
                     </div>
                 </div>
             </div>
         )}
 
-        {/* Modal Chart Voucher */}
         {voucherChartModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-admin-card rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-                    <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-admin-text px-8 py-6 shrink-0">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-admin-border">
+                    <div className="bg-admin-card border-b border-admin-border px-8 py-6 shrink-0">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-2xl font-bold flex items-center gap-2">
-                                    <Icon name="trend" className="w-6 h-6" /> 
+                                <h3 className="text-xl font-semibold text-admin-text flex items-center gap-2">
+                                    <Icon name="trend" className="w-5 h-5 text-admin-accent" /> 
                                     Statistik Penjualan Voucher
                                 </h3>
-                                <p className="text-emerald-100 text-sm mt-1">Tren pendapatan dari penjualan voucher 30 hari terakhir</p>
+                                <p className="text-admin-muted text-xs mt-1">Tren pendapatan dari penjualan voucher 30 hari terakhir</p>
                             </div>
-                            <button onClick={() => setVoucherChartModalOpen(false)} className="p-2 hover:bg-emerald-700 rounded-xl transition-colors">
-                                <Icon name="close" className="w-6 h-6" />
+                            <button onClick={() => setVoucherChartModalOpen(false)} className="p-2 text-admin-muted hover:bg-admin-base hover:text-admin-text rounded-xl transition-colors">
+                                <Icon name="close" className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
                     
                     <div className="flex-1 p-6 bg-admin-base overflow-y-auto">
-                        <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border p-6 h-[400px]">
+                        <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6 h-[400px]">
                             <Line 
                                 data={{
                                     labels: data?.voucher_chart?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],
@@ -662,12 +598,9 @@ const AdminDashboard = () => {
                                         label: 'Pendapatan Voucher (Rp)',
                                         data: data?.voucher_chart?.map(c => c.total) || [],
                                         fill: true,
-                                        borderColor: '#10b981',
-                                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                        tension: 0.4,
-                                        pointRadius: 4,
-                                        pointHoverRadius: 6,
-                                        borderWidth: 3
+                                        borderColor: '#2563eb',
+                                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                        tension: 0.4
                                     }]
                                 }} 
                                 options={{

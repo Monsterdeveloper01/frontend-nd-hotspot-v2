@@ -8,7 +8,7 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         phone: <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />,
         calendar: <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
         search: <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />,
-        plus: <path d="M12 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />,
+        plus: <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />,
         edit: <path d="M11 5H6a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />,
         delete: <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />,
         check: <path d="M5 13l4 4L19 7" />,
@@ -203,7 +203,7 @@ const CustomerManagement = () => {
             <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
                 <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-admin-text shadow-amber-200' : 'bg-blue-600 text-admin-text shadow-blue-200'}`}>
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-white shadow-amber-200' : 'bg-admin-accent text-white shadow-blue-200'}`}>
                             <Icon name={editingId ? "edit" : "plus"} className="w-7 h-7" />
                         </div>
                         <div>
@@ -290,7 +290,7 @@ const CustomerManagement = () => {
                             <button 
                                 type="submit" 
                                 disabled={submitting}
-                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-3 ${submitting ? 'bg-admin-base text-admin-muted' : editingId ? 'bg-amber-500 text-admin-text shadow-lg shadow-amber-200 hover:bg-amber-600' : 'bg-blue-600 text-admin-text shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all flex items-center justify-center gap-3 ${submitting ? 'bg-admin-base text-admin-muted' : editingId ? 'bg-amber-500 text-white shadow-lg shadow-amber-200 hover:bg-amber-600' : 'bg-admin-accent text-white shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
                             >
                                 <Icon name="check" className="w-4 h-4" />
                                 {submitting ? 'Processing...' : editingId ? 'Simpan Perubahan' : 'Daftarkan Pelanggan'}
@@ -387,7 +387,7 @@ const CustomerManagement = () => {
                                             <div>
                                                 <div className="font-black text-admin-text text-lg leading-none uppercase tracking-tight">
                                                     {c.name}
-                                                    {c.is_isolated && <span className="ml-2 text-[8px] bg-rose-600 text-admin-text px-2 py-0.5 rounded-full align-middle">ISOLATED</span>}
+                                                    {c.is_isolated && <span className="ml-2 text-[8px] bg-rose-600 text-white px-2 py-0.5 rounded-full align-middle">ISOLATED</span>}
                                                 </div>
                                                 <div className="flex items-center gap-2 mt-1.5">
                                                     <Icon name="phone" className="w-3 h-3 text-admin-muted" />
@@ -409,7 +409,7 @@ const CustomerManagement = () => {
                                             className="focus:outline-none"
                                         >
                                             {c.is_isolated ? (
-                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-admin-text rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200 hover:bg-rose-700 transition-all">
+                                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-rose-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest border border-rose-700 shadow-lg shadow-rose-200 hover:bg-rose-700 transition-all">
                                                     <span className="w-1.5 h-1.5 bg-admin-card rounded-full animate-pulse"></span>
                                                     Terisolir
                                                 </span>
@@ -437,7 +437,7 @@ const CustomerManagement = () => {
                                         {c.status_bayar === 'paid' ? (
                                             <span className="px-4 py-2 bg-emerald-500 text-admin-text rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20">Lunas</span>
                                         ) : (
-                                            <span className="px-4 py-2 bg-amber-500 text-admin-text rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">Tempo</span>
+                                            <span className="px-4 py-2 bg-amber-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">Tempo</span>
                                         )}
                                     </td>
                                     <td className="px-8 py-6 text-right">
@@ -489,8 +489,8 @@ const CustomerManagement = () => {
                         }`}>
                             <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 shadow-xl ${
                                 modalConfig.type === 'error' ? 'bg-rose-500 text-admin-text shadow-rose-200' : 
-                                modalConfig.type === 'warning' ? 'bg-amber-500 text-admin-text shadow-amber-200' : 
-                                modalConfig.type === 'success' ? 'bg-emerald-500 text-admin-text shadow-emerald-200' : 'bg-blue-600 text-admin-text shadow-blue-200'
+                                modalConfig.type === 'warning' ? 'bg-amber-500 text-white shadow-amber-200' : 
+                                modalConfig.type === 'success' ? 'bg-emerald-500 text-admin-text shadow-emerald-200' : 'bg-admin-accent text-white shadow-blue-200'
                             }`}>
                                 <Icon name={
                                     modalConfig.type === 'error' ? 'close' : 

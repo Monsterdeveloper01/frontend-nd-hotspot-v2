@@ -175,7 +175,7 @@ const VoucherPlans = () => {
             <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
                 <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-admin-text shadow-amber-200' : 'bg-blue-600 text-admin-text shadow-blue-200'}`}>
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${editingId ? 'bg-amber-500 text-white shadow-amber-200' : 'bg-admin-accent text-white shadow-blue-200'}`}>
                             <Icon name={editingId ? "edit" : "plus"} className="w-7 h-7" />
                         </div>
                         <div>
@@ -309,7 +309,7 @@ const VoucherPlans = () => {
                             <button 
                                 type="submit" 
                                 disabled={submitting}
-                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs mt-2 transition-all flex items-center justify-center gap-3 ${submitting ? 'bg-admin-base text-admin-muted' : editingId ? 'bg-amber-500 text-admin-text shadow-lg shadow-amber-200 hover:bg-amber-600' : 'bg-blue-600 text-admin-text shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
+                                className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest text-xs mt-2 transition-all flex items-center justify-center gap-3 ${submitting ? 'bg-admin-base text-admin-muted' : editingId ? 'bg-amber-500 text-white shadow-lg shadow-amber-200 hover:bg-amber-600' : 'bg-admin-accent text-white shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95'}`}
                             >
                                 <Icon name="check" className="w-4 h-4" />
                                 {submitting ? 'Processing...' : editingId ? 'Update & Sync' : 'Deploy to Router'}

@@ -94,7 +94,7 @@ const RadiusSettings = () => {
     return (
         <div className="space-y-10 animate-fadeIn pb-20">
             {/* Header Section Premium */}
-            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-10 border border-slate-800 shadow-2xl relative overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-10 border border-admin-border shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-[120px] opacity-20 -mr-32 -mt-32"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500 rounded-full blur-[100px] opacity-10 -ml-32 -mb-32"></div>
                 
@@ -132,9 +132,9 @@ const RadiusSettings = () => {
                             </div>
                             <div className="flex flex-col">
                                 <span className={`text-[10px] font-black uppercase tracking-widest leading-none mb-1 ${
-                                    serverStatus === 'Online' ? 'text-emerald-400' : serverStatus === 'Checking...' ? 'text-amber-400' : 'text-rose-400'
+                                    serverStatus === 'Online' ? 'text-emerald-400' : serverStatus === 'Checking...' ? 'text-amber-600' : 'text-rose-400'
                                 }`}>Port 1812 / 1813</span>
-                                <span className="text-xs font-bold text-slate-300">
+                                <span className="text-xs font-bold text-admin-muted">
                                     {serverStatus === 'Online' ? 'Service Active' : serverStatus === 'Checking...' ? 'Checking Status...' : 'Service Offline'}
                                 </span>
                             </div>
@@ -167,7 +167,7 @@ const RadiusSettings = () => {
                                         type="text" 
                                         value={formData.name}
                                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm" 
+                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-admin-muted text-sm" 
                                         placeholder="Main Router LT 1"
                                         required
                                     />
@@ -183,7 +183,7 @@ const RadiusSettings = () => {
                                         type="text" 
                                         value={formData.ip_address}
                                         onChange={(e) => setFormData({...formData, ip_address: e.target.value})}
-                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono" 
+                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-admin-muted text-sm font-mono" 
                                         placeholder="192.168.x.x"
                                         required
                                     />
@@ -199,7 +199,7 @@ const RadiusSettings = () => {
                                         type="password" 
                                         value={formData.shared_secret}
                                         onChange={(e) => setFormData({...formData, shared_secret: e.target.value})}
-                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-300 text-sm font-mono tracking-widest" 
+                                        className="w-full pl-14 pr-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:border-indigo-500 focus:bg-admin-card focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-admin-muted text-sm font-mono tracking-widest" 
                                         placeholder="••••••••"
                                         required
                                     />
@@ -285,9 +285,9 @@ const RadiusSettings = () => {
             </div>
 
             {/* Protocol Logs - Full Width Section */}
-            <div className="bg-[#0b1120] rounded-3xl border border-slate-800 shadow-2xl shadow-indigo-900/10 overflow-hidden flex flex-col h-[600px] relative mt-10">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
-                <div className="px-8 py-6 bg-slate-900/50 border-b border-slate-800 flex justify-between items-center backdrop-blur-md relative z-10">
+            <div className="bg-admin-card rounded-3xl border border-admin-border shadow-2xl shadow-sm overflow-hidden flex flex-col h-[600px] relative mt-10">
+                <div className="absolute inset-0  opacity-5 pointer-events-none"></div>
+                <div className="px-8 py-6 bg-admin-base border-b border-admin-border flex justify-between items-center backdrop-blur-md relative z-10">
                     <div className="flex items-center gap-4">
                         <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
                             <Icon name="terminal" className="w-5 h-5 text-emerald-400" />
@@ -297,7 +297,7 @@ const RadiusSettings = () => {
                             <p className="text-[10px] font-bold text-admin-muted uppercase tracking-[0.2em] mt-1">Live AAA Event Stream</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
+                    <div className="flex items-center gap-3 bg-admin-card px-4 py-2 rounded-xl border border-admin-border">
                         <div className="relative w-2.5 h-2.5">
                             <div className="absolute inset-0 bg-emerald-500 rounded-full animate-ping opacity-75"></div>
                             <div className="relative bg-emerald-400 rounded-full w-2.5 h-2.5"></div>
@@ -318,12 +318,12 @@ const RadiusSettings = () => {
                                     <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${log.status === 'Success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
                                         {log.type}
                                     </span>
-                                    <span className="text-indigo-400/80 font-bold px-2 py-0.5 bg-indigo-500/10 rounded-md border border-indigo-500/20">
+                                    <span className="text-indigo-600 font-bold px-2 py-0.5 bg-indigo-50 rounded-md border border-indigo-200">
                                         {log.client_ip}
                                     </span>
                                 </div>
-                                <p className="text-slate-300 mt-1 leading-relaxed">
-                                    {log.username && <span className="text-amber-400 font-bold mr-2">[{log.username}]</span>}
+                                <p className="text-admin-muted mt-1 leading-relaxed">
+                                    {log.username && <span className="text-amber-600 font-bold mr-2">[{log.username}]</span>}
                                     {log.message}
                                 </p>
                             </div>

@@ -124,7 +124,7 @@ const PaymentSuccess = () => {
                     <h1 className="text-3xl font-black text-slate-800 mb-4 uppercase tracking-tighter">System Alert</h1>
                     <p className="text-slate-600 font-bold mb-10 leading-relaxed px-4">{error}</p>
                     <div className="space-y-4">
-                        <button onClick={() => window.location.reload()} className="w-full bg-blue-600 text-admin-text font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition-all uppercase tracking-widest text-xs"><i className="fas fa-sync-alt mr-2"></i> Refresh Halaman</button>
+                        <button onClick={() => window.location.reload()} className="w-full bg-admin-accent text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700 transition-all uppercase tracking-widest text-xs"><i className="fas fa-sync-alt mr-2"></i> Refresh Halaman</button>
                         <Link to="/" className="block w-full bg-slate-100 text-slate-700 font-black py-5 rounded-2xl hover:bg-slate-200 transition-all uppercase tracking-widest text-xs">Kembali ke Beranda</Link>
                     </div>
                     <div className="mt-12 pt-8 border-t border-slate-100">
@@ -229,7 +229,7 @@ const PaymentSuccess = () => {
 
                     {/* Action Buttons */}
                     <div className="space-y-4">
-                        <a href="http://ndnet.login/login" target="_blank" rel="noopener noreferrer" className="block w-full bg-blue-600 text-admin-text font-black py-5 rounded-2xl transition-all shadow-xl text-center active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
+                        <a href="http://ndnet.login/login" target="_blank" rel="noopener noreferrer" className="block w-full bg-admin-accent text-white font-black py-5 rounded-2xl transition-all shadow-xl text-center active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
                             <i className="fas fa-sign-in-alt"></i> Login ke Hotspot
                         </a>
                         <Link to="/" className="block w-full bg-white border-2 border-slate-200 text-slate-700 font-black py-4 rounded-2xl hover:bg-slate-50 transition-all active:scale-95 text-center uppercase tracking-widest text-xs">
