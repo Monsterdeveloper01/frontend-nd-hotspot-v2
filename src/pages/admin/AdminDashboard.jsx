@@ -410,19 +410,36 @@ const AdminDashboard = () => {
                     </div>
                 </div>
                 <div className="divide-y divide-admin-border max-h-[400px] overflow-y-auto">
-                    {data.active_vouchers?.length > 0 ? data.active_vouchers.map((v, i) => (
+                    {data.combined_users?.length > 0 ? data.combined_users.map((user, i) => (
                         <div key={i} className="p-4 hover:bg-admin-base transition-colors flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-bold text-admin-text">{v.username}</p>
-                                <p className="text-[10px] text-admin-muted uppercase mt-0.5">{v.profile}</p>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm font-bold text-admin-text uppercase">{user.code}</p>
+                                    {user.is_online ? (
+                                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                    ) : (
+                                        <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
+                                    )}
+                                </div>
+                                <p className="text-[10px] font-bold text-admin-accent uppercase mt-1">{user.plan_name || 'VOUCHER'}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs font-mono text-admin-text">{v.uptime}</p>
-                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">Exp: {new Date(v.expiration).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}</p>
+                                {user.is_online ? (
+                                    <>
+                                        <p className="text-xs font-mono font-bold text-admin-text">{user.uptime}</p>
+                                        <p className="text-[10px] font-medium text-rose-500 mt-0.5">Exp: {user.expires_at ? new Date(user.expires_at).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}</p>
+                                    </>
+                                ) : (
+                                    <p className="text-[10px] text-admin-muted italic mt-2">
+                                        {user.expires_at 
+                                            ? `Exp: ${new Date(user.expires_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}` 
+                                            : 'Belum Digunakan'}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     )) : (
-                        <div className="p-8 text-center text-admin-muted text-sm">Tidak ada voucher aktif.</div>
+                        <div className="p-8 text-center text-admin-muted text-sm">Tidak ada sesi / voucher aktif.</div>
                     )}
                 </div>
             </div>
@@ -538,7 +555,7 @@ const AdminDashboard = () => {
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-3">
                                                             <div className={`p-2 rounded-lg ${isBill ? 'bg-purple-50 text-purple-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                                                                <Icon name={isBill ? "user" : "ticket"} className="w-4 h-4" />
+                                                                <Icon name={isBill ? "bill" : "voucher"} className="w-5 h-5" />
                                                             </div>
                                                             <div>
                                                                 <p className="text-xs font-bold text-admin-text">{tx.customer_name || 'Voucher Hotspot'}</p>

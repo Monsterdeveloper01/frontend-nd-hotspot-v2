@@ -28,7 +28,7 @@ const VoucherDetailModal = ({ voucher, onClose }) => {
             <div className="bg-admin-card w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                 <div className="px-10 py-8 bg-admin-base border-b border-admin-border flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-admin-text shadow-lg shadow-blue-200">
+                        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
                             <Icon name="info" className="w-6 h-6" />
                         </div>
                         <div>
@@ -395,7 +395,7 @@ const VoucherStock = () => {
                     <div className="bg-admin-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                         <div className="px-10 py-8 bg-admin-base border-b border-admin-border flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-admin-text shadow-lg">
+                                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
                                     <Icon name="code" className="w-6 h-6" />
                                 </div>
                                 <div>

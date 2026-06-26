@@ -94,14 +94,11 @@ const RadiusSettings = () => {
     return (
         <div className="space-y-10 animate-fadeIn pb-20">
             {/* Header Section Premium */}
-            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-10 border border-admin-border shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-[120px] opacity-20 -mr-32 -mt-32"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500 rounded-full blur-[100px] opacity-10 -ml-32 -mb-32"></div>
-                
+            <div className="bg-admin-card rounded-3xl p-10 border border-admin-border shadow-md relative overflow-hidden">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     <div>
-                        <div className="flex items-center gap-4 mb-3">
-                            <div className="p-3 bg-admin-card/10 backdrop-blur-xl rounded-2xl border border-white/10 text-admin-text shadow-xl">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-admin-base rounded-2xl border border-admin-border text-admin-text shadow-sm">
                                 <Icon name="shield" className="w-6 h-6" />
                             </div>
                             <h1 className="text-3xl font-black text-admin-text tracking-tight uppercase">Radius Operations</h1>
