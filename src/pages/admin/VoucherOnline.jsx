@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Pagination from '../../components/Pagination'
 
 const Icon = ({ name, className = "w-5 h-5" }) => {
     const icons = {
@@ -80,6 +81,30 @@ const VoucherOnline = () => {
             : statusFilter === 'online' ? v.is_online : !v.is_online;
         return matchesSearch && matchesStatus;
     });
+
+    const ITEMS_PER_PAGE = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+    
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, statusFilter]);
+
+    const totalPages = Math.ceil(filteredVouchers.length / ITEMS_PER_PAGE);
+    const paginatedVouchers = filteredVouchers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+    const paginationMeta = {
+        current_page: currentPage,
+        last_page: totalPages,
+        links: [
+            { label: '&laquo; Previous', url: currentPage > 1 ? `?page=${currentPage - 1}` : null },
+            ...Array.from({ length: totalPages }, (_, i) => ({
+                label: `${i + 1}`,
+                url: `?page=${i + 1}`,
+                active: i + 1 === currentPage
+            })),
+            { label: 'Next &raquo;', url: currentPage < totalPages ? `?page=${currentPage + 1}` : null }
+        ]
+    };
 
     const stats = {
         total: activeVouchers.length,
@@ -190,7 +215,7 @@ const VoucherOnline = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50">
-                                    {filteredVouchers.length > 0 ? filteredVouchers.map((v) => (
+                                    {paginatedVouchers.length > 0 ? paginatedVouchers.map((v) => (
                                         <tr key={v.id} className="hover:bg-blue-50/30 transition-colors group">
                                             <td className="px-8 py-6">
                                                 <div className="flex items-center gap-4">
@@ -260,6 +285,9 @@ const VoucherOnline = () => {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="px-8 py-6 border-t border-admin-border bg-admin-base/30">
+                            <Pagination meta={paginationMeta} onPageChange={(p) => setCurrentPage(Number(p))} />
                         </div>
                     </div>
                 </div>

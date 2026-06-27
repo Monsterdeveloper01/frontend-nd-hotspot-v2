@@ -129,7 +129,7 @@ const PaymentSuccess = () => {
                     </div>
                     <div className="mt-12 pt-8 border-t border-slate-100">
                         <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Support Line:</p>
-                        <p className="text-blue-600 font-black text-lg mt-1 tracking-tight">0812-8984-8787</p>
+                        <p className="text-blue-600 font-black text-lg mt-1 tracking-tight">+62 812-9588-587</p>
                     </div>
                 </div>
             </div>

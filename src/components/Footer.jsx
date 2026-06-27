@@ -34,12 +34,15 @@ const Footer = () => {
                             </div>
                             <span className="text-slate-600 text-xs font-black uppercase tracking-wider">High Speed</span>
                         </div>
-                        <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 hover:-translate-y-0.5 transition-all cursor-default group">
+                        <a href="https://wa.me/628129588587" target="_blank" rel="noreferrer" className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 hover:-translate-y-0.5 transition-all cursor-pointer group">
                             <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-sm group-hover:scale-110 transition-transform">
-                                <FaIcon name="headset" />
+                                <FaIcon name="whatsapp" className="fab" />
                             </div>
-                            <span className="text-slate-600 text-xs font-black uppercase tracking-wider">Support 24/7</span>
-                        </div>
+                            <div className="flex flex-col">
+                                <span className="text-slate-600 text-[10px] font-black uppercase tracking-wider leading-none">Support 24/7</span>
+                                <span className="text-blue-600 text-[11px] font-black tracking-widest mt-1">+62 812-9588-587</span>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
