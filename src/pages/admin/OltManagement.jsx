@@ -182,10 +182,6 @@ const OltManagement = () => {
                                     required
                                 >
                                     <option value="vsol">GLOBAL V-SOL GPON/EPON</option>
-                                    <option value="hsgq">HSGQ</option>
-                                    <option value="zte">ZTE</option>
-                                    <option value="huawei">HUAWEI</option>
-                                    <option value="generic">GENERIC OLT</option>
                                 </select>
                             </div>
                         </div>
@@ -208,14 +204,15 @@ const OltManagement = () => {
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2 ml-1">SNMP Community</label>
-                                <input 
-                                    type="text" 
+                                <select 
                                     value={formData.snmp_community}
                                     onChange={(e) => setFormData({...formData, snmp_community: e.target.value})}
-                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all" 
-                                    placeholder="public"
+                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all uppercase text-sm"
                                     required
-                                />
+                                >
+                                    <option value="public">PUBLIC (Read-Only - Disarankan)</option>
+                                    <option value="private">PRIVATE (Read-Write)</option>
+                                </select>
                             </div>
                         </div>
 
