@@ -470,7 +470,11 @@ const AdminDashboard = () => {
                                             <Icon name={isBill ? "bill" : "voucher"} className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-admin-text">{tx.customer?.name || tx.customer_name || 'Voucher Hotspot'}</p>
+                                            <p className="text-sm font-bold text-admin-text">
+                                                {isBill 
+                                                    ? (tx.customer?.name || tx.customer_name || 'Pelanggan') 
+                                                    : `Voucher Hotspot${tx.voucher?.code ? ` - ${tx.voucher.code}` : ''}`}
+                                            </p>
                                             <p className="text-[10px] text-admin-muted mt-0.5 font-mono">{tx.external_id}</p>
                                             <div className="flex items-center gap-2 mt-1.5">
                                                 <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">
@@ -559,7 +563,9 @@ const AdminDashboard = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-xs font-bold text-admin-text">{tx.customer?.name || tx.customer_name || 'Voucher Hotspot'}</p>
-                                                                <p className="text-[10px] text-admin-muted">{isBill ? 'Tagihan Bulanan' : 'Voucher Eceran'}</p>
+                                                                <p className="text-[10px] text-admin-muted uppercase tracking-wider font-mono mt-0.5">
+                                                                    {isBill ? 'Tagihan Bulanan' : (tx.voucher?.code || 'Voucher Eceran')}
+                                                                </p>
                                                             </div>
                                                         </div>
                                                     </td>
