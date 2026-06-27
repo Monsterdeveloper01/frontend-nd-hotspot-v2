@@ -103,16 +103,8 @@ const AdminLayout = ({ children, title, subtitle }) => {
         <div className="h-full flex flex-col">
           {/* Logo Section */}
           <div className="h-16 px-6 flex items-center justify-between border-b border-admin-border">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-admin-base rounded-lg flex items-center justify-center border border-admin-border text-admin-text">
-                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-admin-text font-semibold text-sm tracking-tight leading-none">ND-Billing</h2>
-              </div>
+            <div className="flex items-center justify-center w-full">
+              <img src="/logo.png" alt="ND-Billing Logo" className="h-10 object-contain" />
             </div>
             <button className="lg:hidden p-1.5 text-admin-muted hover:text-admin-text transition-colors" onClick={() => setIsSidebarOpen(false)}>
               <Icon name="close" className="w-5 h-5" />
