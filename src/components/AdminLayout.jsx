@@ -104,7 +104,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
           {/* Logo Section */}
           <div className="h-16 px-6 flex items-center justify-between border-b border-admin-border">
             <div className="flex items-center justify-center w-full">
-              <img src="/logo.png" alt="ND-Billing Logo" className="h-10 object-contain" />
+              <img src="/Logo.png" alt="ND-Billing Logo" className="h-10 object-contain" />
             </div>
             <button className="lg:hidden p-1.5 text-admin-muted hover:text-admin-text transition-colors" onClick={() => setIsSidebarOpen(false)}>
               <Icon name="close" className="w-5 h-5" />
