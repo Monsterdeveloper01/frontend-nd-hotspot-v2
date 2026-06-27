@@ -6,13 +6,10 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     olt: <path d="M2 17h20M2 12h20M2 7h20M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />,
     onu: <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />,
     signal: <path d="M12 20v-6M6 20V10M18 20V4" />,
-    temp: <path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z" />,
-    reboot: <path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" />,
-    edit: <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />,
     sync: <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0118.8-4.3M22 12.5a10 10 0 01-18.8 4.3" />,
-    plus: <path d="M12 5v14M5 12h14" />
+    plus: <path d="M12 5v14M5 12h14" />,
+    users: <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
   };
-
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       {icons[name]}
@@ -24,19 +21,18 @@ const NetworkCenter = () => {
   const [olts, setOlts] = useState([])
   const [selectedOlt, setSelectedOlt] = useState(null)
   const [nodes, setNodes] = useState([])
+  const [meta, setMeta] = useState(null)
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
-  const [showAddOlt, setShowAddOlt] = useState(false)
-  const [newOlt, setNewOlt] = useState({ name: '', ip_address: '', username: '', password: '', type: 'global' })
 
   const fetchOlts = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/network/olts`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/olt`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-      setOlts(res.data)
-      if (res.data.length > 0 && !selectedOlt) {
-        setSelectedOlt(res.data[0])
+      setOlts(res.data.data || res.data)
+      if ((res.data.data || res.data).length > 0 && !selectedOlt) {
+        setSelectedOlt((res.data.data || res.data)[0])
       }
     } catch (err) {
       console.error('Failed to fetch OLTs')
@@ -46,10 +42,11 @@ const NetworkCenter = () => {
   const fetchNodes = async (oltId) => {
     setLoading(true)
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/network/olts/${oltId}/nodes`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/olt/${oltId}/onu`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
-      setNodes(res.data)
+      setNodes(res.data.data || [])
+      setMeta(res.data.meta || null)
     } catch (err) {
       console.error('Failed to fetch nodes')
     } finally {
@@ -71,7 +68,7 @@ const NetworkCenter = () => {
     if (!selectedOlt) return
     setSyncing(true)
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/network/olts/${selectedOlt.id}/sync`, {}, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/olt/${selectedOlt.id}/sync`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       })
       fetchNodes(selectedOlt.id)
@@ -82,42 +79,18 @@ const NetworkCenter = () => {
     }
   }
 
-  const handleReboot = async (nodeId) => {
-    if (!confirm('Reboot perangkat ini? Koneksi pelanggan akan terputus sementara.')) return
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/network/nodes/${nodeId}/reboot`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      if (res.data.success) alert('Perintah reboot berhasil dikirim')
-    } catch (err) {
-      alert('Gagal mengirim perintah reboot')
-    }
+  const getSignalColor = (signal) => {
+    if (signal === null || signal === undefined) return 'text-slate-500'
+    if (signal >= -20) return 'text-emerald-600'
+    if (signal >= -25) return 'text-yellow-600'
+    return 'text-rose-600'
   }
-
-  const handleRename = async (nodeId, oldAlias) => {
-    const newAlias = prompt('Ganti nama/alias perangkat:', oldAlias || '')
-    if (newAlias === null) return
-    try {
-      await axios.put(`${import.meta.env.VITE_API_URL}/network/nodes/${nodeId}`, { alias: newAlias }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      fetchNodes(selectedOlt.id)
-    } catch (err) {
-      alert('Gagal update nama')
-    }
-  }
-
-  const handleAddOlt = async (e) => {
-    e.preventDefault()
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/network/olts`, newOlt, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      })
-      setShowAddOlt(false)
-      fetchOlts()
-    } catch (err) {
-      alert('Gagal menambah OLT')
-    }
+  
+  const getSignalBgColor = (signal) => {
+    if (signal === null || signal === undefined) return 'bg-slate-50'
+    if (signal >= -20) return 'bg-emerald-50'
+    if (signal >= -25) return 'bg-yellow-50'
+    return 'bg-rose-50'
   }
 
   return (
@@ -130,17 +103,12 @@ const NetworkCenter = () => {
         </div>
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setShowAddOlt(true)}
-            className="bg-admin-card text-admin-text border border-admin-border px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-admin-base transition-all flex items-center gap-2"
-          >
-            <Icon name="plus" className="w-4 h-4" /> Tambah OLT
-          </button>
-          <button 
             onClick={handleSync}
             disabled={syncing}
             className="bg-indigo-600 text-admin-text px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-200 flex items-center gap-2 hover:bg-indigo-700 transition-all disabled:opacity-50"
           >
-            <Icon name="sync" className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Scan ONU Baru
+            <Icon name="sync" className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> 
+            {syncing ? 'Processing...' : 'Sync Sekarang'}
           </button>
         </div>
       </div>
@@ -162,6 +130,28 @@ const NetworkCenter = () => {
         ))}
       </div>
 
+      {/* Summary Cards */}
+      {meta && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-admin-card border border-admin-border p-6 rounded-3xl shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-admin-muted">Total ONU</p>
+            <p className="text-2xl font-black text-admin-text mt-2">{meta.total || 0}</p>
+          </div>
+          <div className="bg-admin-card border border-emerald-500/20 p-6 rounded-3xl shadow-sm bg-emerald-500/5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">ONU Online</p>
+            <p className="text-2xl font-black text-emerald-600 mt-2">{meta.online || 0}</p>
+          </div>
+          <div className="bg-admin-card border border-rose-500/20 p-6 rounded-3xl shadow-sm bg-rose-500/5">
+            <p className="text-[10px] font-black uppercase tracking-widest text-rose-600">ONU Offline</p>
+            <p className="text-2xl font-black text-rose-600 mt-2">{meta.offline || 0}</p>
+          </div>
+          <div className="bg-admin-card border border-admin-border p-6 rounded-3xl shadow-sm">
+            <p className="text-[10px] font-black uppercase tracking-widest text-admin-muted">Terakhir Diperbarui</p>
+            <p className="text-xs font-bold text-admin-text mt-2">{meta.last_synced_at ? new Date(meta.last_synced_at).toLocaleString() : 'Belum pernah'}</p>
+          </div>
+        </div>
+      )}
+
       {/* Main Monitoring Table */}
       <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
         <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
@@ -171,7 +161,7 @@ const NetworkCenter = () => {
             </div>
             <div>
               <h2 className="text-xl font-black text-admin-text leading-tight uppercase tracking-tight">Daftar Perangkat Pelanggan</h2>
-              <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest mt-1">Total ONU: {nodes.length} | Terhubung ke {selectedOlt?.name}</p>
+              <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest mt-1">Terhubung ke {selectedOlt?.name || 'OLT'}</p>
             </div>
           </div>
         </div>
@@ -180,144 +170,65 @@ const NetworkCenter = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-admin-base border-b border-admin-border">
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Identitas / Alias</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Index OLT</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Kesehatan (Sinyal/Suhu)</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Status & Client</th>
-                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-right">Aksi Remote</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Serial Number / SN</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Status & Deskripsi</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Sinyal (dBm)</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Kualitas Sinyal</th>
+                <th className="px-10 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Last Seen / Pelanggan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {loading ? (
                 <tr><td colSpan="5" className="px-10 py-20 text-center font-bold text-admin-muted">Loading network telemetry...</td></tr>
               ) : nodes.length > 0 ? nodes.map(node => (
-                <tr key={node.id} className="hover:bg-admin-base/80 transition-colors group">
+                <tr key={node.id} className="hover:bg-admin-base/80 transition-colors">
                   <td className="px-10 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm ${node.status === 'online' ? 'bg-indigo-50 text-indigo-600' : 'bg-admin-base text-admin-muted'}`}>
-                        {node.alias ? node.alias.charAt(0).toUpperCase() : '?'}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-black text-admin-text uppercase tracking-tight">{node.alias || 'Tanpa Nama'}</p>
-                          <button onClick={() => handleRename(node.id, node.alias)} className="opacity-0 group-hover:opacity-100 text-admin-muted hover:text-indigo-600 transition-all">
-                            <Icon name="edit" className="w-3 h-3" />
-                          </button>
-                        </div>
-                        <p className="text-[9px] font-mono font-bold text-admin-muted uppercase tracking-widest mt-1">SN: {node.serial_number}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-10 py-6">
-                    <span className="bg-admin-base text-admin-text px-3 py-1 rounded-lg text-[10px] font-mono font-black border border-admin-border">
-                      {node.onu_index}
+                    <span className="font-mono font-black text-sm text-admin-text bg-admin-base px-3 py-1.5 rounded-lg border border-admin-border">
+                      {node.serial_number}
                     </span>
-                  </td>
-                  <td className="px-10 py-6">
-                    <div className="flex items-center gap-8">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-admin-muted font-black text-[9px] uppercase">
-                          <Icon name="signal" className="w-3 h-3 text-indigo-500" /> Sinyal
-                        </div>
-                        <p className={`text-sm font-black italic tracking-tighter ${node.last_signal < -27 ? 'text-rose-500' : 'text-admin-text'}`}>
-                          {node.last_signal} <span className="text-[9px]">dBm</span>
-                        </p>
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-admin-muted font-black text-[9px] uppercase">
-                          <Icon name="temp" className="w-3 h-3 text-rose-500" /> Suhu
-                        </div>
-                        <p className="text-sm font-black italic tracking-tighter text-admin-text">
-                          {node.last_temp} <span className="text-[9px]">°C</span>
-                        </p>
-                      </div>
-                    </div>
+                    <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest mt-2">INDEX: {node.onu_index}</p>
                   </td>
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-2 mb-2">
-                      <div className={`w-1.5 h-1.5 rounded-full ${node.status === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}></div>
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${node.status === 'online' ? 'text-emerald-600' : 'text-admin-muted'}`}>
-                        {node.status === 'online' ? 'Connected' : 'Dying Gasp / LOS'}
+                      <div className={`w-2 h-2 rounded-full ${node.status === 'online' ? 'bg-emerald-500 animate-pulse' : node.status === 'offline' ? 'bg-rose-500' : 'bg-slate-400'}`}></div>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${node.status === 'online' ? 'text-emerald-600' : node.status === 'offline' ? 'text-rose-600' : 'text-slate-500'}`}>
+                        {node.status}
                       </span>
                     </div>
-                    <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest">
-                      {node.client_count} Perangkat Terhubung
+                    <p className="text-sm font-bold text-admin-text">{node.description || '-'}</p>
+                  </td>
+                  <td className="px-10 py-6">
+                    <p className={`text-xl font-black italic tracking-tighter ${getSignalColor(node.last_signal)}`}>
+                      {node.last_signal !== null ? node.last_signal : '-'} <span className="text-[10px] text-admin-muted font-bold not-italic tracking-widest uppercase">dBm</span>
                     </p>
                   </td>
-                  <td className="px-10 py-6 text-right">
-                    <div className="flex items-center justify-end gap-3">
-                      {node.ip_address && (
-                        <a 
-                          href={`http://${node.ip_address}`} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-admin-text transition-all shadow-sm border border-indigo-100"
-                        >
-                          <Icon name="onu" className="w-4 h-4" />
-                        </a>
-                      )}
-                      <button 
-                        onClick={() => handleReboot(node.id)}
-                        className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-500 hover:text-admin-text transition-all shadow-sm border border-rose-100"
-                      >
-                        <Icon name="reboot" className="w-4 h-4" />
-                      </button>
-                    </div>
+                  <td className="px-10 py-6">
+                    <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest ${getSignalBgColor(node.last_signal)} ${getSignalColor(node.last_signal)}`}>
+                      {node.signal_quality || 'Tidak Diketahui'}
+                    </span>
+                  </td>
+                  <td className="px-10 py-6">
+                    {node.customer ? (
+                      <div className="flex items-center gap-2 mb-2">
+                        <Icon name="users" className="w-4 h-4 text-indigo-500" />
+                        <span className="text-xs font-black text-admin-text">{node.customer.name}</span>
+                        {node.customer.whatsapp && <span className="text-[9px] text-admin-muted font-mono bg-admin-base px-2 py-0.5 rounded-md">{node.customer.whatsapp}</span>}
+                      </div>
+                    ) : (
+                      <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest mb-2">Unassigned</p>
+                    )}
+                    <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest">
+                      Seen: {node.last_seen_at ? new Date(node.last_seen_at).toLocaleString() : 'N/A'}
+                    </p>
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan="5" className="px-10 py-32 text-center text-admin-muted font-bold italic uppercase tracking-widest">Belum ada data ONU. Klik "Scan ONU Baru" untuk sinkronisasi.</td></tr>
+                <tr><td colSpan="5" className="px-10 py-32 text-center text-admin-muted font-bold italic uppercase tracking-widest">Belum ada data ONU. Klik "Sync Sekarang" untuk sinkronisasi.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* Add OLT Modal */}
-      {showAddOlt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md">
-          <div className="bg-admin-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="bg-slate-900 p-10 text-admin-text">
-              <h2 className="text-2xl font-black uppercase tracking-tight">Registrasi OLT Baru</h2>
-              <p className="text-admin-muted text-[10px] font-black uppercase tracking-widest mt-1">Konfigurasi akses SNMP & Telnet OLT</p>
-            </div>
-            <form onSubmit={handleAddOlt} className="p-10 space-y-6">
-              <div className="grid grid-cols-1 gap-6">
-                <div>
-                  <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Nama / Lokasi OLT</label>
-                  <input type="text" value={newOlt.name} onChange={e => setNewOlt({...newOlt, name: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="OLT Pusat - Rack 1" required />
-                </div>
-                <div>
-                  <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">IP Management Address</label>
-                  <input type="text" value={newOlt.ip_address} onChange={e => setNewOlt({...newOlt, ip_address: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-indigo-500 outline-none font-mono" placeholder="10.10.10.1" required />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Username OLT</label>
-                    <input type="text" value={newOlt.username} onChange={e => setNewOlt({...newOlt, username: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none" required />
-                  </div>
-                  <div>
-                    <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Password</label>
-                    <input type="password" value={newOlt.password} onChange={e => setNewOlt({...newOlt, password: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none" required />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[9px] font-black text-admin-muted uppercase tracking-widest block mb-2 ml-1">Tipe / Seri OLT</label>
-                  <select value={newOlt.type} onChange={e => setNewOlt({...newOlt, type: e.target.value})} className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none">
-                    <option value="global">Global GPON (GL-Series)</option>
-                    <option value="ad">AD-Series OLT</option>
-                    <option value="vsol">V-SOL (OEM)</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex gap-4 pt-4">
-                <button type="button" onClick={() => setShowAddOlt(false)} className="flex-1 py-4 text-admin-muted font-black uppercase text-[10px] tracking-widest">Batal</button>
-                <button type="submit" className="flex-1 py-4 bg-indigo-600 text-admin-text rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-indigo-200">Simpan OLT</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

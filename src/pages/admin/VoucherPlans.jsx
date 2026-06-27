@@ -26,6 +26,10 @@ const VoucherPlans = () => {
     const [editingId, setEditingId] = useState(null)
     const [submitting, setSubmitting] = useState(false)
     const [priceDisplay, setPriceDisplay] = useState('')
+    const [generateModal, setGenerateModal] = useState(null)
+    const [generateQty, setGenerateQty] = useState(10)
+    const [generateType, setGenerateType] = useState('radius')
+    const [generating, setGenerating] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
         mikrotik_profile: '',
@@ -160,6 +164,38 @@ const VoucherPlans = () => {
             }
         } catch (err) {
             console.error('Failed to delete plan')
+        }
+    }
+
+    const handleGenerate = async () => {
+        if (!generateModal) return
+        setGenerating(true)
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/vouchers/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    voucher_plan_id: generateModal.id,
+                    quantity: generateQty,
+                    type: generateType
+                })
+            })
+            const data = await response.json()
+            if (response.ok) {
+                alert(data.message || `${generateQty} voucher berhasil digenerate!`)
+                setGenerateModal(null)
+                setGenerateQty(10)
+            } else {
+                alert(data.message || 'Gagal generate voucher')
+            }
+        } catch (err) {
+            alert('Terjadi kesalahan saat generate voucher')
+        } finally {
+            setGenerating(false)
         }
     }
 
@@ -329,13 +365,14 @@ const VoucherPlans = () => {
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Limitasi</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-center">Tipe Paket</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted">Harga</th>
+                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-center">Stok</th>
                                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-admin-muted text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-admin-border">
                             {loading ? (
                                 <tr>
-                                    <td colSpan="5" className="px-8 py-20 text-center text-admin-muted font-bold italic">Loading master data...</td>
+                                    <td colSpan="6" className="px-8 py-20 text-center text-admin-muted font-bold italic">Loading master data...</td>
                                 </tr>
                             ) : plans.length > 0 ? plans.map((plan) => (
                                 <tr key={plan.id} className="hover:bg-blue-50/30 transition-colors group">
@@ -367,8 +404,18 @@ const VoucherPlans = () => {
                                     <td className="px-8 py-6">
                                         <div className="font-black text-admin-text text-lg tracking-tighter">Rp {plan.price.toLocaleString('id-ID')}</div>
                                     </td>
+                                    <td className="px-8 py-6 text-center">
+                                        <span className="text-sm font-black text-admin-text">{plan.stock ?? '—'}</span>
+                                    </td>
                                     <td className="px-8 py-6 text-right">
                                         <div className="flex items-center justify-end gap-2">
+                                            <button 
+                                                onClick={() => setGenerateModal(plan)}
+                                                className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm"
+                                                title="Generate Voucher"
+                                            >
+                                                <Icon name="plus" className="w-4 h-4" />
+                                            </button>
                                             <button 
                                                 onClick={() => handleEdit(plan)}
                                                 className="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-admin-text transition-all shadow-sm"
@@ -386,13 +433,60 @@ const VoucherPlans = () => {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="5" className="px-8 py-24 text-center text-admin-muted font-bold italic">No plans available.</td>
+                                    <td colSpan="6" className="px-8 py-24 text-center text-admin-muted font-bold italic">No plans available.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {generateModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-md border border-admin-border overflow-hidden">
+                        <div className="px-8 py-6 border-b border-admin-border bg-admin-base/50">
+                            <h3 className="text-lg font-black text-admin-text uppercase tracking-tight">Generate Voucher</h3>
+                            <p className="text-[10px] font-bold text-admin-muted uppercase tracking-widest mt-1">Paket: {generateModal.name}</p>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2">Jumlah Voucher</label>
+                                <input 
+                                    type="number" 
+                                    min="1" max="100"
+                                    value={generateQty}
+                                    onChange={(e) => setGenerateQty(parseInt(e.target.value) || 1)}
+                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-lg text-center"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-admin-muted uppercase tracking-widest mb-2">Sistem</label>
+                                <select 
+                                    value={generateType}
+                                    onChange={(e) => setGenerateType(e.target.value)}
+                                    className="w-full px-5 py-4 bg-admin-base border border-admin-border rounded-2xl font-bold outline-none focus:ring-2 focus:ring-emerald-500 appearance-none"
+                                >
+                                    <option value="radius">RADIUS (Rekomendasi)</option>
+                                    <option value="mikrotik">MikroTik Direct</option>
+                                </select>
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button 
+                                    onClick={() => { setGenerateModal(null); setGenerateQty(10); }}
+                                    className="flex-1 py-4 bg-admin-base border border-admin-border text-admin-muted rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-admin-card transition-all"
+                                >Batal</button>
+                                <button 
+                                    onClick={handleGenerate}
+                                    disabled={generating}
+                                    className="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    {generating ? 'Processing...' : 'Generate'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

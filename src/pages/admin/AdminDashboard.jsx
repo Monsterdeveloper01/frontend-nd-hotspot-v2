@@ -74,6 +74,7 @@ const AdminDashboard = () => {
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
   const [isMaintenance, setIsMaintenance] = useState(false)
+  const [routerStatus, setRouterStatus] = useState({ online: null, latency_ms: null })
 
   const fetchData = async () => {
     try {
@@ -140,6 +141,19 @@ const AdminDashboard = () => {
     }
   }
 
+  const fetchRouterStatus = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/mikrotik/status`, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 5000
+      })
+      setRouterStatus(res.data)
+    } catch (err) {
+      setRouterStatus({ online: false, latency_ms: null, error: 'Gagal cek status' })
+    }
+  }
+
   useEffect(() => {
     fetchData()
     const clockTimer = setInterval(() => setTime(new Date()), 1000)
@@ -148,6 +162,12 @@ const AdminDashboard = () => {
       clearInterval(clockTimer)
       clearInterval(dataTimer)
     }
+  }, [])
+
+  useEffect(() => {
+    fetchRouterStatus()
+    const routerInterval = setInterval(fetchRouterStatus, 30000)
+    return () => clearInterval(routerInterval)
   }, [])
 
   useEffect(() => {
@@ -231,6 +251,10 @@ const AdminDashboard = () => {
                 <p className="text-admin-muted text-sm mt-1">Sistem Billing ND-Hotspot</p>
             </div>
             <div className="flex items-center gap-3">
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium border ${routerStatus.online ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : routerStatus.online === false ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${routerStatus.online ? 'bg-emerald-500 animate-pulse' : routerStatus.online === false ? 'bg-red-500' : 'bg-zinc-500 animate-pulse'}`}></span>
+                    {routerStatus.online ? `Router ${routerStatus.latency_ms}ms` : routerStatus.online === false ? 'Router Offline' : 'Checking...'}
+                </div>
                 <div className="text-xs text-admin-muted bg-admin-base/50 px-3 py-1.5 rounded-md border border-admin-border flex items-center gap-2">
                     <Icon name="clock" className="w-3.5 h-3.5" />
                     <span>
@@ -254,6 +278,14 @@ const AdminDashboard = () => {
                 </button>
             </div>
         </div>
+
+        {/* Router Status Banner */}
+        {routerStatus.online === false && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 flex items-center gap-3 animate-pulse">
+                <span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                <p className="text-sm font-medium text-red-400">🔴 Router Offline — Periksa koneksi MikroTik segera!</p>
+            </div>
+        )}
 
         {/* Statistik Atas (3 Kolom Besar) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
