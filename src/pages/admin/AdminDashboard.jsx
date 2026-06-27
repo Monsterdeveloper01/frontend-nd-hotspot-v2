@@ -286,6 +286,7 @@ const AdminDashboard = () => {
                 <span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                 <p className="text-sm font-medium text-red-400">🔴 Router Offline — Periksa koneksi MikroTik segera!</p>
             </div>
+        )}
         {/* ONU Health Section */}
         {data?.stats?.olt_stats?.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
