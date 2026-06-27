@@ -24,6 +24,11 @@ const NetworkCenter = () => {
   const [meta, setMeta] = useState(null)
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
+  
+  // Pagination & Search States
+  const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const fetchOlts = async () => {
     try {
@@ -93,6 +98,25 @@ const NetworkCenter = () => {
     return 'bg-rose-50'
   }
 
+  // Filter and Pagination Logic
+  const filteredNodes = nodes.filter(node => {
+    if (!searchTerm) return true
+    const term = searchTerm.toLowerCase()
+    return (
+      (node.serial_number && node.serial_number.toLowerCase().includes(term)) ||
+      (node.description && node.description.toLowerCase().includes(term)) ||
+      (node.status && node.status.toLowerCase().includes(term)) ||
+      (node.alias && node.alias.toLowerCase().includes(term))
+    )
+  })
+
+  const totalPages = Math.ceil(filteredNodes.length / itemsPerPage)
+  const currentNodes = filteredNodes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  useEffect(() => {
+    setCurrentPage(1) // Reset to page 1 on search
+  }, [searchTerm])
+
   return (
     <div className="space-y-10">
       {/* Header Section */}
@@ -154,7 +178,7 @@ const NetworkCenter = () => {
 
       {/* Main Monitoring Table */}
       <div className="bg-admin-card rounded-2xl shadow-sm border border-admin-border overflow-hidden">
-        <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
+        <div className="px-10 py-8 border-b border-admin-border bg-admin-base/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-indigo-600 text-admin-text rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
               <Icon name="onu" className="w-6 h-6" />
@@ -163,6 +187,17 @@ const NetworkCenter = () => {
               <h2 className="text-xl font-black text-admin-text leading-tight uppercase tracking-tight">Daftar Perangkat Pelanggan</h2>
               <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest mt-1">Terhubung ke {selectedOlt?.name || 'OLT'}</p>
             </div>
+          </div>
+          
+          {/* Search Box */}
+          <div className="w-full md:w-64">
+            <input 
+              type="text" 
+              placeholder="Cari SN, Deskripsi, Status..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-admin-card border-2 border-admin-border text-admin-text text-xs font-bold rounded-2xl px-5 py-3 focus:outline-none focus:border-indigo-500 transition-colors"
+            />
           </div>
         </div>
 
@@ -180,7 +215,7 @@ const NetworkCenter = () => {
             <tbody className="divide-y divide-slate-50">
               {loading ? (
                 <tr><td colSpan="5" className="px-10 py-20 text-center font-bold text-admin-muted">Loading network telemetry...</td></tr>
-              ) : nodes.length > 0 ? nodes.map(node => (
+              ) : currentNodes.length > 0 ? currentNodes.map(node => (
                 <tr key={node.id} className="hover:bg-admin-base/80 transition-colors">
                   <td className="px-10 py-6">
                     <span className="font-mono font-black text-sm text-admin-text bg-admin-base px-3 py-1.5 rounded-lg border border-admin-border">
@@ -195,7 +230,7 @@ const NetworkCenter = () => {
                         {node.status}
                       </span>
                     </div>
-                    <p className="text-sm font-bold text-admin-text">{node.description || '-'}</p>
+                    <p className="text-sm font-bold text-admin-text">{node.alias || node.description || '-'}</p>
                   </td>
                   <td className="px-10 py-6">
                     <p className={`text-xl font-black italic tracking-tighter ${getSignalColor(node.last_signal)}`}>
@@ -215,19 +250,44 @@ const NetworkCenter = () => {
                         {node.customer.whatsapp && <span className="text-[9px] text-admin-muted font-mono bg-admin-base px-2 py-0.5 rounded-md">{node.customer.whatsapp}</span>}
                       </div>
                     ) : (
-                      <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest mb-2">Unassigned</p>
+                      <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest mb-2">Belum Dipetakan</p>
                     )}
                     <p className="text-[9px] font-bold text-admin-muted uppercase tracking-widest">
-                      Seen: {node.last_seen_at ? new Date(node.last_seen_at).toLocaleString() : 'N/A'}
+                      Seen: {node.last_seen_at ? new Date(node.last_seen_at).toLocaleString() : 'Belum Pernah'}
                     </p>
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan="5" className="px-10 py-32 text-center text-admin-muted font-bold italic uppercase tracking-widest">Belum ada data ONU. Klik "Sync Sekarang" untuk sinkronisasi.</td></tr>
+                <tr><td colSpan="5" className="px-10 py-32 text-center text-admin-muted font-bold italic uppercase tracking-widest">Belum ada data ONU yang cocok.</td></tr>
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-10 py-4 border-t border-admin-border bg-admin-base/50 flex items-center justify-between">
+            <p className="text-[10px] font-bold text-admin-muted uppercase tracking-widest">
+              Halaman {currentPage} dari {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 bg-admin-card border border-admin-border rounded-lg text-xs font-bold text-admin-text hover:bg-indigo-50 disabled:opacity-50 transition-colors"
+              >
+                Sebelumnya
+              </button>
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 bg-admin-card border border-admin-border rounded-lg text-xs font-bold text-admin-text hover:bg-indigo-50 disabled:opacity-50 transition-colors"
+              >
+                Selanjutnya
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
