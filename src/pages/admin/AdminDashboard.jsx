@@ -287,6 +287,21 @@ const AdminDashboard = () => {
             </div>
         )}
 
+        {/* ONU Health Banner */}
+        {data?.stats?.offline_onus > 0 && (
+            <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 flex items-center justify-between animate-pulse shadow-sm">
+                <div className="flex items-center gap-3">
+                    <span className="w-2.5 h-2.5 bg-rose-500 rounded-full"></span>
+                    <p className="text-sm font-bold text-rose-500">
+                        Peringatan: Ada {data.stats.offline_onus} ONU yang sedang OFFLINE!
+                    </p>
+                </div>
+                <Link to="/admin/network-center" className="px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-lg transition-colors">
+                    Lihat Detail
+                </Link>
+            </div>
+        )}
+
         {/* Statistik Atas (3 Kolom Besar) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Kotak 1: Total Pendapatan */}
