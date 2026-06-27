@@ -286,20 +286,29 @@ const AdminDashboard = () => {
                 <span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
                 <p className="text-sm font-medium text-red-400">🔴 Router Offline — Periksa koneksi MikroTik segera!</p>
             </div>
-        )}
-
-        {/* ONU Health Banner */}
-        {data?.stats?.offline_onus > 0 && (
-            <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 flex items-center justify-between animate-pulse shadow-sm">
-                <div className="flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 bg-rose-500 rounded-full"></span>
-                    <p className="text-sm font-bold text-rose-500">
-                        Peringatan: Ada {data.stats.offline_onus} ONU yang sedang OFFLINE!
-                    </p>
-                </div>
-                <Link to="/admin/network-center" className="px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-lg transition-colors">
-                    Lihat Detail
-                </Link>
+        {/* ONU Health Section */}
+        {data?.stats?.olt_stats?.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {data.stats.olt_stats.map(olt => (
+                    <div key={olt.id} className="bg-admin-card border border-admin-border rounded-xl p-4 flex flex-col justify-between shadow-sm">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-xs font-black uppercase tracking-widest text-admin-text truncate pr-2">{olt.name}</span>
+                            <Link to="/admin/network-center" className="text-[10px] bg-admin-base px-2 py-1 rounded-md text-admin-muted hover:text-indigo-500 hover:bg-indigo-50 transition-colors">
+                                DETAIL
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-emerald-500/10 rounded-lg p-2 text-center">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-600 mb-0.5">Online</p>
+                                <p className="text-lg font-black text-emerald-600">{olt.online}</p>
+                            </div>
+                            <div className={`rounded-lg p-2 text-center ${olt.offline > 0 ? 'bg-rose-500/10 animate-pulse' : 'bg-admin-base'}`}>
+                                <p className={`text-[9px] font-black uppercase tracking-widest mb-0.5 ${olt.offline > 0 ? 'text-rose-600' : 'text-admin-muted'}`}>Offline</p>
+                                <p className={`text-lg font-black ${olt.offline > 0 ? 'text-rose-600' : 'text-admin-muted'}`}>{olt.offline}</p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         )}
 
