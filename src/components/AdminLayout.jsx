@@ -70,7 +70,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
     return () => clearInterval(interval)
   }, [])
 
-  const menuItems = [
+    const menuItems = [
     { name: 'Dashboard', path: '/admin-dashboard-access-granted', icon: 'dashboard', section: 'GENERAL' },
     { name: 'RADIUS Settings', path: '/admin/radius-settings', icon: 'master', section: 'RADIUS SYSTEM' },
     { name: 'Data Pelanggan', path: '/admin/customers', icon: 'customers', section: 'PELANGGAN BULANAN' },
@@ -78,7 +78,8 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { name: 'Stock Voucher', path: '/admin/vouchers', icon: 'stock' },
     { name: 'User Online', path: '/admin/vouchers-online', icon: 'online' },
     { name: 'Voucher Terjual', path: '/admin/vouchers-sold', icon: 'sold' },
-    { name: 'Network Monitoring', path: '/admin/network-center', icon: 'network', section: 'INFRASTRUCTURE' },
+    { name: 'Manajemen OLT', path: '/admin/olt-management', icon: 'master', section: 'INFRASTRUCTURE' },
+    { name: 'Network Monitoring', path: '/admin/network-center', icon: 'network' },
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp', section: 'MESSAGING' },
   ]
 

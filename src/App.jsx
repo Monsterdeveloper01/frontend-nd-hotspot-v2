@@ -44,6 +44,8 @@ axios.interceptors.response.use(
   }
 );
 
+import OltManagement from './pages/admin/OltManagement'
+
 // Private Route Component
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('token')
@@ -76,6 +78,7 @@ function App() {
           <Route path="/admin/vouchers-online" element={<VoucherOnline />} />
           <Route path="/admin/vouchers-sold" element={<VoucherSold />} />
           <Route path="/admin/network-center" element={<NetworkCenter />} />
+          <Route path="/admin/olt-management" element={<OltManagement />} />
           <Route path="/admin/radius-settings" element={<RadiusSettings />} />
           <Route path="/admin/voucher-plans" element={<VoucherPlans />} />
           <Route path="/admin/whatsapp" element={<WhatsAppSettings />} />
