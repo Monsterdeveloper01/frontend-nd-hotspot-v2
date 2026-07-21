@@ -164,8 +164,9 @@ const PaymentSuccess = () => {
                                 Kode Voucher Hotspot
                             </p>
                             <div className="flex flex-col items-center gap-6">
-                                <div className="bg-white/5 border-2 border-white/10 rounded-3xl p-6 w-full shadow-inner">
-                                    <code className="text-4xl md:text-5xl font-black text-admin-text tracking-[0.2em] select-all uppercase">
+                                <div className="bg-white/10 border-2 border-white/20 rounded-3xl p-6 w-full shadow-inner relative overflow-hidden group-hover:border-emerald-500/50 transition-colors duration-500">
+                                    <div className="absolute inset-0 bg-emerald-400/5 blur-xl group-hover:bg-emerald-400/20 transition-all duration-500"></div>
+                                    <code className="relative z-10 text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-300 to-emerald-300 tracking-[0.2em] select-all uppercase drop-shadow-[0_0_15px_rgba(52,211,153,0.4)]">
                                         {voucherData?.voucher_code || 'XXXXXX'}
                                     </code>
                                 </div>
