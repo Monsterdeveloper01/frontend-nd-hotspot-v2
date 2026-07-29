@@ -370,7 +370,7 @@ const AdminDashboard = () => {
         {/* Statistik Atas (3 Kolom Besar) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Kotak 1: Total Pendapatan */}
-            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
+            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col">
                 <div>
                     <p className="text-sm font-medium text-admin-muted mb-1">Pendapatan Bulan Ini</p>
                     <div className="flex items-baseline gap-2">
@@ -408,7 +408,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Kotak 2: Total Pelanggan */}
-            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
+            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col">
                 <div>
                     <div className="flex items-center justify-between mb-1">
                         <p className="text-sm font-medium text-admin-muted">Pelanggan Aktif</p>
@@ -432,7 +432,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Kotak 3: Detail Hari Ini */}
-            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col justify-between">
+            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col">
                 <div>
                     <p className="text-sm font-medium text-admin-muted mb-1">Performa Hari Ini</p>
                     <div className="grid grid-cols-2 gap-4 mt-3">
