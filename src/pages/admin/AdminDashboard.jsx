@@ -69,8 +69,9 @@ const AdminDashboard = () => {
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyFilter, setHistoryFilter] = useState('all')
 
-  // Voucher Chart Modal State
-  const [voucherChartModalOpen, setVoucherChartModalOpen] = useState(false)
+  // Chart Modal State
+  const [chartModalOpen, setChartModalOpen] = useState(false)
+  const [activeChartTab, setActiveChartTab] = useState('voucher')
 
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
@@ -377,16 +378,16 @@ const AdminDashboard = () => {
                 <div className="mt-6 pt-4 border-t border-admin-border">
                     <div className="flex items-center justify-between">
                         <div className="text-right">
-                            <p className="text-xs text-admin-muted">Pendapatan Voucher</p>
+                            <p className="text-xs text-admin-muted">Statistik Pendapatan</p>
                             <button 
-                                onClick={() => setVoucherChartModalOpen(true)}
+                                onClick={() => setChartModalOpen(true)}
                                 className="mt-1 px-3 py-1 bg-admin-base border border-admin-border text-[10px] font-semibold text-admin-text rounded-md hover:bg-slate-100 transition-colors flex items-center gap-1"
                             >
                                 <Icon name="trend" className="w-3 h-3 text-admin-accent" />
                                 Lihat Chart
                             </button>
                         </div>
-                        <p className="text-lg font-bold text-admin-text mt-0.5">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
+                        <p className="text-lg font-bold text-admin-text mt-0.5">Rp {formatPrice(data.stats.voucher_revenue_today + data.stats.bill_revenue_today)}</p>
                     </div>
                 </div>
             </div>
@@ -647,12 +648,18 @@ const AdminDashboard = () => {
                                 </tbody>
                             </table>
                         </div>
+                        {historyData?.meta && (
+                            <Pagination 
+                                meta={historyData.meta} 
+                                onPageChange={(page) => fetchHistory(page, historyFilter)} 
+                            />
+                        )}
                     </div>
                 </div>
             </div>
         )}
 
-        {voucherChartModalOpen && (
+        {chartModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
                 <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 border border-admin-border">
                     <div className="bg-admin-card border-b border-admin-border px-8 py-6 shrink-0">
@@ -660,13 +667,28 @@ const AdminDashboard = () => {
                             <div>
                                 <h3 className="text-xl font-semibold text-admin-text flex items-center gap-2">
                                     <Icon name="trend" className="w-5 h-5 text-admin-accent" /> 
-                                    Statistik Penjualan Voucher
+                                    Statistik Pendapatan
                                 </h3>
-                                <p className="text-admin-muted text-xs mt-1">Tren pendapatan dari penjualan voucher 30 hari terakhir</p>
+                                <p className="text-admin-muted text-xs mt-1">Tren pendapatan 30 hari terakhir berdasarkan jenis</p>
                             </div>
-                            <button onClick={() => setVoucherChartModalOpen(false)} className="p-2 text-admin-muted hover:bg-admin-base hover:text-admin-text rounded-xl transition-colors">
+                            <button onClick={() => setChartModalOpen(false)} className="p-2 text-admin-muted hover:bg-admin-base hover:text-admin-text rounded-xl transition-colors">
                                 <Icon name="close" className="w-5 h-5" />
                             </button>
+                        </div>
+                        <div className="flex space-x-2 mt-6 overflow-x-auto pb-2">
+                            {[
+                                { id: 'voucher', label: 'Voucher' },
+                                { id: 'bill', label: 'Bill' },
+                                { id: 'qris_statis', label: 'QRIS Statis' }
+                            ].map(tab => (
+                                <button 
+                                    key={tab.id}
+                                    onClick={() => setActiveChartTab(tab.id)}
+                                    className={`whitespace-nowrap px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md transition-colors border ${activeChartTab === tab.id ? 'bg-admin-text text-white border-admin-text' : 'bg-admin-base text-admin-muted border-admin-border hover:bg-slate-100'}`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
                     
@@ -674,10 +696,10 @@ const AdminDashboard = () => {
                         <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6 h-[400px]">
                             <Line 
                                 data={{
-                                    labels: data?.voucher_chart?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],
+                                    labels: data?.[`${activeChartTab}_chart`]?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],
                                     datasets: [{
-                                        label: 'Pendapatan Voucher (Rp)',
-                                        data: data?.voucher_chart?.map(c => c.total) || [],
+                                        label: `Pendapatan ${activeChartTab.replace('_', ' ').toUpperCase()} (Rp)`,
+                                        data: data?.[`${activeChartTab}_chart`]?.map(c => c.total) || [],
                                         fill: true,
                                         borderColor: '#2563eb',
                                         backgroundColor: 'rgba(37, 99, 235, 0.1)',
