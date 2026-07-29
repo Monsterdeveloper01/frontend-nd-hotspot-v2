@@ -71,7 +71,6 @@ const AdminDashboard = () => {
 
   // Chart Modal State
   const [chartModalOpen, setChartModalOpen] = useState(false)
-  const [activeChartTab, setActiveChartTab] = useState('voucher')
 
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
@@ -243,6 +242,60 @@ const AdminDashboard = () => {
       }
     }
   }
+
+  const getUnifiedChartData = () => {
+      if (!data) return { labels: [], datasets: [] };
+
+      const dateSet = new Set();
+      const charts = ['voucher_chart', 'bill_chart', 'qris_statis_chart'];
+      
+      charts.forEach(chartName => {
+          if (data[chartName]) {
+              data[chartName].forEach(item => dateSet.add(item.date));
+          }
+      });
+
+      const sortedDates = Array.from(dateSet).sort();
+
+      const mapData = (chartName) => {
+          if (!data[chartName]) return sortedDates.map(() => 0);
+          const dataMap = data[chartName].reduce((acc, curr) => {
+              acc[curr.date] = curr.total;
+              return acc;
+          }, {});
+          return sortedDates.map(date => dataMap[date] || 0);
+      };
+
+      return {
+          labels: sortedDates.map(d => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })),
+          datasets: [
+              {
+                  label: 'Voucher',
+                  data: mapData('voucher_chart'),
+                  fill: true,
+                  borderColor: '#2563eb', // Blue
+                  backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                  tension: 0.4
+              },
+              {
+                  label: 'Bill',
+                  data: mapData('bill_chart'),
+                  fill: true,
+                  borderColor: '#10b981', // Emerald
+                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                  tension: 0.4
+              },
+              {
+                  label: 'QRIS Statis',
+                  data: mapData('qris_statis_chart'),
+                  fill: true,
+                  borderColor: '#8b5cf6', // Violet
+                  backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                  tension: 0.4
+              }
+          ]
+      };
+  };
 
   return (
     <div className="space-y-6 pb-20">
@@ -675,45 +728,30 @@ const AdminDashboard = () => {
                                 <Icon name="close" className="w-5 h-5" />
                             </button>
                         </div>
-                        <div className="flex space-x-2 mt-6 overflow-x-auto pb-2">
-                            {[
-                                { id: 'voucher', label: 'Voucher' },
-                                { id: 'bill', label: 'Bill' },
-                                { id: 'qris_statis', label: 'QRIS Statis' }
-                            ].map(tab => (
-                                <button 
-                                    key={tab.id}
-                                    onClick={() => setActiveChartTab(tab.id)}
-                                    className={`whitespace-nowrap px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md transition-colors border ${activeChartTab === tab.id ? 'bg-admin-text text-white border-admin-text' : 'bg-admin-base text-admin-muted border-admin-border hover:bg-slate-100'}`}
-                                >
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </div>
                     </div>
                     
                     <div className="flex-1 p-6 bg-admin-base overflow-y-auto">
                         <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6 h-[400px]">
                             <Line 
-                                data={{
-                                    labels: data?.[`${activeChartTab}_chart`]?.map(c => new Date(c.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })) || [],
-                                    datasets: [{
-                                        label: `Pendapatan ${activeChartTab.replace('_', ' ').toUpperCase()} (Rp)`,
-                                        data: data?.[`${activeChartTab}_chart`]?.map(c => c.total) || [],
-                                        fill: true,
-                                        borderColor: '#2563eb',
-                                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                                        tension: 0.4
-                                    }]
-                                }} 
+                                data={getUnifiedChartData()} 
                                 options={{
                                     ...chartOptions,
                                     plugins: {
                                         ...chartOptions.plugins,
+                                        legend: { 
+                                            display: true, 
+                                            position: 'top',
+                                            labels: {
+                                                usePointStyle: true,
+                                                boxWidth: 8,
+                                                padding: 20,
+                                                font: { size: 11 }
+                                            }
+                                        },
                                         tooltip: {
                                             ...chartOptions.plugins.tooltip,
                                             callbacks: {
-                                                label: (ctx) => `Rp ${formatPrice(ctx.parsed.y)}`
+                                                label: (ctx) => `${ctx.dataset.label}: Rp ${formatPrice(ctx.parsed.y)}`
                                             }
                                         }
                                     }
