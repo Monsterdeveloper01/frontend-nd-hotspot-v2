@@ -181,18 +181,30 @@ const AdminDashboard = () => {
     </div>
   )
 
+  const chartDataArray = data?.chart.map(c => c.total) || [];
+  const maxVal = chartDataArray.length > 0 ? Math.max(...chartDataArray) : 0;
+  const maxIdx = chartDataArray.indexOf(maxVal);
+
   const chartConfig = {
     labels: data?.chart.map(c => new Date(c.date).getDate()) || [],
     datasets: [{
       label: 'Pendapatan (Rp)',
-      data: data?.chart.map(c => c.total) || [],
-      fill: false,
+      data: chartDataArray,
+      fill: true,
       borderColor: '#0ea5e9', // admin-accent
-      backgroundColor: 'transparent',
-      tension: 0.3,
-      pointRadius: 0,
-      pointHoverRadius: 4,
-      pointHoverBackgroundColor: '#0ea5e9',
+      backgroundColor: (context) => {
+        const ctx = context.chart.ctx;
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(14, 165, 233, 0.25)');
+        gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+        return gradient;
+      },
+      tension: 0.4,
+      pointRadius: context => context.dataIndex === maxIdx ? 5 : 0,
+      pointBackgroundColor: context => context.dataIndex === maxIdx ? '#0ea5e9' : 'transparent',
+      pointBorderColor: context => context.dataIndex === maxIdx ? '#ffffff' : 'transparent',
+      pointBorderWidth: 2,
+      pointHoverRadius: 6,
       borderWidth: 2
     }]
   }
@@ -222,7 +234,7 @@ const AdminDashboard = () => {
     scales: {
       y: {
         beginAtZero: true,
-        grid: { color: '#f1f5f9', drawBorder: false },
+        grid: { color: '#e2e8f0', drawBorder: false, borderDash: [4, 4], lineWidth: 1 },
         border: { display: false },
         ticks: { 
           color: '#64748b', // zinc-500
@@ -370,11 +382,11 @@ const AdminDashboard = () => {
         {/* Statistik Atas (3 Kolom Besar) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Kotak 1: Total Pendapatan */}
-            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
                 <div>
                     <p className="text-sm font-medium text-admin-muted mb-1">Pendapatan Bulan Ini</p>
                     <div className="flex items-baseline gap-2">
-                        <p className="text-3xl font-semibold text-admin-text tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
+                        <p className="text-4xl font-bold tabular-nums text-admin-text tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
                     </div>
                     <div className="grid grid-cols-2 gap-2 mt-4">
                         <div className="bg-admin-base/50 px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
@@ -408,7 +420,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Kotak 2: Total Pelanggan */}
-            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
                 <div>
                     <div className="flex items-center justify-between mb-1">
                         <p className="text-sm font-medium text-admin-muted">Pelanggan Aktif</p>
@@ -417,7 +429,7 @@ const AdminDashboard = () => {
                             {data.stats.online_count} Online
                         </span>
                     </div>
-                    <p className="text-3xl font-semibold text-admin-text tracking-tight">{data.stats.total_customers.toLocaleString('id-ID')}</p>
+                    <p className="text-4xl font-bold tabular-nums text-admin-text tracking-tight">{data.stats.total_customers.toLocaleString('id-ID')}</p>
                 </div>
                 <div className="mt-6 pt-4 border-t border-admin-border grid grid-cols-2 gap-4">
                     <div>
@@ -432,17 +444,18 @@ const AdminDashboard = () => {
             </div>
 
             {/* Kotak 3: Detail Hari Ini */}
-            <div className="bg-admin-card rounded-xl border border-admin-border p-5 flex flex-col">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col">
                 <div>
                     <p className="text-sm font-medium text-admin-muted mb-1">Performa Hari Ini</p>
                     <div className="grid grid-cols-2 gap-4 mt-3">
                         <div>
                             <p className="text-xs text-admin-muted">Bill Masuk</p>
-                            <p className="text-lg font-semibold text-admin-text mt-0.5">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
+                            <p className="text-xl font-bold tabular-nums text-admin-text mt-0.5">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
                         </div>
                         <div>
                             <p className="text-xs text-admin-muted">Voucher Terjual</p>
-                            <p className="text-lg font-semibold text-admin-text mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-admin-muted font-normal">voucher</span></p>
+                            <p className="text-xl font-bold tabular-nums text-admin-text mt-0.5">{data.stats.voucher_sold_today.toLocaleString('id-ID')} <span className="text-xs text-admin-muted font-normal">voucher</span></p>
+                            <p className="text-[10px] text-admin-success font-semibold mt-1">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
                         </div>
                     </div>
                 </div>
@@ -458,17 +471,17 @@ const AdminDashboard = () => {
                                 Lihat Chart
                             </button>
                         </div>
-                        <p className="text-lg font-bold text-admin-text mt-0.5">Rp {formatPrice(Number(data.stats.voucher_revenue_today || 0) + Number(data.stats.bill_revenue_today || 0))}</p>
+                        <p className="text-xl font-bold tabular-nums text-admin-text mt-0.5">Rp {formatPrice(Number(data.stats.voucher_revenue_today || 0) + Number(data.stats.bill_revenue_today || 0))}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div className="bg-admin-card rounded-xl border border-admin-border p-6 mb-6">
+        <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-base font-semibold text-admin-text tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-                    <p className="text-xs text-admin-muted mt-1">Statistik pendapatan harian bulan ini</p>
+                    <h3 className="text-lg font-bold text-admin-text tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
+                    <p className="text-xs text-slate-400 mt-1">Statistik pendapatan harian bulan ini</p>
                 </div>
                 <div className="flex items-center gap-2 mt-4 md:mt-0">
                     <span className="flex items-center text-[10px] text-admin-muted font-medium"><span className="w-2 h-2 rounded-full bg-admin-accent mr-1.5"></span> Total Pendapatan</span>
@@ -481,11 +494,11 @@ const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 mb-6">
-            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6">
+            <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <div>
-                        <h3 className="text-base font-semibold text-admin-text">Jam Ramai Pengunjung (Hari Ini)</h3>
-                        <p className="text-xs text-admin-muted mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
+                        <h3 className="text-lg font-bold text-admin-text tracking-tight">Jam Ramai Pengunjung (Hari Ini)</h3>
+                        <p className="text-xs text-slate-400 mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
                     </div>
                     <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
                         <Icon name="clock" className="w-4 h-4" />
