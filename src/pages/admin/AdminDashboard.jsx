@@ -440,7 +440,7 @@ const AdminDashboard = () => {
                                 Lihat Chart
                             </button>
                         </div>
-                        <p className="text-lg font-bold text-admin-text mt-0.5">Rp {formatPrice(data.stats.voucher_revenue_today + data.stats.bill_revenue_today)}</p>
+                        <p className="text-lg font-bold text-admin-text mt-0.5">Rp {formatPrice(Number(data.stats.voucher_revenue_today || 0) + Number(data.stats.bill_revenue_today || 0))}</p>
                     </div>
                 </div>
             </div>
