@@ -376,6 +376,24 @@ const AdminDashboard = () => {
                     <div className="flex items-baseline gap-2">
                         <p className="text-3xl font-semibold text-admin-text tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
                     </div>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                        <div className="bg-admin-base/50 px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">Voucher</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.voucher_revenue_month)}</span>
+                        </div>
+                        <div className="bg-admin-base/50 px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">Bill</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.bill_revenue_month)}</span>
+                        </div>
+                        <div className="bg-admin-base/50 px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">Manual Bill</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.manual_bill_revenue_month)}</span>
+                        </div>
+                        <div className="bg-admin-base/50 px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">QRIS Statis</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.qris_statis_revenue_month)}</span>
+                        </div>
+                    </div>
                 </div>
                 <div className="mt-6 pt-4 border-t border-admin-border flex items-center justify-between">
                     <div>
@@ -474,15 +492,16 @@ const AdminDashboard = () => {
                     </div>
                 </div>
                 <div className="h-64 w-full">
-                    <Bar 
+                    <Line 
                         data={{
                             labels: peakHours.map(p => p.hour),
                             datasets: [{
                                 label: 'Visitor Hits',
                                 data: peakHours.map(p => p.count),
-                                backgroundColor: '#2563eb',
-                                hoverBackgroundColor: '#1d4ed8',
-                                borderRadius: 4,
+                                fill: true,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                tension: 0.4
                             }]
                         }} 
                         options={{
