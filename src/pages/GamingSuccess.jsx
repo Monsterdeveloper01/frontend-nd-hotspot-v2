@@ -17,7 +17,7 @@ const GamingSuccess = () => {
         if (!orderId) { setLoading(false); return }
         const fetchVoucher = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/voucher-by-order/${orderId}`)
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/voucher/details?order_id=${orderId}`)
                 setVoucher(response.data.voucher)
             } catch (err) {
                 console.error('Failed to fetch voucher:', err)
