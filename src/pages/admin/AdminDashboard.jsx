@@ -483,49 +483,65 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 mb-6">
-            <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* JAM RAMAI PENGUNJUNG (Equalizer Custom) */}
+            <div className="bg-admin-card rounded-md shadow-sm border border-admin-border p-6 flex flex-col h-[400px]">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
                     <div>
-                        <h3 className="text-lg font-bold text-admin-text tracking-tight">Jam Ramai Pengunjung (Hari Ini)</h3>
-                        <p className="text-xs text-slate-400 mt-1">Statistik kunjungan unik per jam (Reset setiap hari)</p>
+                        <h3 className="text-sm font-bold text-admin-text tracking-tight uppercase flex items-center gap-2">
+                            <Icon name="clock" className="w-4 h-4 text-amber-500" />
+                            Aktivitas Pengunjung (Hari Ini)
+                        </h3>
+                        <p className="text-[10px] text-admin-muted mt-1 uppercase tracking-widest">Intensitas Kunjungan per Jam</p>
                     </div>
-                    <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center">
-                        <Icon name="clock" className="w-4 h-4" />
+                    <div className="flex items-center gap-2 mt-2 md:mt-0">
+                        <span className="flex items-center text-[9px] text-admin-muted font-bold uppercase tracking-widest"><span className="w-2 h-2 rounded-full bg-amber-500 mr-1.5 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span> Puncak</span>
+                        <span className="flex items-center text-[9px] text-admin-muted font-bold uppercase tracking-widest"><span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5"></span> Normal</span>
                     </div>
                 </div>
-                <div className="h-64 w-full">
-                    <Line 
-                        data={{
-                            labels: peakHours.map(p => p.hour),
-                            datasets: [{
-                                label: 'Visitor Hits',
-                                data: peakHours.map(p => p.count),
-                                fill: true,
-                                borderColor: '#f59e0b',
-                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                                tension: 0.4
-                            }]
-                        }} 
-                        options={{
-                            ...chartOptions,
-                            plugins: {
-                                ...chartOptions.plugins,
-                                tooltip: {
-                                    ...chartOptions.plugins.tooltip,
-                                    callbacks: {
-                                        label: (ctx) => `${ctx.parsed.y} Kunjungan`
-                                    }
-                                }
-                            }
-                        }} 
-                    />
+                
+                {/* Heatmap / Equalizer Container */}
+                <div className="flex-1 w-full flex items-end justify-between gap-1 mt-2 pb-6 border-b border-admin-border/50 relative">
+                    {(() => {
+                        const maxPeak = peakHours.length > 0 ? Math.max(...peakHours.map(p => p.count)) : 1;
+                        if (peakHours.length === 0) {
+                            return <div className="absolute inset-0 flex items-center justify-center text-admin-muted text-xs font-bold italic">Belum ada data pengunjung hari ini</div>;
+                        }
+                        return peakHours.map((p, i) => {
+                            const heightPct = Math.max((p.count / maxPeak) * 100, 4); // minimal 4% agar bar tetap terlihat
+                            const isPeak = p.count === maxPeak && maxPeak > 0;
+                            return (
+                                <div key={i} className="relative flex flex-col items-center justify-end h-full w-full group">
+                                    {/* Tooltip pada Hover */}
+                                    <div className="absolute -top-10 bg-admin-card text-admin-text text-[10px] py-1.5 px-3 rounded-lg border border-admin-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-xl font-bold tracking-widest uppercase">
+                                        Jam {p.hour}:00 <span className={isPeak ? "text-amber-500" : "text-blue-500"}>({p.count} Visit)</span>
+                                    </div>
+                                    
+                                    {/* Bar Equalizer */}
+                                    <div className="w-full bg-admin-base rounded-t-md overflow-hidden relative flex flex-col justify-end transition-all border-x border-t border-admin-border/30 group-hover:border-admin-border" style={{ height: '100%' }}>
+                                        <div 
+                                            className={`w-full rounded-t-md transition-all duration-700 ease-out group-hover:brightness-125 ${
+                                                isPeak 
+                                                    ? 'bg-gradient-to-t from-amber-600 to-amber-400 shadow-[0_-5px_15px_rgba(245,158,11,0.3)]' 
+                                                    : 'bg-gradient-to-t from-blue-900 to-blue-500'
+                                            }`}
+                                            style={{ height: `${heightPct}%` }}
+                                        >
+                                            {/* Efek Garis Glow di Ujung Atas */}
+                                            <div className={`w-full h-1 ${isPeak ? 'bg-amber-200' : 'bg-blue-300'} opacity-50`}></div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Label Waktu */}
+                                    <span className="text-[8px] text-admin-muted mt-2 rotate-[-90deg] origin-top-left -ml-1 font-mono font-bold">{p.hour}</span>
+                                </div>
+                            );
+                        });
+                    })()}
                 </div>
             </div>
-        </div>
 
-        <div className="grid grid-cols-1 gap-6 mb-6">
-            {/* LOG TRANSAKSI (Satu Kolom Penuh) */}
+            {/* LOG TRANSAKSI */}
             <div className="bg-admin-card rounded-md shadow-sm border border-admin-border overflow-hidden flex flex-col h-[400px]">
                 <div className="px-4 py-3 border-b border-admin-border flex justify-between items-center bg-admin-card">
                     <h2 className="text-xs font-bold text-admin-text tracking-wider uppercase flex items-center gap-2">
@@ -549,22 +565,22 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
                                 <div className="flex-1 border-b border-admin-border pb-3">
-                                    <p className="text-xs text-admin-muted">
+                                    <p className="text-xs text-admin-muted font-bold tracking-widest">
                                         {new Date(tx.paid_at || tx.created_at).toLocaleString('id-ID')}
                                     </p>
-                                    <p className="text-sm font-medium text-admin-text mt-0.5">
+                                    <p className="text-sm font-bold text-admin-text mt-0.5 tracking-tight uppercase">
                                         {isBill 
-                                            ? `Pembayaran Tagihan ${(tx.customer?.name || tx.customer_name || 'Pelanggan')} Berhasil` 
-                                            : `Pembelian Voucher ${tx.voucher?.code || ''} Berhasil`}
+                                            ? `BAYAR TAGIHAN ${(tx.customer?.name || tx.customer_name || 'PELANGGAN')} SUKSES` 
+                                            : `BELI VOUCHER ${tx.voucher?.code || ''} SUKSES`}
                                     </p>
-                                    <p className="text-xs text-admin-muted font-mono mt-0.5">
-                                        Ref: {tx.reference_id || tx.external_id} | Rp{formatPrice(tx.amount)}
+                                    <p className="text-[10px] text-admin-muted font-mono mt-1 font-bold">
+                                        REF: {tx.reference_id || tx.external_id} <span className="mx-2">|</span> <span className={isBill ? "text-emerald-500" : "text-blue-500"}>Rp{formatPrice(tx.amount)}</span>
                                     </p>
                                 </div>
                             </div>
                         )
                     }) : (
-                        <div className="text-center text-admin-muted text-xs mt-10">Belum ada log transaksi.</div>
+                        <div className="text-center text-admin-muted text-xs mt-10 font-bold italic">Belum ada log transaksi.</div>
                     )}
                 </div>
             </div>
