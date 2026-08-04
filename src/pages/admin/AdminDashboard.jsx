@@ -285,7 +285,7 @@ const AdminDashboard = () => {
                   label: 'Voucher',
                   data: mapData('voucher_chart'),
                   fill: true,
-                  borderColor: '#2563eb', // Blue
+                  borderColor: '#60a5fa', // Blue
                   backgroundColor: 'rgba(37, 99, 235, 0.1)',
                   tension: 0.4
               },

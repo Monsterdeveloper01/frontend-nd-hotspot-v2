@@ -3,61 +3,77 @@ import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
+const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
+
 const PublicLayout = ({ children }) => {
     const [showMenu, setShowMenu] = useState(false)
     const toggleMenu = () => setShowMenu(!showMenu)
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col pt-16 lg:pt-0">
+        <div style={{ minHeight: '100vh', background: '#ffffff', display: 'flex', flexDirection: 'column' }} className="pt-16 lg:pt-0">
             <Navbar toggleMenu={toggleMenu} />
 
-            {/* Mobile Menu Overlay */}
-            <div className={`fixed inset-0 z-[100] transition-all duration-500 lg:hidden ${showMenu ? 'visible opacity-100' : 'invisible opacity-0'}`}>
-                <div className={`absolute inset-0 bg-slate-900/60 backdrop-blur-sm`} onClick={toggleMenu}></div>
-                <div className={`absolute right-0 top-0 bottom-0 w-[80%] max-w-sm bg-white shadow-2xl transition-transform duration-500 transform ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
-                    {/* Header Mobile Menu */}
-                    <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 flex items-center justify-center bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
-                                <img src="/logo-wifi.png" alt="Logo" className="w-full h-full object-contain invert brightness-0" />
+            {/* Mobile Menu Overlay - Neo Brutalism */}
+            <div className={`fixed inset-0 z-[100] transition-all duration-300 lg:hidden ${showMenu ? 'visible opacity-100' : 'invisible opacity-0'}`}>
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(30,58,138,0.5)' }} onClick={toggleMenu} />
+                <div className={`absolute right-0 top-0 bottom-0 w-[80%] max-w-sm transition-transform duration-300 transform ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
+                    style={{ background: '#ffffff', borderLeft: `3px solid ${nb.dark}` }}
+                >
+                    <div style={{ padding: '1.5rem', borderBottom: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div style={{
+                                width: '40px', height: '40px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                borderRadius: '10px',
+                                border: `2px solid ${nb.dark}`,
+                                boxShadow: `3px 3px 0px ${nb.dark}`,
+                            }}>
+                                <img src="/logo-wifi.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="font-black text-slate-900 text-lg tracking-tighter">ND-HOTSPOT</span>
-                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">High Speed Internet</span>
-                            </div>
+                            <span style={{ fontWeight: 900, color: nb.dark, fontSize: '1.1rem', letterSpacing: '-0.03em' }}>ND-HOTSPOT</span>
                         </div>
-                        <button onClick={toggleMenu} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                            <i className="fas fa-times text-xl" />
+                        <button onClick={toggleMenu} style={{
+                            width: '40px', height: '40px', borderRadius: '10px',
+                            background: '#ffffff',
+                            border: `2px solid ${nb.dark}`,
+                            boxShadow: `2px 2px 0px ${nb.dark}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: nb.dark, cursor: 'pointer', fontSize: '1rem',
+                        }}>
+                            <i className="fas fa-times" />
                         </button>
                     </div>
 
-                    {/* Navigation Links */}
-                    <div className="flex-1 overflow-y-auto py-8 px-6 space-y-4">
-                        <Link to="/" onClick={toggleMenu} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-blue-50 hover:border-blue-100 transition-all group">
-                            <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i className="fas fa-home text-xl" />
-                            </div>
-                            <span className="font-bold text-slate-700 text-lg">Beranda</span>
-                        </Link>
-
-                        <Link to="/check-voucher" onClick={toggleMenu} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-blue-50 hover:border-blue-100 transition-all group">
-                            <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i className="fas fa-search text-xl" />
-                            </div>
-                            <span className="font-bold text-slate-700 text-lg">Cek Voucher</span>
-                        </Link>
-
-                        <Link to="/payment" onClick={toggleMenu} className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-blue-50 hover:border-blue-100 transition-all group">
-                            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i className="fas fa-credit-card text-xl" />
-                            </div>
-                            <span className="font-bold text-slate-700 text-lg">Bayar Tagihan</span>
-                        </Link>
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {[
+                            { to: '/', icon: 'home', label: 'Beranda' },
+                            { to: '/check-voucher', icon: 'search', label: 'Cek Voucher' },
+                            { to: '/payment', icon: 'credit-card', label: 'Bayar Tagihan' },
+                        ].map((item) => (
+                            <Link key={item.to} to={item.to} onClick={toggleMenu} style={{
+                                display: 'flex', alignItems: 'center', gap: '1rem',
+                                padding: '1rem 1.25rem', borderRadius: '14px',
+                                border: `3px solid ${nb.dark}`, background: '#ffffff',
+                                boxShadow: `4px 4px 0px ${nb.dark}`,
+                                textDecoration: 'none',
+                            }}>
+                                <div style={{
+                                    width: '44px', height: '44px', borderRadius: '12px',
+                                    background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    color: '#fff', fontSize: '1.1rem',
+                                }}>
+                                    <i className={`fas fa-${item.icon}`} />
+                                </div>
+                                <span style={{ fontWeight: 800, color: nb.dark, fontSize: '1.05rem' }}>{item.label}</span>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col">
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 {children}
             </div>
 

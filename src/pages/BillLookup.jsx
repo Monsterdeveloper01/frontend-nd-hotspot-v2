@@ -1,36 +1,24 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import axios from 'axios'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import PublicLayout from '../components/PublicLayout'
 
+const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
+
 const formatTanggal = (dateString) => {
-    if (!dateString || dateString === '0000-00-00') return '-';
-    
+    if (!dateString || dateString === '0000-00-00') return '-'
     try {
-        // Handle ISO strings or YYYY-MM-DD
-        const date = new Date(dateString);
+        const date = new Date(dateString)
         if (!isNaN(date.getTime())) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
+            return `${String(date.getDate()).padStart(2,'0')}-${String(date.getMonth()+1).padStart(2,'0')}-${date.getFullYear()}`
         }
-        
-        // Fallback for numeric only (day)
         if (/^\d{1,2}$/.test(dateString)) {
-            const now = new Date();
-            const day = dateString.padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            return `${day}-${month}-${year}`;
+            const now = new Date()
+            return `${dateString.padStart(2,'0')}-${String(now.getMonth()+1).padStart(2,'0')}-${now.getFullYear()}`
         }
-        
-        return dateString;
-    } catch (e) {
-        console.error('Error formatting date:', e, dateString);
-        return dateString || '-';
-    }
-};
+        return dateString
+    } catch { return dateString || '-' }
+}
 
 const BillLookup = () => {
     const [query, setQuery] = useState('')
@@ -39,32 +27,18 @@ const BillLookup = () => {
     const [loading, setLoading] = useState(false)
     const [paymentLoading, setPaymentLoading] = useState(false)
     const [error, setError] = useState('')
-    const [activeView, setActiveView] = useState('search') // search, detail, success
+    const [activeView, setActiveView] = useState('search')
     const searchInputRef = useRef(null)
 
     const handleSearch = async (e) => {
         e.preventDefault()
         if (!query.trim()) return
-        
-        setLoading(true)
-        setError('')
-        setSearchResults([])
-        
+        setLoading(true); setError(''); setSearchResults([])
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/search-bill`, {
-                params: { query }
-            })
-            // If only one result, select it automatically
-            if (Array.isArray(response.data)) {
-                setSearchResults(response.data)
-            } else {
-                setSearchResults([response.data])
-            }
-        } catch (err) {
-            setError('Data tagihan tidak ditemukan. Pastikan Nama atau No. WA benar.')
-        } finally {
-            setLoading(false)
-        }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/search-bill`, { params: { query } })
+            setSearchResults(Array.isArray(response.data) ? response.data : [response.data])
+        } catch { setError('Data tagihan tidak ditemukan. Pastikan Nama atau No. WA benar.') }
+        finally { setLoading(false) }
     }
 
     const handleSelectCustomer = (customer) => {
@@ -77,204 +51,197 @@ const BillLookup = () => {
         setPaymentLoading(true)
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/customers/${selectedCustomer.id}/snap-token`)
-            const { token } = response.data
-
-            window.snap.pay(token, {
-                onSuccess: (result) => {
-                    setActiveView('success')
-                    setPaymentLoading(false)
-                },
-                onPending: (result) => {
-                    alert('Pembayaran Tertunda. Silakan selesaikan pembayaran Anda.')
-                    setPaymentLoading(false)
-                },
-                onError: (result) => {
-                    alert('Pembayaran Gagal!')
-                    setPaymentLoading(false)
-                },
-                onClose: () => {
-                    setPaymentLoading(false)
-                }
+            window.snap.pay(response.data.token, {
+                onSuccess: () => { setActiveView('success'); setPaymentLoading(false) },
+                onPending: () => { alert('Pembayaran Tertunda.'); setPaymentLoading(false) },
+                onError: () => { alert('Pembayaran Gagal!'); setPaymentLoading(false) },
+                onClose: () => { setPaymentLoading(false) }
             })
-        } catch (err) {
-            alert('Gagal mengambil token pembayaran')
-            setPaymentLoading(false)
-        }
+        } catch { alert('Gagal mengambil token pembayaran'); setPaymentLoading(false) }
     }
 
-    const formatRupiah = (amount) => {
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(amount);
-    }
-
-    const FaIcon = ({ name, className = "" }) => <i className={`fas fa-${name} ${className}`}></i>
+    const formatRupiah = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount)
 
     return (
         <PublicLayout>
-            <div className="min-h-screen bg-slate-50 py-12 px-4">
-                <div className="max-w-md mx-auto">
+            <div style={{ minHeight: '100vh', background: '#ffffff', padding: '3rem 1rem' }}>
+                <div style={{ maxWidth: '28rem', margin: '0 auto' }}>
                     {/* Header */}
-                    <div className="text-center mb-10">
-                        <div className="inline-block mb-4">
-                            <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[30px] shadow-xl flex items-center justify-center text-3xl text-admin-text mb-4 mx-auto rotate-3">
-                                <FaIcon name="credit-card" />
-                            </div>
+                    <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+                        <div style={{
+                            width: '72px', height: '72px',
+                            background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                            borderRadius: '20px', border: `3px solid ${nb.dark}`,
+                            boxShadow: `5px 5px 0px ${nb.dark}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            margin: '0 auto 1.25rem', color: '#fff', fontSize: '2rem',
+                        }}>
+                            <i className="fas fa-credit-card" />
                         </div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase">
-                            ND-Hotspot <span className="text-blue-600">Payment</span>
+                        <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: nb.dark, letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
+                            ND-Hotspot <span style={{ color: nb.light }}>Payment</span>
                         </h1>
-                        <p className="text-slate-500 font-bold text-sm mt-2">Portal Pembayaran Tagihan Internet</p>
+                        <p style={{ color: '#64748b', fontWeight: 700, fontSize: '0.85rem', marginTop: '0.5rem' }}>Portal Pembayaran Tagihan Internet</p>
                     </div>
 
                     {activeView === 'search' && (
-                        <div className="space-y-6 animate-fadeIn">
-                            <div className="bg-white rounded-[35px] shadow-2xl border border-slate-100 p-8">
-                                <div className="flex items-center justify-between mb-8">
+                        <div>
+                            {/* Search Card */}
+                            <div style={{
+                                background: '#fff', borderRadius: '20px',
+                                border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`,
+                                padding: '2rem', marginBottom: '1.5rem',
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                     <div>
-                                        <h2 className="text-xl font-black text-slate-800 tracking-tight uppercase">Cari Tagihan</h2>
-                                        <p className="text-slate-400 font-bold text-xs">Masukkan Nama atau Nomor WA</p>
+                                        <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase' }}>Cari Tagihan</h2>
+                                        <p style={{ color: '#94a3b8', fontWeight: 700, fontSize: '0.7rem' }}>Masukkan Nama atau Nomor WA</p>
                                     </div>
-                                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-                                        <FaIcon name="search" />
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#eff6ff', color: nb.light, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>
+                                        <i className="fas fa-search" />
                                     </div>
                                 </div>
-
-                                <form onSubmit={handleSearch} className="relative">
-                                    <input 
-                                        ref={searchInputRef}
-                                        type="text" 
-                                        value={query}
-                                        onChange={(e) => setQuery(e.target.value)}
-                                        placeholder="Nama pelanggan..."
-                                        className="w-full pl-6 pr-14 py-5 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-lg outline-none focus:border-blue-500 transition-all"
-                                        required
+                                <form onSubmit={handleSearch} style={{ position: 'relative' }}>
+                                    <input ref={searchInputRef} type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Nama pelanggan..."
+                                        style={{
+                                            width: '100%', padding: '1rem 3.5rem 1rem 1.25rem',
+                                            background: '#f8fafc', border: `3px solid ${nb.dark}`,
+                                            borderRadius: '12px', fontWeight: 800, fontSize: '1rem',
+                                            outline: 'none', color: nb.dark, boxSizing: 'border-box',
+                                        }} required
                                     />
-                                    <button 
-                                        type="submit"
-                                        disabled={loading}
-                                        className="absolute right-3 top-3 bottom-3 bg-admin-accent text-white px-5 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
-                                    >
-                                        {loading ? <FaIcon name="sync" className="animate-spin" /> : <FaIcon name="arrow-right" />}
+                                    <button type="submit" disabled={loading} style={{
+                                        position: 'absolute', right: '6px', top: '6px', bottom: '6px',
+                                        background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                        color: '#fff', padding: '0 1.25rem', borderRadius: '8px',
+                                        border: 'none', cursor: 'pointer', fontSize: '1rem',
+                                    }}>
+                                        {loading ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-arrow-right" />}
                                     </button>
                                 </form>
-
                                 {error && (
-                                    <div className="mt-6 p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-2xl flex items-center gap-3">
-                                        <FaIcon name="exclamation-circle" className="text-lg" />
-                                        <span>{error}</span>
+                                    <div style={{ marginTop: '1rem', padding: '0.85rem', background: '#fef2f2', border: '2px solid #fecaca', color: '#ef4444', fontSize: '0.75rem', fontWeight: 700, borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <i className="fas fa-exclamation-circle" /> {error}
                                     </div>
                                 )}
                             </div>
 
+                            {/* Results */}
                             {searchResults.length > 0 && (
-                                <div className="space-y-4">
-                                    <h3 className="px-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Hasil Pencarian</h3>
+                                <div style={{ marginBottom: '1.5rem' }}>
+                                    <h3 style={{ padding: '0 0.5rem', fontSize: '0.6rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Hasil Pencarian</h3>
                                     {searchResults.map((customer) => (
-                                        <div 
-                                            key={customer.id}
-                                            onClick={() => handleSelectCustomer(customer)}
-                                            className="bg-white p-6 rounded-3xl border-2 border-slate-100 shadow-lg hover:border-blue-400 transition-all cursor-pointer flex justify-between items-center group"
+                                        <div key={customer.id} onClick={() => handleSelectCustomer(customer)} style={{
+                                            background: '#fff', padding: '1.25rem', borderRadius: '16px',
+                                            border: `3px solid ${nb.dark}`, boxShadow: `4px 4px 0px ${nb.dark}`,
+                                            marginBottom: '0.75rem', cursor: 'pointer',
+                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                            transition: 'all 0.15s ease',
+                                        }}
+                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'translate(-2px, -2px)'; e.currentTarget.style.boxShadow = `6px 6px 0px ${nb.dark}` }}
+                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
                                         >
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 bg-slate-50 text-slate-400 rounded-2xl flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                                    <FaIcon name="user" />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                <div style={{ width: '48px', height: '48px', background: '#f1f5f9', color: '#64748b', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `2px solid ${nb.dark}20` }}>
+                                                    <i className="fas fa-user" />
                                                 </div>
                                                 <div>
-                                                    <div className="font-black text-slate-900 text-lg uppercase leading-none mb-1">{customer.name}</div>
-                                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <div style={{ fontWeight: 900, color: nb.dark, fontSize: '1.05rem', textTransform: 'uppercase' }}>{customer.name}</div>
+                                                    <div style={{ fontSize: '0.6rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.25rem' }}>
                                                         {customer.status_bayar === 'paid' ? (
-                                                            <span className="text-emerald-500"><FaIcon name="check-circle" /> Lunas</span>
+                                                            <span style={{ color: '#10b981' }}><i className="fas fa-check-circle" /> Lunas</span>
                                                         ) : (
-                                                            <span className="text-amber-500"><FaIcon name="clock" /> Belum Bayar</span>
+                                                            <span style={{ color: '#f59e0b' }}><i className="fas fa-clock" /> Belum Bayar</span>
                                                         )}
-                                                        <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                                                        <span style={{ width: '3px', height: '3px', background: '#cbd5e1', borderRadius: '50%' }} />
                                                         {customer.whatsapp}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <button className="w-10 h-10 rounded-xl bg-emerald-500 text-admin-text flex items-center justify-center shadow-lg shadow-emerald-200">
-                                                <FaIcon name="wallet" />
-                                            </button>
+                                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <i className="fas fa-wallet" />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             )}
 
-                            <div className="text-center pt-6">
-                                <Link to="/" className="text-sm font-black text-slate-400 hover:text-slate-900 uppercase tracking-widest transition-colors">
-                                    <FaIcon name="arrow-left" className="mr-2" /> Kembali ke Beranda
+                            <div style={{ textAlign: 'center', paddingTop: '1rem' }}>
+                                <Link to="/" style={{ color: '#94a3b8', fontWeight: 800, fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <i className="fas fa-arrow-left" /> Kembali ke Beranda
                                 </Link>
                             </div>
                         </div>
                     )}
 
                     {activeView === 'detail' && selectedCustomer && (
-                        <div className="space-y-6 animate-fadeIn">
-                            <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100">
-                                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-10 text-admin-text relative">
-                                    <button 
-                                        onClick={() => setActiveView('search')}
-                                        className="absolute left-6 top-6 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-admin-text flex items-center justify-center transition-all"
-                                    >
-                                        <FaIcon name="arrow-left" />
+                        <div>
+                            <div style={{
+                                background: '#fff', borderRadius: '20px',
+                                border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`,
+                                overflow: 'hidden', marginBottom: '1.5rem',
+                            }}>
+                                <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '2rem', color: '#fff', textAlign: 'center', position: 'relative' }}>
+                                    <button onClick={() => setActiveView('search')} style={{
+                                        position: 'absolute', left: '1rem', top: '1rem',
+                                        width: '40px', height: '40px', borderRadius: '10px',
+                                        background: 'rgba(255,255,255,0.2)', border: '2px solid rgba(255,255,255,0.3)',
+                                        color: '#fff', cursor: 'pointer', display: 'flex',
+                                        alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                        <i className="fas fa-arrow-left" />
                                     </button>
-                                    
-                                    <div className="text-center pt-4">
-                                        <p className="text-blue-100 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Total Pembayaran</p>
-                                        <h2 className="text-4xl font-black tracking-tighter">
-                                            {formatRupiah(selectedCustomer.billing_amount)}
-                                        </h2>
-                                        <div className={`inline-block mt-6 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${selectedCustomer.status_bayar === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`}>
-                                            {selectedCustomer.status_bayar === 'paid' ? 'LUNAS' : 'BELUM BAYAR'}
-                                        </div>
+                                    <p style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.2em', opacity: 0.8, marginBottom: '0.5rem' }}>Total Pembayaran</p>
+                                    <h2 style={{ fontSize: '2.25rem', fontWeight: 900, letterSpacing: '-0.03em' }}>{formatRupiah(selectedCustomer.billing_amount)}</h2>
+                                    <div style={{
+                                        display: 'inline-block', marginTop: '1rem',
+                                        padding: '0.3rem 0.85rem', borderRadius: '8px',
+                                        fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em',
+                                        background: selectedCustomer.status_bayar === 'paid' ? '#10b981' : '#f59e0b',
+                                    }}>
+                                        {selectedCustomer.status_bayar === 'paid' ? 'LUNAS' : 'BELUM BAYAR'}
                                     </div>
                                 </div>
 
-                                <div className="p-10 space-y-8">
-                                    <div className="space-y-5">
-                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b-2 border-slate-50 pb-4">Informasi Pelanggan</h3>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-slate-500 font-bold text-sm">Nama Akun</span>
-                                            <span className="font-black text-slate-900 text-sm uppercase">{selectedCustomer.name}</span>
+                                <div style={{ padding: '2rem' }}>
+                                    <h3 style={{ fontSize: '0.6rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '1.25rem', paddingBottom: '0.75rem', borderBottom: `2px solid ${nb.dark}10` }}>Informasi Pelanggan</h3>
+                                    {[
+                                        { label: 'Nama Akun', value: selectedCustomer.name },
+                                        { label: 'Paket Layanan', value: 'Hotspot Bulanan', isBadge: true },
+                                        { label: 'Jatuh Tempo', value: formatTanggal(selectedCustomer.due_date), isRed: true },
+                                    ].map((item, i) => (
+                                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                                            <span style={{ color: '#64748b', fontWeight: 700, fontSize: '0.85rem' }}>{item.label}</span>
+                                            {item.isBadge ? (
+                                                <span style={{ fontWeight: 800, color: nb.light, background: '#eff6ff', padding: '0.25rem 0.6rem', borderRadius: '8px', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', border: `1px solid ${nb.light}30` }}>{item.value}</span>
+                                            ) : (
+                                                <span style={{ fontWeight: 900, color: item.isRed ? '#ef4444' : nb.dark, fontSize: '0.85rem', textTransform: 'uppercase' }}>{item.value}</span>
+                                            )}
                                         </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-slate-500 font-bold text-sm">Paket Layanan</span>
-                                            <span className="font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg text-[10px] uppercase tracking-widest border border-blue-100">Hotspot Bulanan</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-slate-500 font-bold text-sm">Jatuh Tempo</span>
-                                            <span className="font-black text-red-600 text-sm uppercase">{formatTanggal(selectedCustomer.due_date)}</span>
-                                        </div>
-                                    </div>
+                                    ))}
 
-                                    <button 
-                                        onClick={handlePay}
-                                        disabled={paymentLoading}
-                                        className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-admin-text font-black py-6 rounded-2xl shadow-xl shadow-emerald-200 uppercase tracking-[0.2em] text-xs transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
-                                    >
-                                        {paymentLoading ? (
-                                            <FaIcon name="circle-notch" className="animate-spin text-lg" />
-                                        ) : (
-                                            <>
-                                                <span>Bayar Sekarang</span>
-                                                <FaIcon name="arrow-right" />
-                                            </>
-                                        )}
+                                    <button onClick={handlePay} disabled={paymentLoading} style={{
+                                        width: '100%', padding: '1.1rem',
+                                        background: '#10b981', color: '#fff',
+                                        fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.75rem',
+                                        borderRadius: '14px', border: `3px solid ${nb.dark}`,
+                                        boxShadow: `4px 4px 0px ${nb.dark}`,
+                                        cursor: paymentLoading ? 'not-allowed' : 'pointer',
+                                        opacity: paymentLoading ? 0.6 : 1, marginTop: '1.5rem',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                    }}>
+                                        {paymentLoading ? <i className="fas fa-circle-notch fa-spin" style={{ fontSize: '1.1rem' }} /> : <><span>Bayar Sekarang</span> <i className="fas fa-arrow-right" /></>}
                                     </button>
 
-                                    <div className="text-center">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center justify-center gap-2">
-                                            <FaIcon name="shield-check" className="text-emerald-500 text-sm" /> 
-                                            Pembayaran Aman dengan Midtrans
+                                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                                        <p style={{ fontSize: '0.55rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.15em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+                                            <i className="fas fa-shield-alt" style={{ color: '#10b981' }} /> Pembayaran Aman dengan Midtrans
                                         </p>
                                     </div>
-                                    
+
                                     {selectedCustomer.status_bayar === 'paid' && (
-                                        <div className="p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black uppercase text-center rounded-2xl">
-                                            <FaIcon name="info-circle" className="mr-2" />
+                                        <div style={{ marginTop: '1rem', padding: '0.85rem', background: '#f0fdf4', border: '2px solid #bbf7d0', color: '#15803d', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', textAlign: 'center', borderRadius: '10px' }}>
+                                            <i className="fas fa-info-circle" style={{ marginRight: '0.4rem' }} />
                                             Tagihan sudah lunas, namun pembayaran tetap dibuka.
                                         </div>
                                     )}
@@ -284,57 +251,62 @@ const BillLookup = () => {
                     )}
 
                     {activeView === 'success' && (
-                        <div className="text-center animate-fadeIn">
-                            <div className="bg-white rounded-[40px] shadow-2xl border border-slate-100 overflow-hidden mb-10">
-                                <div className="bg-emerald-500 h-2"></div>
-                                <div className="p-12">
-                                    <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-[25px] flex items-center justify-center mx-auto mb-8 text-3xl shadow-lg shadow-emerald-100">
-                                        <FaIcon name="check" />
+                        <div style={{ textAlign: 'center' }}>
+                            <div style={{
+                                background: '#fff', borderRadius: '20px',
+                                border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`,
+                                overflow: 'hidden', marginBottom: '1.5rem',
+                            }}>
+                                <div style={{ height: '6px', background: '#10b981' }} />
+                                <div style={{ padding: '2.5rem' }}>
+                                    <div style={{ width: '72px', height: '72px', background: '#f0fdf4', color: '#10b981', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2rem', border: `3px solid ${nb.dark}` }}>
+                                        <i className="fas fa-check" />
                                     </div>
-                                    <h2 className="text-3xl font-black text-slate-900 tracking-tighter uppercase mb-2">Pembayaran Berhasil!</h2>
-                                    <p className="text-slate-500 font-bold text-sm mb-10">Layanan internet Anda akan aktif otomatis dalam 1-2 menit.</p>
-                                    
-                                    <div className="bg-slate-50 rounded-3xl p-8 border-2 border-slate-100 text-left space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pelanggan</span>
-                                            <span className="font-black text-slate-900 text-sm uppercase">{selectedCustomer?.name}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Waktu</span>
-                                            <span className="font-black text-slate-900 text-[10px] uppercase">{new Date().toLocaleString('id-ID')}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center border-t border-slate-200 pt-4 mt-4">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</span>
-                                            <span className="px-3 py-1 bg-emerald-500 text-admin-text rounded-full text-[9px] font-black uppercase tracking-widest">LUNAS</span>
+                                    <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Pembayaran Berhasil!</h2>
+                                    <p style={{ color: '#64748b', fontWeight: 700, fontSize: '0.85rem', marginBottom: '2rem' }}>Layanan internet Anda akan aktif otomatis dalam 1-2 menit.</p>
+
+                                    <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '1.5rem', border: `2px solid ${nb.dark}15`, textAlign: 'left' }}>
+                                        {[
+                                            { label: 'Pelanggan', value: selectedCustomer?.name },
+                                            { label: 'Waktu', value: new Date().toLocaleString('id-ID') },
+                                        ].map((item, i) => (
+                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                                <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{item.label}</span>
+                                                <span style={{ fontWeight: 900, color: nb.dark, fontSize: '0.8rem', textTransform: 'uppercase' }}>{item.value}</span>
+                                            </div>
+                                        ))}
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `2px solid ${nb.dark}15`, paddingTop: '0.75rem' }}>
+                                            <span style={{ fontSize: '0.6rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Status</span>
+                                            <span style={{ padding: '0.25rem 0.6rem', background: '#10b981', color: '#fff', borderRadius: '6px', fontSize: '0.55rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>LUNAS</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div className="flex gap-4">
-                                <button
-                                    onClick={() => {
-                                        setActiveView('search')
-                                        setSelectedCustomer(null)
-                                        setQuery('')
-                                    }}
-                                    className="flex-1 py-5 bg-white border-2 border-slate-200 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-50 transition-all shadow-lg shadow-slate-100"
-                                >
-                                    Cari Tagihan Lain
-                                </button>
-                                <Link
-                                    to="/"
-                                    className="flex-1 py-5 bg-slate-900 text-admin-text rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-2"
-                                >
-                                    <FaIcon name="home" /> Beranda
+
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button onClick={() => { setActiveView('search'); setSelectedCustomer(null); setQuery('') }} style={{
+                                    flex: 1, padding: '1rem', background: '#fff', color: nb.dark,
+                                    fontWeight: 800, fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em',
+                                    borderRadius: '12px', border: `3px solid ${nb.dark}`, boxShadow: `3px 3px 0px ${nb.dark}`,
+                                    cursor: 'pointer',
+                                }}>Cari Tagihan Lain</button>
+                                <Link to="/" style={{
+                                    flex: 1, padding: '1rem',
+                                    background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                    color: '#fff', fontWeight: 800, fontSize: '0.65rem',
+                                    textTransform: 'uppercase', letterSpacing: '0.1em',
+                                    borderRadius: '12px', border: `3px solid ${nb.dark}`,
+                                    boxShadow: `3px 3px 0px ${nb.dark}`,
+                                    textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
+                                }}>
+                                    <i className="fas fa-home" /> Beranda
                                 </Link>
                             </div>
                         </div>
                     )}
 
-                    {/* Footer Credits */}
-                    <div className="mt-12 text-center">
-                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
+                    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+                        <p style={{ fontSize: '0.55rem', fontWeight: 800, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
                             © {new Date().getFullYear()} ND-HOTSPOT • Portal Pembayaran
                         </p>
                     </div>

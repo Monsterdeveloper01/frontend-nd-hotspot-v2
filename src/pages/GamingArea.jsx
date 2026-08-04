@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
 
-const FaIcon = ({ name, className = "" }) => (
-  <i className={`fas fa-${name} ${className}`}></i>
-)
+const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
 
 const GamingArea = () => {
     const [plans, setPlans] = useState([])
@@ -26,128 +24,167 @@ const GamingArea = () => {
     }, [])
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-purple-600 selection:text-admin-text overflow-x-hidden">
-            {/* Soft Grid Background */}
-            <div className="fixed inset-0 z-0 opacity-40 pointer-events-none" 
-                 style={{ backgroundImage: 'linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
-            </div>
-
-            {/* Glowing Orbs - Light Theme */}
-            <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-200/40 blur-[120px] rounded-full z-0"></div>
-            <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-100/40 blur-[120px] rounded-full z-0"></div>
-
-            <div className="relative z-10">
+        <div style={{ minHeight: '100vh', background: '#ffffff', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', zIndex: 10 }}>
                 {/* Navbar */}
-                <nav className="p-8 flex justify-between items-center max-w-7xl mx-auto">
-                    <Link to="/" className="flex items-center gap-3 group">
-                        <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center shadow-sm group-hover:bg-slate-50 group-hover:border-purple-300 transition-all">
-                            <FaIcon name="arrow-left" className="text-sm text-slate-600" />
+                <nav style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1280px', margin: '0 auto' }}>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+                        <div style={{
+                            width: '42px', height: '42px',
+                            background: '#ffffff', border: `3px solid ${nb.dark}`,
+                            borderRadius: '12px', boxShadow: `3px 3px 0px ${nb.dark}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                            <i className="fas fa-arrow-left" style={{ fontSize: '0.85rem', color: nb.dark }} />
                         </div>
-                        <span className="font-black uppercase tracking-widest text-[10px] text-slate-500">Exit Zone</span>
+                        <span style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.65rem', color: '#64748b' }}>Kembali</span>
                     </Link>
-                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span className="font-black uppercase tracking-widest text-[10px] text-emerald-600">Servers Online</span>
+                    <div style={{
+                        display: 'flex', alignItems: 'center', gap: '0.5rem',
+                        background: '#ffffff', padding: '0.5rem 1rem',
+                        border: `2px solid ${nb.dark}`, borderRadius: '8px',
+                        boxShadow: `3px 3px 0px ${nb.dark}`,
+                    }}>
+                        <span style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }} className="animate-pulse" />
+                        <span style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.6rem', color: '#10b981' }}>Servers Online</span>
                     </div>
                 </nav>
 
                 {/* Hero */}
-                <header className="max-w-7xl mx-auto px-8 pt-10 pb-20 text-center lg:text-left">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 bg-purple-100 border border-purple-200 rounded-full mb-8 shadow-sm">
-                        <FaIcon name="bolt" className="text-purple-600 text-xs animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-700">Latensi Sangat Rendah Aktif</span>
-                    </div>
-                    <h1 className="text-6xl lg:text-8xl font-black italic uppercase tracking-tighter mb-6 text-slate-900">
-                        Gaming <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">Area</span>
+                <header style={{ maxWidth: '1280px', margin: '0 auto', padding: '2.5rem 2rem 5rem' }} className="text-center lg:text-left">
+                    <h1 style={{ fontSize: 'clamp(3rem, 7vw, 5rem)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.04em', marginBottom: '1.5rem', color: nb.dark, lineHeight: 0.95 }}>
+                        Zona <span style={{ color: nb.light }}>Kecepatan</span>
                     </h1>
-                    <p className="text-slate-500 font-bold text-lg max-w-2xl leading-relaxed">
-                        Tingkatkan potensi gaming Anda dengan prioritas bandwidth tertinggi. Tanpa lag, jalur khusus, dan kuota tak terbatas untuk pengalaman bermain game yang maksimal.
+                    <p style={{ color: '#64748b', fontWeight: 700, fontSize: '1.1rem', maxWidth: '600px', lineHeight: 1.7 }}>
+                        Streaming YouTube tanpa buffering, push rank tanpa lag, dan live streaming tanpa gangguan. Bandwidth prioritas untuk semua aktivitas online Anda.
                     </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1.5rem' }} className="justify-center lg:justify-start">
+                        {[
+                            { icon: 'play-circle', label: 'YouTube', color: '#ef4444' },
+                            { icon: 'gamepad', label: 'Gaming', color: '#8b5cf6' },
+                            { icon: 'video', label: 'Live Stream', color: nb.light },
+                            { icon: 'bolt', label: 'Turbo Speed', color: '#f59e0b' },
+                        ].map((tag) => (
+                            <div key={tag.label} style={{
+                                display: 'flex', alignItems: 'center', gap: '0.4rem',
+                                padding: '0.5rem 0.85rem', background: '#fff',
+                                border: `2px solid ${nb.dark}`, borderRadius: '8px',
+                                boxShadow: `2px 2px 0px ${nb.dark}`,
+                            }}>
+                                <i className={`fas fa-${tag.icon}`} style={{ color: tag.color, fontSize: '0.75rem' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{tag.label}</span>
+                            </div>
+                        ))}
+                    </div>
                 </header>
 
                 {/* Plans Grid */}
-                <section className="max-w-7xl mx-auto px-8 pb-32">
-                    <div className="flex flex-wrap justify-center gap-10">
+                <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2rem 5rem' }}>
+                    <div className="flex flex-wrap justify-center gap-8">
                         {loading ? (
                             [1, 2, 3].map(i => (
-                                <div key={i} className="w-full max-w-[380px] h-96 bg-white border border-slate-200 rounded-[40px] animate-pulse shadow-sm"></div>
+                                <div key={i} style={{
+                                    width: '100%', maxWidth: '380px', height: '24rem',
+                                    background: '#f1f5f9', border: `3px solid ${nb.dark}`,
+                                    borderRadius: '24px', boxShadow: `6px 6px 0px ${nb.dark}`,
+                                }} className="animate-pulse" />
                             ))
                         ) : plans.length > 0 ? plans.map((plan) => (
-                            <div key={plan.id} className="w-full max-w-[380px] group relative bg-white border-2 border-slate-100 rounded-[40px] p-10 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 overflow-hidden shadow-xl shadow-slate-200/50">
-                                {/* Card Glow */}
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 blur-3xl group-hover:bg-purple-100 transition-all"></div>
-                                
-                                <div className="relative z-10">
-                                    <div className="flex justify-between items-start mb-10">
-                                        <div className="w-16 h-16 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-700 group-hover:bg-purple-600 group-hover:text-admin-text transition-all duration-500 group-hover:rotate-6 shadow-inner">
-                                            <FaIcon name="gamepad" className="text-2xl" />
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Level Akses</span>
-                                            <span className="text-purple-600 font-black uppercase tracking-tighter italic">Tier 1 Pro</span>
-                                        </div>
-                                    </div>
+                            <div key={plan.id} style={{
+                                width: '100%', maxWidth: '380px',
+                                background: '#ffffff',
+                                border: `3px solid ${nb.dark}`,
+                                borderRadius: '24px',
+                                boxShadow: `6px 6px 0px ${nb.dark}`,
+                                padding: '2.5rem',
+                                transition: 'all 0.2s ease',
+                                position: 'relative', overflow: 'hidden',
+                            }}
+                            onMouseOver={(e) => { e.currentTarget.style.transform = 'translate(-3px, -3px)'; e.currentTarget.style.boxShadow = `9px 9px 0px ${nb.dark}` }}
+                            onMouseOut={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `6px 6px 0px ${nb.dark}` }}
+                            >
+                                {/* Top bar */}
+                                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '6px', background: `linear-gradient(90deg, ${nb.mid}, ${nb.light})` }} />
 
-                                    <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-2 text-slate-900 group-hover:text-purple-600 transition-colors">{plan.name}</h3>
-                                    <div className="flex items-baseline gap-1 mb-8">
-                                        <span className="text-4xl font-black italic tracking-tighter text-slate-900">Rp {Number(plan.price).toLocaleString()}</span>
-                                        <span className="text-slate-400 font-black uppercase text-[10px] tracking-widest">/ {plan.duration.endsWith('h') ? plan.duration.replace('h', ' Jam') : plan.duration.endsWith('d') ? plan.duration.replace('d', ' Hari') : plan.duration.replace('m', ' Bulan')} UNLIMITED</span>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+                                    <div style={{
+                                        width: '56px', height: '56px',
+                                        background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                        borderRadius: '16px', border: `2px solid ${nb.dark}`,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        color: '#fff', fontSize: '1.5rem',
+                                    }}>
+                                        <i className="fas fa-rocket" />
                                     </div>
-
-                                    <div className="space-y-4 mb-10">
-                                        <div className="flex justify-between items-center bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100">
-                                            <div className="flex items-center gap-3 text-slate-500 font-black uppercase text-[10px] tracking-widest">
-                                                <FaIcon name="microchip" className="text-purple-500" />
-                                                Prioritas
-                                            </div>
-                                            <span className="font-black text-xs uppercase tracking-tighter text-slate-700">Sangat Tinggi</span>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="flex flex-col bg-slate-50/50 backdrop-blur-sm px-5 py-4 rounded-2xl border border-slate-100 group-hover:bg-white group-hover:border-emerald-200 transition-all duration-300">
-                                                <div className="flex items-center gap-2 text-slate-500 font-black uppercase text-[8px] tracking-[0.2em] mb-1">
-                                                    <FaIcon name="arrow-up" className="text-emerald-500 group-hover:animate-bounce" />
-                                                    Upload
-                                                </div>
-                                                <span className="font-black text-xs uppercase tracking-tighter text-slate-700">{plan.upload_limit} <span className="text-[10px] text-slate-400">Mbps</span></span>
-                                            </div>
-                                            <div className="flex flex-col bg-slate-50/50 backdrop-blur-sm px-5 py-4 rounded-2xl border border-slate-100 group-hover:bg-white group-hover:border-blue-200 transition-all duration-300">
-                                                <div className="flex items-center gap-2 text-slate-500 font-black uppercase text-[8px] tracking-[0.2em] mb-1">
-                                                    <FaIcon name="arrow-down" className="text-blue-500 group-hover:animate-bounce" />
-                                                    Download
-                                                </div>
-                                                <span className="font-black text-xs uppercase tracking-tighter text-slate-700">{plan.download_limit} <span className="text-[10px] text-slate-400">Mbps</span></span>
-                                            </div>
-                                        </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#94a3b8', display: 'block', marginBottom: '0.25rem' }}>Level Akses</span>
+                                        <span style={{ color: nb.light, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em' }}>Priority</span>
                                     </div>
-
-                                    <button 
-                                        onClick={() => navigate('/gaming-checkout', { state: { plan } })}
-                                        className="w-full py-5 bg-purple-600 text-admin-text font-black uppercase tracking-[0.2em] text-xs rounded-2xl hover:bg-purple-700 transition-all active:scale-95 shadow-xl shadow-purple-200"
-                                    >
-                                        Beli Sekarang
-                                    </button>
                                 </div>
+
+                                <h3 style={{ fontSize: '1.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.03em', marginBottom: '0.5rem', color: nb.dark }}>{plan.name}</h3>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem', marginBottom: '2rem' }}>
+                                    <span style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.03em', color: nb.dark }}>Rp {Number(plan.price).toLocaleString()}</span>
+                                    <span style={{ color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.6rem', letterSpacing: '0.1em' }}>/ {plan.duration.endsWith('h') ? plan.duration.replace('h', ' Jam') : plan.duration.endsWith('d') ? plan.duration.replace('d', ' Hari') : plan.duration.replace('m', ' Bulan')} UNLIMITED</span>
+                                </div>
+
+                                <div style={{ marginBottom: '2rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', padding: '0.85rem 1.25rem', borderRadius: '12px', border: `2px solid ${nb.dark}20`, marginBottom: '0.75rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.6rem', letterSpacing: '0.1em' }}>
+                                            <i className="fas fa-microchip" style={{ color: nb.light }} /> Prioritas
+                                        </div>
+                                        <span style={{ fontWeight: 900, fontSize: '0.75rem', textTransform: 'uppercase', color: nb.dark }}>Sangat Tinggi</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '12px', border: `2px solid ${nb.dark}20` }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.5rem', letterSpacing: '0.15em', marginBottom: '0.25rem' }}>
+                                                <i className="fas fa-arrow-up" style={{ color: '#10b981' }} /> Upload
+                                            </div>
+                                            <span style={{ fontWeight: 900, fontSize: '0.75rem', color: nb.dark }}>{plan.upload_limit} <span style={{ fontSize: '0.6rem', color: '#94a3b8' }}>Mbps</span></span>
+                                        </div>
+                                        <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '12px', border: `2px solid ${nb.dark}20` }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.5rem', letterSpacing: '0.15em', marginBottom: '0.25rem' }}>
+                                                <i className="fas fa-arrow-down" style={{ color: nb.light }} /> Download
+                                            </div>
+                                            <span style={{ fontWeight: 900, fontSize: '0.75rem', color: nb.dark }}>{plan.download_limit} <span style={{ fontSize: '0.6rem', color: '#94a3b8' }}>Mbps</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button 
+                                    onClick={() => navigate('/gaming-checkout', { state: { plan } })}
+                                    style={{
+                                        width: '100%', padding: '1.1rem',
+                                        background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                        color: '#fff', fontWeight: 800,
+                                        textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.75rem',
+                                        borderRadius: '14px', border: `3px solid ${nb.dark}`,
+                                        boxShadow: `4px 4px 0px ${nb.dark}`,
+                                        cursor: 'pointer', transition: 'all 0.15s ease',
+                                    }}
+                                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(3px, 3px)'; e.currentTarget.style.boxShadow = `1px 1px 0px ${nb.dark}` }}
+                                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                >
+                                    Beli Sekarang
+                                </button>
                             </div>
                         )) : (
-                            <div className="col-span-full py-20 text-center border-2 border-dashed border-slate-200 rounded-[40px] bg-white">
-                                <FaIcon name="ghost" className="text-4xl text-slate-300 mb-4" />
-                                <p className="text-slate-400 font-black uppercase tracking-widest">No Gaming Tiers Currently Deployed</p>
+                            <div style={{
+                                width: '100%', padding: '5rem 2rem', textAlign: 'center',
+                                border: `3px dashed ${nb.dark}`, borderRadius: '24px',
+                                background: '#ffffff',
+                            }}>
+                                <i className="fas fa-box-open" style={{ fontSize: '2rem', color: '#cbd5e1', marginBottom: '1rem', display: 'block' }} />
+                                <p style={{ color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Belum ada paket tersedia</p>
                             </div>
                         )}
                     </div>
                 </section>
 
-                {/* Footer Info */}
-                <footer className="max-w-7xl mx-auto px-8 pb-20 flex flex-col lg:flex-row justify-between items-center gap-10 border-t border-slate-200 pt-20">
-                    <div className="flex items-center gap-8 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Valorant_logo.svg" alt="Valorant" className="h-6" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Mobile_Legends_Logo.png" alt="MLBB" className="h-8" />
-                        <img src="https://upload.wikimedia.org/wikipedia/id/thumb/0/03/Free_Fire_Logo.png/640px-Free_Fire_Logo.png" alt="FreeFire" className="h-10" />
-                    </div>
-                    <div className="text-right">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">© 2026 ND-Hotspot Core</p>
-                        <p className="text-xs font-black italic uppercase text-purple-600 mt-1">Gaming Area Optimized v2.0</p>
-                    </div>
+                {/* Footer */}
+                <footer style={{ maxWidth: '1280px', margin: '0 auto', padding: '3rem 2rem', borderTop: `3px solid ${nb.dark}`, textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#94a3b8' }}>© 2026 ND-Hotspot • Zona Kecepatan v2.0</p>
                 </footer>
             </div>
         </div>

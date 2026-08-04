@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
+import PublicLayout from '../components/PublicLayout'
+
+const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
 
 const GamingCheckout = () => {
     const location = useLocation()
@@ -14,52 +17,26 @@ const GamingCheckout = () => {
     const [showConfirmModal, setShowConfirmModal] = useState(false)
 
     useEffect(() => {
-        if (!plan) {
-            navigate('/gaming-area')
-            return
-        }
+        if (!plan) { navigate('/gaming-area'); return }
+        setTimeout(() => document.getElementById('phoneInput')?.focus(), 300)
     }, [plan, navigate])
 
-    const formatRupiah = (number) => {
-        return new Intl.NumberFormat('id-ID').format(number)
-    }
-
-    const validatePhone = (number) => {
-        // Valid if it's 9-13 digits (after stripping 0/62)
-        return /^[0-9]{9,13}$/.test(number)
-    }
+    const validatePhone = (number) => /^[0-9]{9,13}$/.test(number)
 
     const handleSubmit = (e) => {
-        e.preventDefault()
-        setError('')
-        if (!validatePhone(phone)) {
-            setError('Nomor WhatsApp harus 8-15 digit angka')
-            return
-        }
+        e.preventDefault(); setError('')
+        if (!validatePhone(phone)) { setError('Nomor WhatsApp harus 8-15 digit angka'); return }
         setShowConfirmModal(true)
     }
 
     const confirmPayment = async () => {
-        setShowConfirmModal(false)
-        setLoading(true)
-
+        setShowConfirmModal(false); setLoading(true)
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/checkout`, {
-                voucher_plan_id: plan.id,
-                phone: '62' + phone
-            })
-
-            if (response.data.success) {
-                setPaymentResult(response.data.transaction)
-                startPaymentPolling(response.data.transaction.id)
-            } else {
-                setError(response.data.message || 'Gagal memproses pembayaran')
-            }
-        } catch (err) {
-            setError(err.response?.data?.message || 'Kesalahan server')
-        } finally {
-            setLoading(false)
-        }
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/checkout`, { voucher_plan_id: plan.id, phone: '62' + phone })
+            if (response.data.success) { setPaymentResult(response.data.transaction); startPaymentPolling(response.data.transaction.id) }
+            else { setError(response.data.message || 'Terjadi kesalahan sistem.') }
+        } catch (err) { setError(err.response?.data?.message || 'Gagal menyambung ke server pembayaran.') }
+        finally { setLoading(false) }
     }
 
     const startPaymentPolling = (transactionId) => {
@@ -67,207 +44,148 @@ const GamingCheckout = () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/transactions/${transactionId}`)
                 const data = response.data
-                if (data.status === 'success') {
-                    clearInterval(interval)
-                    navigate(`/gaming-success?order_id=${data.external_id}`)
-                } else if (data.status === 'expire' || data.status === 'cancel') {
-                    clearInterval(interval)
-                    setError('Pembayaran kadaluarsa atau dibatalkan')
-                    setPaymentResult(null)
-                }
-            } catch (err) {
-                console.error('Polling error:', err)
-            }
+                if (data.status === 'success') { clearInterval(interval); navigate(`/gaming-success?order_id=${data.external_id}`) }
+                else if (data.status === 'expire' || data.status === 'cancel') { clearInterval(interval); setError('Sesi pembayaran berakhir atau dibatalkan.'); setPaymentResult(null) }
+            } catch (err) { console.error('Polling error:', err) }
         }, 3000)
     }
 
     if (!plan) return null
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center p-4 selection:bg-purple-600 selection:text-admin-text">
-            {/* Soft Grid Background */}
-            <div className="fixed inset-0 z-0 opacity-40 pointer-events-none" 
-                 style={{ backgroundImage: 'linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
-            </div>
-            <div className="fixed top-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-100/40 blur-[120px] rounded-full z-0"></div>
-
-            <div className="w-full max-w-md relative z-10">
-                {/* Modal Konfirmasi Light Theme */}
-                {showConfirmModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                        <div className="bg-white border-2 border-purple-100 rounded-[35px] shadow-2xl w-full max-w-sm overflow-hidden transform transition-all animate-bounce-in">
-                            <div className="bg-slate-50 px-8 py-6 border-b border-slate-100">
-                                <h3 className="text-lg font-black italic uppercase tracking-widest text-purple-600 flex items-center gap-3">
-                                    <i className="fas fa-shield-alt"></i> Verifikasi Target
-                                </h3>
+        <div style={{ minHeight: '100vh', background: '#ffffff', position: 'relative' }}>
+            
+            {showConfirmModal && (
+                <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(14,70,150,0.5)' }}>
+                    <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `8px 8px 0px ${nb.dark}`, width: '100%', maxWidth: '24rem', overflow: 'hidden' }}>
+                        <div style={{ background: '#f8fafc', padding: '1.5rem', borderBottom: `3px solid ${nb.dark}` }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 900, color: nb.dark, display: 'flex', alignItems: 'center', gap: '0.75rem', textTransform: 'uppercase' }}>
+                                <i className="fas fa-satellite-dish" style={{ color: '#10b981' }} /> Konfirmasi Target Transmisi
+                            </h3>
+                        </div>
+                        <div style={{ padding: '2rem' }}>
+                            <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1.25rem', fontWeight: 700 }}>Kode akses akan dikirimkan ke nomor WhatsApp ini:</p>
+                            <div style={{ background: '#fff', borderRadius: '16px', padding: '1.5rem', textAlign: 'center', border: `3px solid ${nb.dark}` }}>
+                                <p style={{ fontSize: '1.75rem', fontWeight: 900, color: nb.dark, letterSpacing: '0.15em' }}>+62 {phone}</p>
                             </div>
-                            <div className="p-8 text-center">
-                                <p className="text-slate-500 text-xs font-bold mb-6 uppercase tracking-widest leading-relaxed">
-                                    Voucher akan dikirimkan ke tujuan WhatsApp berikut:
-                                </p>
-                                <div className="bg-purple-50 rounded-2xl p-6 border border-purple-100 mb-6">
-                                    <p className="text-3xl font-black italic tracking-[0.1em] text-purple-700">
-                                        +62 {phone}
-                                    </p>
-                                </div>
-                                <div className="flex gap-4">
-                                    <button onClick={() => setShowConfirmModal(false)} className="flex-1 py-4 border border-slate-200 rounded-xl font-black uppercase tracking-widest text-[10px] text-slate-500 hover:bg-slate-50 transition-all">Batal</button>
-                                    <button onClick={confirmPayment} className="flex-1 py-4 bg-purple-600 text-admin-text rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-purple-200">Konfirmasi</button>
-                                </div>
-                            </div>
+                        </div>
+                        <div style={{ padding: '0 2rem 2rem', display: 'flex', gap: '1rem' }}>
+                            <button onClick={() => setShowConfirmModal(false)} style={{ flex: 1, padding: '1rem', background: '#ef4444', color: '#fff', fontWeight: 900, borderRadius: '12px', border: `3px solid ${nb.dark}`, cursor: 'pointer', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Batal</button>
+                            <button onClick={confirmPayment} style={{ flex: 1, padding: '1rem', background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, color: '#fff', fontWeight: 900, borderRadius: '12px', border: `3px solid ${nb.dark}`, boxShadow: `3px 3px 0px ${nb.dark}`, cursor: 'pointer', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Eksekusi</button>
                         </div>
                     </div>
-                )}
+                </div>
+            )}
 
-                {paymentResult ? (
-                    <div className="bg-white border-2 border-slate-100 rounded-[30px] md:rounded-[45px] p-6 md:p-10 shadow-2xl relative overflow-hidden text-center">
-                        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-purple-500 to-blue-500"></div>
-                        <div className="mb-10">
-                            <div className="w-20 h-20 bg-purple-50 text-purple-600 border border-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
-                                <i className="fas fa-qrcode text-3xl"></i>
+            <div style={{ padding: '3rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '100%', maxWidth: '28rem', position: 'relative', zIndex: 10 }}>
+                    
+                    {paymentResult ? (
+                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`, padding: '2rem', textAlign: 'center', overflow: 'hidden' }}>
+                            <div style={{ marginBottom: '2rem' }}>
+                                <div style={{ width: '64px', height: '64px', background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, borderRadius: '16px', border: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', color: '#fff', fontSize: '2rem' }}>
+                                    <i className="fas fa-qrcode" />
+                                </div>
+                                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>Scan QRIS</h3>
+                                <p style={{ color: '#64748b', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Otorisasi Akses Jaringan</p>
                             </div>
-                            <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter mb-2 text-slate-900">Scan & Bayar</h2>
-                            <p className="text-slate-500 font-bold text-[10px] md:text-sm">Menyiapkan akses prioritas gaming...</p>
-                        </div>
+                            
+                            <div style={{ background: '#fff', padding: '1rem', borderRadius: '20px', border: `3px solid ${nb.dark}`, display: 'inline-block', marginBottom: '2rem' }}>
+                                <img src={paymentResult.payment_url} style={{ width: '16rem', height: '16rem', borderRadius: '12px' }} alt="QR Code"
+                                    onError={(e) => { e.target.onerror = null; const qrData = paymentResult.qr_string || paymentResult.payment_url; e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrData) }}
+                                />
+                                <div style={{ marginTop: '1rem' }}>
+                                    <a href={paymentResult.payment_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.65rem', fontWeight: 900, color: nb.mid, textTransform: 'uppercase', letterSpacing: '0.1em', textDecoration: 'none' }}>
+                                        <i className="fas fa-external-link-alt" style={{ marginRight: '6px' }} /> Buka QR di Tab Baru
+                                    </a>
+                                </div>
+                            </div>
 
-                        <div className="bg-slate-50 p-4 rounded-[25px] md:rounded-[40px] border-4 border-purple-50 inline-block mb-8 shadow-inner relative group">
-                            <img 
-                                src={paymentResult.payment_url} 
-                                className="w-56 h-56 md:w-64 md:h-64 rounded-[20px] md:rounded-[30px] mx-auto" 
-                                alt="Gaming QRIS" 
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    // PRIORITASKAN qr_string untuk QRIS yang valid (IDR), bukan link gambar
-                                    const qrData = paymentResult.qr_string || paymentResult.payment_url;
-                                    e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrData);
-                                }}
-                            />
-                            <div className="mt-4">
-                                <a 
-                                    href={paymentResult.payment_url} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-[10px] font-black text-purple-600 hover:text-purple-700 underline uppercase tracking-widest"
-                                >
-                                    <i className="fas fa-external-link-alt mr-1"></i> Buka Gambar di Tab Baru
-                                </a>
+                            <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '1.5rem', border: `3px solid ${nb.dark}`, marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ color: '#64748b', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Jumlah Transfer</span>
+                                <span style={{ fontSize: '1.75rem', fontWeight: 900, color: nb.dark }}>Rp {new Intl.NumberFormat('id-ID').format(plan.price)}</span>
+                            </div>
+
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', color: nb.mid, fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', background: '#eff6ff', padding: '0.75rem 1.5rem', borderRadius: '12px', border: `3px solid ${nb.dark}` }} className="animate-pulse">
+                                <i className="fas fa-satellite fa-spin" /> Menunggu Otorisasi...
+                            </div>
+                            <div style={{ marginTop: '1.5rem' }}>
+                                <button onClick={() => window.location.reload()} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.7rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer' }}><i className="fas fa-times-circle" /> Batalkan Proses</button>
                             </div>
                         </div>
-
-                        <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-6 text-left relative overflow-hidden group">
-                            <div className="flex justify-between items-center mb-1">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Biaya Protokol</span>
-                                <span className="text-2xl font-black italic text-purple-600 tracking-tighter">Rp {formatRupiah(plan.price)}</span>
-                            </div>
-                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">ID Transaksi: {paymentResult.external_id}</div>
-                            <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full blur-xl group-hover:bg-purple-500/10 transition-all"></div>
-                        </div>
-
-                        {/* Captive Portal Fix for Gamers */}
-                        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 mb-10 text-left">
-                            <p className="text-[10px] font-black text-amber-800 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                <i className="fas fa-exclamation-triangle"></i> QR Tidak Muncul? (CNA FIX)
-                            </p>
-                            <p className="text-[10px] text-amber-700 font-bold leading-relaxed">
-                                Jika Anda di browser bawaan Wifi dan QR tidak muncul, <b>Salin Link</b> lalu buka di <b>Chrome/Safari</b> biasa untuk melanjutkan pembayaran.
-                            </p>
-                            <button 
-                                onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
-                                    alert('Link pembayaran berhasil disalin! Silakan buka Chrome/Safari dan tempel link tersebut.');
-                                }}
-                                className="mt-4 w-full py-3 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-                            >
-                                Salin Link Misi
-                            </button>
-                        </div>
-
-                        <div className="space-y-6">
-                            <div className="inline-flex items-center gap-3 text-purple-600 text-[10px] font-black uppercase tracking-[0.2em] bg-purple-50 px-6 py-3 rounded-full border border-purple-100 animate-pulse">
-                                <i className="fas fa-circle-notch fa-spin"></i> Menunggu Pembayaran...
-                            </div>
-                            <button onClick={() => window.location.reload()} className="block mx-auto text-slate-400 hover:text-slate-600 text-[9px] font-black uppercase tracking-widest transition">Batalkan Misi</button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="bg-white border-2 border-slate-100 rounded-[30px] md:rounded-[45px] overflow-hidden shadow-2xl">
-                        {/* Header */}
-                        <div className="p-6 md:p-10 bg-slate-50 border-b border-slate-100 relative">
-                            <div className="flex justify-between items-start mb-8 relative z-10">
+                    ) : (
+                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `8px 8px 0px ${nb.dark}`, overflow: 'hidden' }}>
+                            <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '2rem', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: `3px solid ${nb.dark}` }}>
                                 <div>
-                                    <h1 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-slate-900">Finalisasi <span className="text-purple-600">Akses</span></h1>
-                                    <p className="text-slate-400 font-bold text-[10px] mt-1 uppercase tracking-widest">Deployment Area Gaming</p>
+                                    <h1 style={{ fontSize: '1.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.04em', lineHeight: 1 }}>Setup Koneksi</h1>
+                                    <p style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', marginTop: '0.5rem', opacity: 0.9 }}>Zona Kecepatan Prioritas</p>
                                 </div>
-                                <div className="w-12 h-12 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm">
-                                    <i className="fas fa-bolt"></i>
-                                </div>
+                                <i className="fas fa-rocket" style={{ fontSize: '2.5rem', opacity: 0.3 }} />
                             </div>
-                            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-                                <div className="flex justify-between items-center">
-                                     <div>
-                                         <p className="text-purple-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Paket Tier</p>
-                                         <p className="text-xl font-black italic uppercase tracking-tighter text-slate-700">{plan.name}</p>
-                                         <div className="flex gap-4 mt-2">
-                                          <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                                 <i className="fas fa-arrow-up text-emerald-500"></i> {plan.upload_limit} Mbps
-                                             </div>
-                                             <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                                 <i className="fas fa-arrow-down text-blue-500"></i> {plan.download_limit} Mbps
-                                             </div>
-                                         </div>
-                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-2xl font-black italic text-slate-900 tracking-tighter">Rp {formatRupiah(plan.price)}</p>
+
+                            <div style={{ padding: '2rem' }}>
+                                <div style={{ background: '#f8fafc', borderRadius: '16px', padding: '1.5rem', border: `3px solid ${nb.dark}`, marginBottom: '2rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                        <div>
+                                            <p style={{ fontWeight: 900, fontSize: '1.1rem', textTransform: 'uppercase', letterSpacing: '-0.02em', color: nb.dark }}>{plan.name}</p>
+                                            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-arrow-up" /> {plan.upload_limit} Mbps</span>
+                                                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: nb.mid, textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-arrow-down" /> {plan.download_limit} Mbps</span>
+                                            </div>
+                                        </div>
+                                        <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '0.4rem 0.8rem', borderRadius: '8px', color: '#fff', fontSize: '0.6rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', border: `2px solid ${nb.dark}` }}>
+                                            <i className="fas fa-bolt" /> Priority
+                                        </div>
+                                    </div>
+                                    <div style={{ height: '3px', background: `${nb.dark}20`, margin: '1rem 0' }} />
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Biaya</span>
+                                        <span style={{ fontSize: '1.5rem', fontWeight: 900, color: nb.dark }}>Rp {new Intl.NumberFormat('id-ID').format(plan.price)}</span>
                                     </div>
                                 </div>
+
+                                <form onSubmit={handleSubmit}>
+                                    <div style={{ marginBottom: '2rem' }}>
+                                        <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.75rem' }}><i className="fab fa-whatsapp" style={{ color: '#25D366', fontSize: '0.8rem' }} /> Target Pengiriman (No. WA)</label>
+                                        <div style={{ position: 'relative' }}>
+                                            <div style={{ position: 'absolute', left: '1.25rem', top: '50%', transform: 'translateY(-50%)', color: nb.dark, fontWeight: 900, fontSize: '1.1rem' }}>+62</div>
+                                            <input type="tel" id="phoneInput" value={phone}
+                                                onChange={(e) => { let val = e.target.value.replace(/\D/g, ''); if (val.startsWith('0')) val = val.substring(1); if (val.startsWith('62')) val = val.substring(2); setPhone(val) }}
+                                                required placeholder="812xxxxx" inputMode="numeric"
+                                                style={{ width: '100%', paddingLeft: '4rem', paddingRight: '1.5rem', paddingTop: '1.25rem', paddingBottom: '1.25rem', background: '#fff', border: `3px solid ${nb.dark}`, borderRadius: '16px', fontWeight: 900, fontSize: '1.25rem', outline: 'none', color: nb.dark, boxSizing: 'border-box', boxShadow: `inset 3px 3px 0px ${nb.dark}15` }}
+                                            />
+                                        </div>
+                                        {error && <p style={{ color: '#ef4444', fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem' }}><i className="fas fa-exclamation-circle" />{error}</p>}
+                                    </div>
+
+                                    <button type="submit" disabled={loading || !phone} style={{
+                                        width: '100%', padding: '1.25rem',
+                                        background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                        color: '#fff', fontWeight: 900, textTransform: 'uppercase',
+                                        letterSpacing: '0.2em', fontSize: '0.85rem',
+                                        borderRadius: '16px', border: `3px solid ${nb.dark}`,
+                                        boxShadow: `4px 4px 0px ${nb.dark}`,
+                                        cursor: (loading || !phone) ? 'not-allowed' : 'pointer',
+                                        opacity: (loading || !phone) ? 0.7 : 1,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+                                        transition: 'all 0.15s ease',
+                                    }}
+                                    onMouseDown={(e) => { if(!loading && phone){ e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` } }}
+                                    onMouseUp={(e) => { if(!loading && phone){ e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` } }}
+                                    >
+                                        {loading ? <i className="fas fa-circle-notch fa-spin" style={{ fontSize: '1.25rem' }} /> : <><i className="fas fa-bolt" /> Lanjutkan ke Pembayaran</>}
+                                    </button>
+
+                                    <div style={{ textAlign: 'center', paddingTop: '1.5rem' }}>
+                                        <Link to="/gaming-area" style={{ color: '#94a3b8', fontSize: '0.65rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <i className="fas fa-arrow-left" /> Kembali ke Daftar Paket
+                                        </Link>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-
-                        <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-8 md:space-y-10">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Nomor Tujuan (WhatsApp)</label>
-                                <div className="relative group">
-                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-purple-600 font-black italic text-lg">+62</div>
-                                    <input 
-                                        type="tel" 
-                                        id="phoneInput"
-                                        value={phone}
-                                        onChange={(e) => {
-                                            let val = e.target.value.replace(/\D/g, '');
-                                            if (val.startsWith('0')) val = val.substring(1);
-                                            if (val.startsWith('62')) val = val.substring(2);
-                                            setPhone(val);
-                                        }}
-                                        required 
-                                        placeholder="812xxxxx" 
-                                        className="w-full pl-14 md:pl-16 pr-6 py-4 md:py-5 bg-slate-50 border-2 border-slate-100 rounded-xl md:rounded-2xl focus:border-purple-400 focus:bg-white outline-none transition font-black italic text-lg md:text-xl text-slate-800 placeholder:text-slate-300"
-                                        inputMode="numeric"
-                                    />
-                                    <div className="absolute inset-0 rounded-2xl bg-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                                </div>
-                                <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100 flex gap-4 items-start">
-                                    <i className="fas fa-info-circle text-blue-500 mt-1"></i>
-                                    <p className="text-[10px] font-bold text-blue-700 uppercase tracking-widest leading-relaxed">Pastikan nomor akurat. Kode akses terenkripsi akan dikirim via WhatsApp segera setelah bayar.</p>
-                                </div>
-                                {error && <p className="text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 px-1"><i className="fas fa-exclamation-circle"></i> {error}</p>}
-                            </div>
-
-                            <button 
-                                type="submit" 
-                                disabled={loading || !phone}
-                                className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-admin-text font-black italic uppercase tracking-[0.2em] text-sm rounded-2xl shadow-xl shadow-purple-200 transition-all active:scale-95 flex items-center justify-center gap-4"
-                            >
-                                {loading ? <i className="fas fa-circle-notch fa-spin text-lg"></i> : <><i className="fas fa-rocket"></i> Luncurkan Pembayaran</>}
-                            </button>
-
-                            <div className="text-center pt-4">
-                                <Link to="/gaming-area" className="text-slate-400 hover:text-purple-600 text-[10px] font-black uppercase tracking-[0.3em] transition flex items-center justify-center gap-3">
-                                    <i className="fas fa-arrow-left"></i> Pilih Ulang Paket
-                                </Link>
-                            </div>
-                        </form>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     )

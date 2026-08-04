@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import PublicLayout from '../components/PublicLayout'
 
-const FaIcon = ({ name, className = "" }) => <i className={`fas fa-${name} ${className}`}></i>
+const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
 
 const Maintenance = () => {
     const [showBypass, setShowBypass] = useState(false)
@@ -13,13 +14,10 @@ const Maintenance = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        // Fetch current session ID to see if existing bypass is still valid
         const checkStatus = async () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_API_URL}/maintenance/status`)
                 setCurrentSessionId(res.data.session_id)
-                
-                // If maintenance is OFF, redirect home
                 if (!res.data.maintenance_mode) {
                     navigate('/')
                 }
@@ -32,7 +30,7 @@ const Maintenance = () => {
 
     const handleLogoClick = () => {
         setClickCount(prev => prev + 1)
-        if (clickCount >= 4) { // Click 5 times to reveal bypass
+        if (clickCount >= 4) {
             setShowBypass(true)
             setClickCount(0)
         }
@@ -44,14 +42,9 @@ const Maintenance = () => {
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/maintenance/bypass`, { password })
             if (res.data.success) {
-                // Set cookie for 24 hours
                 document.cookie = `maintenance_bypass=${res.data.token}; path=/; max-age=` + (24 * 60 * 60);
                 localStorage.setItem('maintenance_bypass', res.data.token);
-                
-                // Set axios default for current session
                 axios.defaults.headers.common['X-Maintenance-Bypass'] = res.data.token;
-                
-                // Direct redirect to home
                 window.location.href = '/';
             }
         } catch (err) {
@@ -62,118 +55,75 @@ const Maintenance = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-            {/* Ultra Premium Background Decor */}
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-50/50 blur-[120px] rounded-full pointer-events-none"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-50/50 blur-[120px] rounded-full pointer-events-none"></div>
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#2563eb 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }}></div>
-            
-            <div className="max-w-4xl w-full relative z-10">
-                {/* Hero Card */}
-                <div className="bg-white/70 backdrop-blur-2xl border border-slate-100 rounded-[50px] p-8 lg:p-16 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] text-center relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600"></div>
-                    
-                    {/* Floating Tools Icon */}
-                    <div 
-                        onClick={handleLogoClick}
-                        className="w-28 h-28 bg-white border border-slate-100 rounded-[40px] flex items-center justify-center mx-auto mb-12 shadow-xl shadow-blue-100 group cursor-pointer active:scale-90 transition-all hover:rotate-3"
-                    >
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-[30px] flex items-center justify-center shadow-lg">
-                            <FaIcon name="tools" className="text-admin-text text-4xl animate-pulse" />
+        <div style={{ minHeight: '100vh', background: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem' }}>
+            <div style={{ width: '100%', maxWidth: '36rem', margin: '0 auto', position: 'relative', zIndex: 10 }}>
+                <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `10px 10px 0px ${nb.dark}`, overflow: 'hidden' }}>
+                    <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '2.5rem 2rem 3rem', textAlign: 'center', color: '#fff', borderBottom: `3px solid ${nb.dark}` }}>
+                        <div 
+                            onClick={handleLogoClick}
+                            style={{ width: '72px', height: '72px', background: '#fff', borderRadius: '20px', border: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2rem', color: nb.mid, boxShadow: `4px 4px 0px ${nb.dark}`, cursor: 'pointer' }}
+                        >
+                            <i className="fas fa-tools" />
                         </div>
+                        <h1 style={{ fontSize: '2rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.04em', marginBottom: '0.5rem', lineHeight: 1 }}>Sistem Dalam Pemeliharaan</h1>
+                        <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', opacity: 0.9 }}>Sedang Meningkatkan Kualitas Layanan</p>
                     </div>
 
-                    <div className="max-w-2xl mx-auto space-y-8">
-                        <div className="inline-flex items-center gap-3 px-6 py-2.5 bg-blue-50 border border-blue-100 rounded-full">
-                            <span className="w-2 h-2 bg-blue-600 rounded-full animate-ping"></span>
-                            <span className="text-[10px] font-black text-blue-700 uppercase tracking-[0.3em]">System Under Optimization</span>
-                        </div>
-                        
-                        <h1 className="text-5xl lg:text-7xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-4">
-                            Kami Sedang <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700">Meningkatkan Layanan</span>
-                        </h1>
-
-                        <div className="space-y-6">
-                            <p className="text-slate-500 font-bold text-xl leading-relaxed">
-                                Mohon maaf, website ini mungkin akan tidak tersedia beberapa waktu.
-                            </p>
-                            
-                            <div className="relative p-8 bg-amber-50/50 border border-amber-100 rounded-[35px] overflow-hidden group/alert hover:bg-amber-50 transition-colors">
-                                <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-400"></div>
-                                <div className="flex flex-col md:flex-row items-center gap-6 text-left">
-                                    <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-amber-500 text-2xl flex-shrink-0 group-hover/alert:scale-110 transition-transform">
-                                        <FaIcon name="broadcast-tower" />
-                                    </div>
-                                    <p className="text-amber-900 text-sm font-black uppercase leading-relaxed tracking-wide">
-                                        Gangguan sinyal ngeleg atau hilang sinyal mungkin terjadi di wilayah kamu. <span className="text-amber-600 underline decoration-amber-200 underline-offset-4">Tolong tunggu teknisi kami meningkatkan kualitas layanan kami.</span>
-                                    </p>
-                                </div>
+                    <div style={{ padding: '2.5rem' }}>
+                        <div style={{ background: '#fffbeb', borderRadius: '16px', border: `3px solid #f59e0b`, padding: '1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                            <div style={{ width: '48px', height: '48px', background: '#f59e0b', color: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', border: '2px solid #b45309', flexShrink: 0 }}>
+                                <i className="fas fa-exclamation-triangle" />
+                            </div>
+                            <div>
+                                <p style={{ fontSize: '0.7rem', fontWeight: 900, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.25rem' }}>Informasi Gangguan</p>
+                                <p style={{ fontSize: '0.85rem', fontWeight: 700, color: '#92400e', lineHeight: 1.6 }}>Mohon maaf, layanan internet kami sedang dalam perbaikan untuk memberikan koneksi yang lebih stabil. Harap tunggu sementara teknisi kami bekerja.</p>
                             </div>
                         </div>
 
-                        {/* Visual Progress Mockup */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
-                            <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex flex-col items-center">
-                                <FaIcon name="microchip" className="text-blue-500 mb-3 text-lg" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Hardware</span>
-                                <span className="text-xs font-black text-slate-700 uppercase">Upgraded</span>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center' }}>
+                            <div style={{ background: '#f8fafc', padding: '1.25rem 0.5rem', borderRadius: '16px', border: `2px solid ${nb.dark}30` }}>
+                                <i className="fas fa-server" style={{ color: nb.mid, fontSize: '1.25rem', marginBottom: '0.5rem' }} />
+                                <p style={{ fontSize: '0.55rem', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Server Core</p>
+                                <p style={{ fontSize: '0.75rem', fontWeight: 900, color: nb.dark, marginTop: '0.2rem' }}>Upgrading</p>
                             </div>
-                            <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex flex-col items-center">
-                                <FaIcon name="server" className="text-indigo-500 mb-3 text-lg" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Core Server</span>
-                                <span className="text-xs font-black text-slate-700 uppercase">Stabilizing</span>
+                            <div style={{ background: '#f8fafc', padding: '1.25rem 0.5rem', borderRadius: '16px', border: `2px solid ${nb.dark}30` }}>
+                                <i className="fas fa-network-wired" style={{ color: '#10b981', fontSize: '1.25rem', marginBottom: '0.5rem' }} />
+                                <p style={{ fontSize: '0.55rem', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Jaringan</p>
+                                <p style={{ fontSize: '0.75rem', fontWeight: 900, color: nb.dark, marginTop: '0.2rem' }}>Optimizing</p>
                             </div>
-                            <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex flex-col items-center">
-                                <FaIcon name="shield-check" className="text-emerald-500 mb-3 text-lg" />
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Security</span>
-                                <span className="text-xs font-black text-slate-700 uppercase">Verified</span>
+                            <div style={{ background: '#f8fafc', padding: '1.25rem 0.5rem', borderRadius: '16px', border: `2px solid ${nb.dark}30` }}>
+                                <i className="fas fa-shield-alt" style={{ color: '#f59e0b', fontSize: '1.25rem', marginBottom: '0.5rem' }} />
+                                <p style={{ fontSize: '0.55rem', fontWeight: 900, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Keamanan</p>
+                                <p style={{ fontSize: '0.75rem', fontWeight: 900, color: nb.dark, marginTop: '0.2rem' }}>Securing</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Bypass Panel */}
                 {showBypass && (
-                    <div className="mt-12 p-10 bg-white border border-slate-200 rounded-[40px] max-w-md mx-auto shadow-2xl animate-bounce-in relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                        <h3 className="text-slate-400 font-black uppercase tracking-widest text-xs mb-8 flex items-center justify-center gap-3 relative z-10">
-                            <FaIcon name="lock" className="text-blue-600" /> Administrative Access
+                    <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`, padding: '2rem', marginTop: '2rem' }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1.5rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                            <i className="fas fa-lock" style={{ color: '#ef4444' }} /> Akses Administratif
                         </h3>
-                        <form onSubmit={handleBypass} className="space-y-5 relative z-10">
-                            <div className="relative group">
-                                <input 
-                                    type="password" 
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter Bypass Password"
-                                    className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-5 text-slate-900 font-mono text-center outline-none focus:border-blue-500 transition-all text-xl placeholder:text-slate-300 shadow-inner"
-                                />
-                            </div>
-                            <button 
-                                type="submit"
-                                disabled={loading}
-                                className="w-full py-5 bg-slate-900 hover:bg-admin-accent text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] transition-all active:scale-95 disabled:opacity-50 shadow-xl"
-                            >
-                                {loading ? 'Authenticating...' : 'Authorize Session'}
+                        <form onSubmit={handleBypass}>
+                            <input 
+                                type="password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Masukkan Password Bypass"
+                                style={{ width: '100%', padding: '1rem', background: '#f8fafc', border: `3px solid ${nb.dark}`, borderRadius: '12px', fontWeight: 900, fontSize: '1rem', textAlign: 'center', outline: 'none', color: nb.dark, marginBottom: '1rem', boxSizing: 'border-box' }}
+                            />
+                            <button type="submit" disabled={loading} style={{
+                                width: '100%', padding: '1rem', background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, color: '#fff', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.8rem', borderRadius: '12px', border: `3px solid ${nb.dark}`, boxShadow: `4px 4px 0px ${nb.dark}`, cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '1rem'
+                            }}>
+                                {loading ? 'Memproses...' : 'Buka Kunci Akses'}
                             </button>
-                            <button 
-                                type="button"
-                                onClick={() => setShowBypass(false)}
-                                className="w-full text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2 hover:text-slate-600 transition-colors"
-                            >
-                                Back to Status
+                            <button type="button" onClick={() => setShowBypass(false)} style={{ width: '100%', padding: '0.75rem', background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.65rem', cursor: 'pointer' }}>
+                                Batal
                             </button>
                         </form>
                     </div>
                 )}
-
-                {/* Network Branding Footer */}
-                <div className="mt-16 text-center">
-                    <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.8em]">
-                        ND-NETWORK CORE SYSTEM • HIGH AVAILABILITY
-                    </p>
-                </div>
             </div>
         </div>
     )
