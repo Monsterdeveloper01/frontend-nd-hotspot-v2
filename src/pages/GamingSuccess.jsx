@@ -18,7 +18,7 @@ const GamingSuccess = () => {
         const fetchVoucher = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/voucher/details?order_id=${orderId}`)
-                setVoucher(response.data.voucher)
+                setVoucher(response.data)
             } catch (err) {
                 console.error('Failed to fetch voucher:', err)
             } finally {
@@ -58,9 +58,9 @@ const GamingSuccess = () => {
                             <div style={{ background: '#0e4696', borderRadius: '20px', padding: '2rem', textAlign: 'center', marginBottom: '2.5rem', position: 'relative', overflow: 'hidden' }}>
                                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)' }} />
                                 <div style={{ position: 'relative', zIndex: 1 }}>
-                                    <p style={{ color: nb.light, fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.75rem' }}>Kode Akses</p>
-                                    <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#fff', letterSpacing: '0.15em', fontFamily: 'monospace', textShadow: `4px 4px 0px ${nb.dark}` }}>
-                                        {voucher.code}
+                                    <p style={{ color: '#64748b', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>Kode Voucher</p>
+                                    <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#fff', letterSpacing: '0.1em', fontFamily: 'monospace' }}>
+                                        {voucher.voucher_code}
                                     </h2>
                                 </div>
                             </div>
@@ -74,35 +74,47 @@ const GamingSuccess = () => {
                                 <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: `3px solid ${nb.dark}`, textAlign: 'center' }}>
                                     <i className="fas fa-stopwatch" style={{ color: nb.mid, fontSize: '1.5rem', marginBottom: '0.5rem' }} />
                                     <p style={{ fontSize: '0.6rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Durasi</p>
-                                    <p style={{ fontSize: '0.9rem', fontWeight: 900, color: nb.dark }}>{formatDuration(voucher.duration)}</p>
+                                    <p style={{ fontSize: '0.9rem', fontWeight: 900, color: nb.dark }}>{formatDuration(voucher.plan?.duration)}</p>
                                 </div>
                                 <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: `3px solid ${nb.dark}`, textAlign: 'center' }}>
                                     <i className="fas fa-arrow-up" style={{ color: '#10b981', fontSize: '1.5rem', marginBottom: '0.5rem' }} />
                                     <p style={{ fontSize: '0.6rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Upload</p>
-                                    <p style={{ fontSize: '0.9rem', fontWeight: 900, color: nb.dark }}>{voucher.upload_limit} Mbps</p>
+                                    <p style={{ fontSize: '0.9rem', fontWeight: 900, color: nb.dark }}>{voucher.plan?.upload_limit} Mbps</p>
                                 </div>
                                 <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: `3px solid ${nb.dark}`, textAlign: 'center' }}>
                                     <i className="fas fa-arrow-down" style={{ color: nb.mid, fontSize: '1.5rem', marginBottom: '0.5rem' }} />
                                     <p style={{ fontSize: '0.6rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Download</p>
-                                    <p style={{ fontSize: '0.9rem', fontWeight: 900, color: nb.dark }}>{voucher.download_limit} Mbps</p>
+                                    <p style={{ fontSize: '0.9rem', fontWeight: 900, color: nb.dark }}>{voucher.plan?.download_limit} Mbps</p>
                                 </div>
                             </div>
 
-                            <Link to="/gaming-area" style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                                width: '100%', padding: '1.25rem',
-                                background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
-                                color: '#fff', fontWeight: 900, textTransform: 'uppercase',
-                                letterSpacing: '0.2em', fontSize: '0.85rem', textAlign: 'center',
-                                borderRadius: '16px', border: `3px solid ${nb.dark}`,
-                                boxShadow: `6px 6px 0px ${nb.dark}`, textDecoration: 'none',
-                                transition: 'all 0.15s ease',
-                            }}
-                            onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(6px, 6px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
-                            onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `6px 6px 0px ${nb.dark}` }}
-                            >
-                                <i className="fas fa-bolt" /> Mulai Koneksi
-                            </Link>
+                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                <Link to="/" style={{
+                                    display: 'block', flex: 1, padding: '1.25rem',
+                                    background: '#f1f5f9', color: nb.dark, fontWeight: 900, textTransform: 'uppercase',
+                                    letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
+                                    borderRadius: '16px', border: `3px solid ${nb.dark}`,
+                                    boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
+                                }}
+                                onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
+                                onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                >
+                                    Selesai
+                                </Link>
+                                <a href="http://ndnet.login" style={{
+                                    display: 'block', flex: 1, padding: '1.25rem',
+                                    background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                    color: '#fff', fontWeight: 900, textTransform: 'uppercase',
+                                    letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
+                                    borderRadius: '16px', border: `3px solid ${nb.dark}`,
+                                    boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
+                                }}
+                                onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
+                                onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                >
+                                    <i className="fas fa-sign-in-alt" /> Login
+                                </a>
+                            </div>
                         </div>
                     </div>
                 ) : (

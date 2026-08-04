@@ -18,7 +18,7 @@ const PaymentSuccess = () => {
         const fetchVoucher = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/voucher/details?order_id=${orderId}`)
-                setVoucher(response.data.voucher)
+                setVoucher(response.data)
             } catch (err) {
                 console.error('Failed to fetch voucher:', err)
             } finally {
@@ -59,7 +59,7 @@ const PaymentSuccess = () => {
                                 <div style={{ background: '#f8fafc', borderRadius: '16px', border: `3px dashed ${nb.dark}`, padding: '2rem', textAlign: 'center', marginBottom: '2rem' }}>
                                     <p style={{ color: '#64748b', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>Kode Voucher</p>
                                     <h2 style={{ fontSize: '3rem', fontWeight: 900, color: nb.dark, letterSpacing: '0.1em', fontFamily: 'monospace' }}>
-                                        {voucher.code}
+                                        {voucher.voucher_code}
                                     </h2>
                                 </div>
 
@@ -70,11 +70,11 @@ const PaymentSuccess = () => {
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '1rem', borderBottom: `2px solid ${nb.dark}15` }}>
                                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-clock" style={{ color: nb.mid, marginRight: '0.5rem' }} /> Durasi</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{formatDuration(voucher.duration)}</span>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{formatDuration(voucher.plan?.duration)}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-tachometer-alt" style={{ color: nb.mid, marginRight: '0.5rem' }} /> Speed</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{voucher.upload_limit}M / {voucher.download_limit}M</span>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{voucher.plan?.upload_limit}M / {voucher.plan?.download_limit}M</span>
                                     </div>
                                 </div>
 
@@ -89,19 +89,33 @@ const PaymentSuccess = () => {
                                     </ol>
                                 </div>
 
-                                <Link to="/" style={{
-                                    display: 'block', width: '100%', padding: '1.25rem',
-                                    background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
-                                    color: '#fff', fontWeight: 900, textTransform: 'uppercase',
-                                    letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
-                                    borderRadius: '16px', border: `3px solid ${nb.dark}`,
-                                    boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
-                                }}
-                                onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
-                                onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
-                                >
-                                    Selesai
-                                </Link>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <Link to="/" style={{
+                                        display: 'block', flex: 1, padding: '1.25rem',
+                                        background: '#f1f5f9', color: nb.dark, fontWeight: 900, textTransform: 'uppercase',
+                                        letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
+                                        borderRadius: '16px', border: `3px solid ${nb.dark}`,
+                                        boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
+                                    }}
+                                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
+                                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                    >
+                                        Selesai
+                                    </Link>
+                                    <a href="http://ndnet.login" style={{
+                                        display: 'block', flex: 1, padding: '1.25rem',
+                                        background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                        color: '#fff', fontWeight: 900, textTransform: 'uppercase',
+                                        letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
+                                        borderRadius: '16px', border: `3px solid ${nb.dark}`,
+                                        boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
+                                    }}
+                                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
+                                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                    >
+                                        <i className="fas fa-sign-in-alt" /> Login
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     ) : (
