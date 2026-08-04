@@ -533,7 +533,7 @@ const AdminDashboard = () => {
                                     </div>
                                     
                                     {/* Label Waktu */}
-                                    <span className="text-[8px] text-admin-muted mt-2 rotate-[-90deg] origin-top-left -ml-1 font-mono font-bold">{p.hour}</span>
+                                    <span className="text-[8px] text-admin-muted mt-2 font-mono font-bold tracking-widest" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>{p.hour}:00</span>
                                 </div>
                             );
                         });
