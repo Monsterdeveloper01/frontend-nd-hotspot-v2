@@ -4,16 +4,17 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        'admin-base': '#f8fafc', // slate-50
-        'admin-card': '#ffffff', // white
-        'admin-border': '#e2e8f0', // slate-200
-        'admin-text': '#0f172a', // slate-900
-        'admin-muted': '#64748b', // slate-500
-        'admin-accent': '#2563eb', // blue-600
-        'admin-success': '#059669', // emerald-600
+        'admin-base': 'var(--admin-base)',
+        'admin-card': 'var(--admin-card)',
+        'admin-border': 'var(--admin-border)',
+        'admin-text': 'var(--admin-text)',
+        'admin-muted': 'var(--admin-muted)',
+        'admin-accent': 'var(--admin-accent)',
+        'admin-success': 'var(--admin-success)',
         'nd-blue': '#0084ff',
         'nd-purple': '#9333ea',
         'nd-green': '#10b981',

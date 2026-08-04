@@ -12,6 +12,24 @@
     --dark: #1e293b;
     --purple: #9333ea;
     --emerald: #10b981;
+    
+    --admin-base: #f8fafc;
+    --admin-card: #ffffff;
+    --admin-border: #e2e8f0;
+    --admin-text: #0f172a;
+    --admin-muted: #64748b;
+    --admin-accent: #2563eb;
+    --admin-success: #059669;
+  }
+
+  .dark {
+    --admin-base: #131a2c; /* match screenshot bg */
+    --admin-card: #1e293b; /* sidebar/card bg */
+    --admin-border: #334155;
+    --admin-text: #f8fafc;
+    --admin-muted: #94a3b8;
+    --admin-accent: #3b82f6;
+    --admin-success: #10b981;
   }
 
   body {

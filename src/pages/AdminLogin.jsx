@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const AdminLogin = () => {
@@ -7,6 +7,15 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const theme = localStorage.getItem('theme') || 'dark'
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -41,7 +50,7 @@ const AdminLogin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-admin-base flex items-center justify-center p-6 relative font-sans text-admin-text">
+    <div className="min-h-screen bg-admin-base flex items-center justify-center p-6 relative font-sans text-admin-text admin-theme">
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-admin-base rounded-xl flex items-center justify-center mx-auto mb-5 border border-admin-border text-admin-text">

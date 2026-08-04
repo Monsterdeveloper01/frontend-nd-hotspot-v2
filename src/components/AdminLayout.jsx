@@ -14,7 +14,14 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     logout: <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />,
     menu: <path d="M4 6h16M4 12h16M4 18h16" />,
     close: <path d="M6 18L18 6M6 6l12 12" />,
-    sync: <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    sync: <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />,
+    sun: <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />,
+    moon: <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />,
+    bell: <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />,
+    user: <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />,
+    fullscreen: <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />,
+    chevronDown: <path d="M19 9l-7 7-7-7" />,
+    clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
   };
 
   return (
@@ -36,8 +43,39 @@ const AdminLayout = ({ children, title, subtitle }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [routerConnected, setRouterConnected] = useState(null)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [time, setTime] = useState(new Date())
+  
+  // Theme state
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
+
   const location = useLocation()
   const navigate = useNavigate()
+  
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+  }
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {})
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen()
+    }
+  }
+
+  useEffect(() => {
+    const clockTimer = setInterval(() => setTime(new Date()), 1000)
+    return () => clearInterval(clockTimer)
+  }, [])
   
   const checkRouterStatus = async () => {
     setIsSyncing(true)
@@ -99,13 +137,17 @@ const AdminLayout = ({ children, title, subtitle }) => {
         ></div>
       )}
 
-      {/* Sidebar - Enterprise Minimalist Style */}
+      {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 w-64 bg-admin-card border-r border-admin-border z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="h-full flex flex-col">
           {/* Logo Section */}
-          <div className="h-16 px-6 flex items-center justify-between border-b border-admin-border">
-            <div className="flex items-center justify-center w-full">
-              <img src="/Logo.png" alt="ND-Billing Logo" className="h-10 object-contain" />
+          <div className="h-16 px-4 flex items-center justify-between border-b border-admin-border bg-admin-card">
+            <div className="flex items-center gap-2 w-full">
+              <img src="/Logo.png" alt="Logo" className="w-8 h-8 object-contain hidden" />
+              <div className="flex items-center gap-2 text-admin-text">
+                <i className="fas fa-wifi text-[#f59e0b] text-xl" />
+                <span className="font-bold text-lg tracking-tight">ND-Hotspot</span>
+              </div>
             </div>
             <button className="lg:hidden p-1.5 text-admin-muted hover:text-admin-text transition-colors" onClick={() => setIsSidebarOpen(false)}>
               <Icon name="close" className="w-5 h-5" />
@@ -150,8 +192,8 @@ const AdminLayout = ({ children, title, subtitle }) => {
 
       {/* Main Content Area */}
       <main className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        {/* Header - Minimalist */}
-        <header className="sticky top-0 bg-admin-card/90 backdrop-blur-md border-b border-admin-border z-30 h-16 px-6 flex items-center justify-between">
+        {/* Header */}
+        <header className="sticky top-0 bg-admin-card border-b border-admin-border z-30 h-14 px-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button 
               className="lg:hidden p-2 text-admin-muted hover:text-admin-text transition-colors"
@@ -159,40 +201,39 @@ const AdminLayout = ({ children, title, subtitle }) => {
             >
               <Icon name="menu" className="w-5 h-5" />
             </button>
-            <div>
-              <h1 className="text-lg font-semibold text-admin-text tracking-tight">{title}</h1>
+            
+            <div className="hidden md:flex items-center gap-6">
+              <div className="flex items-center gap-2 text-admin-text text-sm font-semibold uppercase">
+                <Icon name="user" className="w-4 h-4" /> ADMINISTRATOR
+              </div>
+              <div className="flex items-center gap-1.5 text-admin-muted text-xs uppercase font-medium">
+                <Icon name="clock" className="w-3.5 h-3.5" />
+                WAKTU SERVER : {time.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })} {time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} WIB
+              </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-3">
-              <span className="text-xs text-admin-muted">Router</span>
-              {routerConnected === null ? (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-admin-base/50 border border-admin-border">
-                  <div className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-medium text-admin-muted uppercase tracking-wide">Checking</span>
-                </div>
-              ) : routerConnected ? (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-admin-success/10 border border-admin-success/20">
-                  <div className="w-1.5 h-1.5 bg-admin-success rounded-full"></div>
-                  <span className="text-[10px] font-medium text-admin-success uppercase tracking-wide">Online</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20">
-                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-medium text-red-500 uppercase tracking-wide">Offline</span>
-                </div>
-              )}
-            </div>
-            <div className="h-4 w-px bg-admin-border hidden md:block"></div>
-            <button 
-              onClick={checkRouterStatus}
-              disabled={isSyncing}
-              className="text-admin-muted hover:text-admin-text transition-colors disabled:opacity-50"
-              title="Sync Router Status"
-            >
-              <Icon name="sync" className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+          <div className="flex items-center gap-3">
+            <button className="p-2 text-admin-muted hover:text-admin-text transition-colors hidden sm:block">
+              <Icon name="bell" className="w-4 h-4" />
             </button>
+            <button onClick={toggleTheme} className="p-2 text-admin-muted hover:text-admin-text transition-colors">
+              <Icon name={theme === 'dark' ? 'sun' : 'moon'} className="w-4 h-4" />
+            </button>
+            <button onClick={toggleFullscreen} className="p-2 text-admin-muted hover:text-admin-text transition-colors hidden sm:block">
+              <Icon name="fullscreen" className="w-4 h-4" />
+            </button>
+            <Link to="/admin/whatsapp" className="p-2 text-admin-muted hover:text-admin-text transition-colors hidden sm:block">
+              <Icon name="whatsapp" className="w-4 h-4" />
+            </Link>
+            
+            <div className="h-4 w-px bg-admin-border hidden md:block mx-1"></div>
+            
+            <div className="flex items-center gap-2 cursor-pointer p-2 hover:bg-admin-base/50 rounded-md transition-colors text-admin-muted hover:text-admin-text">
+              <Icon name="user" className="w-4 h-4" />
+              <span className="text-sm font-medium">Account</span>
+              <Icon name="chevronDown" className="w-3 h-3" />
+            </div>
           </div>
         </header>
 
