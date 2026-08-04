@@ -369,82 +369,99 @@ const AdminDashboard = () => {
             </div>
         )}
 
-        {/* RINGKASAN HARI INI */}
-        <div className="bg-admin-card rounded-md shadow-sm border border-admin-border mb-6 overflow-hidden">
-            <div className="px-4 py-3 border-b border-admin-border flex justify-between items-center bg-admin-card">
-                <h2 className="text-xs font-bold text-admin-text tracking-wider uppercase flex items-center gap-2">
-                    <Icon name="master" className="w-4 h-4" /> RINGKASAN HARI INI
-                </h2>
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 text-[10px] font-bold tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> LIVE
+        {/* RINGKASAN HARI INI - 3 Kolom Besar */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            {/* Kotak 1: Total Pendapatan */}
+            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6 flex flex-col">
+                <div>
+                    <p className="text-sm font-medium text-admin-muted mb-1">Pendapatan Bulan Ini</p>
+                    <div className="flex items-baseline gap-2">
+                        <p className="text-4xl font-bold tabular-nums text-admin-text tracking-tight">Rp {formatPrice(data.stats.monthly_revenue)}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 mt-4">
+                        <div className="bg-admin-base px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">Voucher</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.voucher_revenue_month)}</span>
+                        </div>
+                        <div className="bg-admin-base px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">Bill</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.bill_revenue_month)}</span>
+                        </div>
+                        <div className="bg-admin-base px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">Manual Bill</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.manual_bill_revenue_month)}</span>
+                        </div>
+                        <div className="bg-admin-base px-3 py-2 rounded-lg border border-admin-border flex flex-col justify-center">
+                            <span className="text-[10px] font-medium text-admin-muted">QRIS Statis</span>
+                            <span className="text-xs font-bold text-admin-text">Rp {formatPrice(data.stats.qris_statis_revenue_month)}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-6 pt-4 border-t border-admin-border flex items-center justify-between">
+                    <div>
+                        <p className="text-xs text-admin-muted">Omset Hari Ini</p>
+                        <p className="text-sm font-medium text-emerald-500 mt-0.5">Rp {formatPrice(data.stats.today_revenue)}</p>
+                    </div>
+                    <div className="flex gap-2">
+                        <span className="text-[10px] px-1.5 py-0.5 bg-admin-base text-admin-muted rounded border border-admin-border">Bill {data.stats.today_revenue > 0 ? ((data.stats.bill_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                        <span className="text-[10px] px-1.5 py-0.5 bg-admin-base text-admin-muted rounded border border-admin-border">Vcr {data.stats.today_revenue > 0 ? ((data.stats.voucher_revenue_today/data.stats.today_revenue)*100).toFixed(0) : '0'}%</span>
+                    </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-admin-border">
-                {/* Card 1: Pemasukan Voucher */}
-                <div className="p-4 flex items-center justify-between border-b sm:border-b-0">
-                    <div>
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-1">Pemasukan Voucher</p>
-                        <p className="text-2xl font-bold text-[#60a5fa] mb-1">Rp{formatPrice(data.stats.voucher_revenue_today)}</p>
-                        <p className="text-[10px] text-admin-muted">Keuangan</p>
+
+            {/* Kotak 2: Total Pelanggan */}
+            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6 flex flex-col">
+                <div>
+                    <div className="flex items-center justify-between mb-1">
+                        <p className="text-sm font-medium text-admin-muted">Pelanggan Aktif</p>
+                        <span className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium rounded-full border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            {data.stats.online_count} Online
+                        </span>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                        <Icon name="sold" className="w-5 h-5 text-[#60a5fa]" />
+                    <p className="text-4xl font-bold tabular-nums text-admin-text tracking-tight">{data.stats.total_customers?.toLocaleString('id-ID') || 0}</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-admin-border grid grid-cols-2 gap-4">
+                    <div>
+                        <p className="text-xs text-admin-muted">Tunggakan (Due)</p>
+                        <p className="text-sm font-medium text-amber-500 mt-0.5">{data.stats.due_customers?.toLocaleString('id-ID') || 0}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-admin-muted">Terisolir</p>
+                        <p className="text-sm font-medium text-red-500 mt-0.5">{data.stats.isolated_customers?.toLocaleString('id-ID') || 0}</p>
                     </div>
                 </div>
-                {/* Card 2: Pemasukan Invoice */}
-                <div className="p-4 flex items-center justify-between border-b sm:border-b-0 lg:border-b-0">
-                    <div>
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-1">Pemasukan Invoice</p>
-                        <p className="text-2xl font-bold text-[#10b981] mb-1">Rp{formatPrice(data.stats.bill_revenue_today)}</p>
-                        <p className="text-[10px] text-admin-muted">Keuangan</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                        <Icon name="check" className="w-5 h-5 text-[#10b981]" />
-                    </div>
-                </div>
-                {/* Card 3: Pengeluaran */}
-                <div className="p-4 flex items-center justify-between sm:border-t lg:border-t-0 border-admin-border">
-                    <div>
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-1">Pengeluaran</p>
-                        <p className="text-2xl font-bold text-[#f59e0b] mb-1">Rp0</p>
-                        <p className="text-[10px] text-admin-muted">Keuangan</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
-                        <Icon name="bill" className="w-5 h-5 text-[#f59e0b]" />
+            </div>
+
+            {/* Kotak 3: Detail Hari Ini */}
+            <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-6 flex flex-col">
+                <div>
+                    <p className="text-sm font-medium text-admin-muted mb-1">Performa Hari Ini</p>
+                    <div className="grid grid-cols-2 gap-4 mt-3">
+                        <div>
+                            <p className="text-xs text-admin-muted">Bill Masuk</p>
+                            <p className="text-xl font-bold tabular-nums text-admin-text mt-0.5">Rp {formatPrice(data.stats.bill_revenue_today)}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-admin-muted">Voucher Terjual</p>
+                            <p className="text-xl font-bold tabular-nums text-admin-text mt-0.5">{data.stats.voucher_sold_today?.toLocaleString('id-ID') || 0} <span className="text-xs text-admin-muted font-normal">voucher</span></p>
+                            <p className="text-[10px] text-emerald-500 font-semibold mt-1">Rp {formatPrice(data.stats.voucher_revenue_today)}</p>
+                        </div>
                     </div>
                 </div>
-                
-                {/* Card 4: Voucher Online */}
-                <div className="p-4 flex items-center justify-between border-t border-admin-border">
-                    <div>
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-1">Voucher Online</p>
-                        <p className="text-2xl font-bold text-[#10b981] mb-1">{data.stats.online_count}</p>
-                        <p className="text-[10px] text-admin-muted">Device Online</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                        <Icon name="online" className="w-5 h-5 text-[#10b981]" />
-                    </div>
-                </div>
-                {/* Card 5: PPPoE-DHCP Online */}
-                <div className="p-4 flex items-center justify-between border-t border-admin-border sm:border-l sm:border-admin-border">
-                    <div>
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-1">PPPoE-DHCP Online</p>
-                        <p className="text-2xl font-bold text-[#8b5cf6] mb-1">0</p>
-                        <p className="text-[10px] text-admin-muted">User Online</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-                        <Icon name="users" className="w-5 h-5 text-[#8b5cf6]" />
-                    </div>
-                </div>
-                {/* Card 6: Pelanggan Terisolir */}
-                <div className="p-4 flex items-center justify-between border-t border-admin-border lg:border-l lg:border-admin-border sm:col-span-2 lg:col-span-1">
-                    <div>
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-1">Pelanggan Terisolir</p>
-                        <p className="text-2xl font-bold text-[#ef4444] mb-1">{data.stats.isolated_customers}</p>
-                        <p className="text-[10px] text-admin-muted">PPPoE-DHCP Expired</p>
-                    </div>
-                    <div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
-                        <Icon name="close" className="w-5 h-5 text-[#ef4444]" />
+                <div className="mt-6 pt-4 border-t border-admin-border">
+                    <div className="flex items-center justify-between">
+                        <div className="text-right">
+                            <p className="text-xs text-admin-muted">Statistik Pendapatan</p>
+                            <button 
+                                onClick={() => setChartModalOpen(true)}
+                                className="mt-1 px-3 py-1 bg-admin-base border border-admin-border text-[10px] font-semibold text-admin-text rounded-md hover:bg-slate-100 transition-colors flex items-center gap-1"
+                            >
+                                <Icon name="trend" className="w-3 h-3 text-admin-accent" />
+                                Lihat Chart
+                            </button>
+                        </div>
+                        <p className="text-xl font-bold tabular-nums text-admin-text mt-0.5">Rp {formatPrice(Number(data.stats.voucher_revenue_today || 0) + Number(data.stats.bill_revenue_today || 0))}</p>
                     </div>
                 </div>
             </div>
@@ -507,12 +524,12 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            {/* Kiri: Log Aplikasi (Transactions) */}
-            <div className="lg:col-span-2 bg-admin-card rounded-md shadow-sm border border-admin-border overflow-hidden flex flex-col h-[400px]">
+        <div className="grid grid-cols-1 gap-6 mb-6">
+            {/* LOG TRANSAKSI (Satu Kolom Penuh) */}
+            <div className="bg-admin-card rounded-md shadow-sm border border-admin-border overflow-hidden flex flex-col h-[400px]">
                 <div className="px-4 py-3 border-b border-admin-border flex justify-between items-center bg-admin-card">
                     <h2 className="text-xs font-bold text-admin-text tracking-wider uppercase flex items-center gap-2">
-                        <Icon name="master" className="w-4 h-4" /> LOG APLIKASI
+                        <Icon name="master" className="w-4 h-4" /> LOG TRANSAKSI
                     </h2>
                     <button 
                         onClick={() => setModalOpen(true)}
@@ -549,54 +566,6 @@ const AdminDashboard = () => {
                     }) : (
                         <div className="text-center text-admin-muted text-xs mt-10">Belum ada log transaksi.</div>
                     )}
-                </div>
-            </div>
-
-            {/* Kanan: Informasi Lisensi */}
-            <div className="bg-admin-card rounded-md shadow-sm border border-admin-border overflow-hidden h-[400px]">
-                <div className="px-4 py-3 border-b border-admin-border bg-admin-card">
-                    <h2 className="text-xs font-bold text-admin-text tracking-wider uppercase flex items-center gap-2">
-                        <Icon name="master" className="w-4 h-4" /> Informasi Lisensi
-                    </h2>
-                </div>
-                <div className="p-5 space-y-6">
-                    {/* Sesi Online */}
-                    <div>
-                        <div className="flex justify-between items-end mb-2">
-                            <p className="text-xs font-semibold text-admin-text uppercase tracking-wider">Total Sesi Online</p>
-                            <p className="text-[10px] text-admin-muted font-bold">{data.stats.online_count}/600 <span className="text-emerald-500 ml-1">{Math.round((data.stats.online_count/600)*100)}%</span></p>
-                        </div>
-                        <div className="w-full bg-admin-base rounded-full h-1.5 border border-admin-border overflow-hidden">
-                            <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${Math.min((data.stats.online_count/600)*100, 100)}%` }}></div>
-                        </div>
-                    </div>
-                    {/* Voucher Terjual (Assuming out of 1000 limit for demo) */}
-                    <div>
-                        <div className="flex justify-between items-end mb-2">
-                            <p className="text-xs font-semibold text-admin-text uppercase tracking-wider">Voucher Terjual Hari Ini</p>
-                            <p className="text-[10px] text-admin-muted font-bold">{data.stats.voucher_sold_today}/1000 <span className="text-blue-500 ml-1">{Math.round((data.stats.voucher_sold_today/1000)*100)}%</span></p>
-                        </div>
-                        <div className="w-full bg-admin-base rounded-full h-1.5 border border-admin-border overflow-hidden">
-                            <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${Math.min((data.stats.voucher_sold_today/1000)*100, 100)}%` }}></div>
-                        </div>
-                    </div>
-                    {/* Router Status */}
-                    <div className="mt-8 p-4 rounded border border-admin-border bg-admin-base text-center">
-                        <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-2">KONEKSI MIKROTIK</p>
-                        {routerStatus.online ? (
-                            <div className="flex flex-col items-center justify-center gap-2">
-                                <Icon name="network" className="w-8 h-8 text-emerald-500" />
-                                <p className="text-sm font-bold text-emerald-500 uppercase tracking-widest">TERHUBUNG</p>
-                                <p className="text-[10px] text-admin-muted font-mono">{routerStatus.latency_ms}ms latency</p>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center gap-2">
-                                <Icon name="network" className="w-8 h-8 text-rose-500 opacity-50" />
-                                <p className="text-sm font-bold text-rose-500 uppercase tracking-widest animate-pulse">TERPUTUS</p>
-                                <p className="text-[10px] text-admin-muted font-mono">Periksa koneksi RouterOS</p>
-                            </div>
-                        )}
-                    </div>
                 </div>
             </div>
         </div>
