@@ -46,8 +46,8 @@ const PaymentSuccess = () => {
                             <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase' }}>Memuat Detail...</h2>
                         </div>
                     ) : voucher ? (
-                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `8px 8px 0px ${nb.dark}`, overflow: 'hidden' }}>
-                            <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '2.5rem 2rem 2rem', textAlign: 'center', color: '#fff', position: 'relative' }}>
+                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `8px 8px 0px ${nb.dark}` }}>
+                            <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '2.5rem 2rem 2rem', textAlign: 'center', color: '#fff', position: 'relative', borderTopLeftRadius: '21px', borderTopRightRadius: '21px' }}>
                                 <div style={{ position: 'absolute', top: '-24px', left: '50%', transform: 'translateX(-50%)', width: '48px', height: '48px', background: '#10b981', borderRadius: '50%', border: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', color: '#fff', boxShadow: `2px 2px 0px ${nb.dark}` }}>
                                     <i className="fas fa-check" />
                                 </div>

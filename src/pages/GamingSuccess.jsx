@@ -45,8 +45,8 @@ const GamingSuccess = () => {
                         <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Mengesahkan Koneksi...</h2>
                     </div>
                 ) : voucher ? (
-                    <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `10px 10px 0px ${nb.dark}`, overflow: 'hidden' }}>
-                        <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '3rem 2rem 2.5rem', textAlign: 'center', color: '#fff', position: 'relative', borderBottom: `3px solid ${nb.dark}` }}>
+                    <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `10px 10px 0px ${nb.dark}` }}>
+                        <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '3rem 2rem 2.5rem', textAlign: 'center', color: '#fff', position: 'relative', borderBottom: `3px solid ${nb.dark}`, borderTopLeftRadius: '21px', borderTopRightRadius: '21px' }}>
                             <div style={{ position: 'absolute', top: '-28px', left: '50%', transform: 'translateX(-50%)', width: '56px', height: '56px', background: '#10b981', borderRadius: '16px', border: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: '#fff', boxShadow: `4px 4px 0px ${nb.dark}` }}>
                                 <i className="fas fa-check-double" />
                             </div>
