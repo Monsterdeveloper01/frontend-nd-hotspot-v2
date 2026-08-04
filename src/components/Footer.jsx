@@ -48,7 +48,7 @@ const Footer = () => {
                             <span style={{ fontSize: '0.65rem', fontWeight: 800, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.1em' }}>High Speed</span>
                         </div>
                         {/* WhatsApp Support - inline SVG */}
-                        <a href="https://wa.me/628129588587" target="_blank" rel="noreferrer" style={{
+                        <a href="https://wa.me/6285129391531" target="_blank" rel="noreferrer" style={{
                             display: 'flex', alignItems: 'center', gap: '0.6rem',
                             padding: '0.6rem 1rem', background: '#ffffff',
                             border: `2px solid ${nb.dark}`, borderRadius: '10px',
@@ -64,7 +64,7 @@ const Footer = () => {
                             </svg>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <span style={{ fontSize: '0.6rem', fontWeight: 800, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.1em', lineHeight: 1 }}>Support 24/7</span>
-                                <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#25D366', letterSpacing: '0.05em', marginTop: '2px' }}>+62 812-9588-587</span>
+                                <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#25D366', letterSpacing: '0.05em', marginTop: '2px' }}>+62 851-2939-1531</span>
                             </div>
                         </a>
                     </div>

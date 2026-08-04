@@ -142,7 +142,7 @@ function Home() {
   }, [])
 
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/6281234567890?text=Halo%20ND-HOTSPOT%20,%20saya%20ingin%20bertanya%20tentang%20voucher%20internet', '_blank');
+    window.open('https://wa.me/6285129391531?text=Halo%20ND-HOTSPOT%20,%20saya%20ingin%20bertanya%20tentang%20voucher%20internet', '_blank');
   };
 
   return (
