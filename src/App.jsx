@@ -149,7 +149,7 @@ function Home() {
     <PublicLayout>
 
       {/* Hero Section - Neo Brutalism */}
-      <section style={{ position: 'relative', paddingTop: '5rem', paddingBottom: '4rem', overflow: 'hidden', background: '#ffffff' }}>
+      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '2rem', paddingBottom: '2rem', overflow: 'hidden', background: '#ffffff' }}>
         {/* Background Image with Effects */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
           <img src="/logo-wifi-section.png" alt="Background" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.08 }} />
@@ -157,23 +157,7 @@ function Home() {
 
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }} className="lg:text-left">
           <div className="lg:flex items-center justify-between">
-            <div className="lg:max-w-2xl">
-              <div className="hidden lg:inline-flex" style={{
-                alignItems: 'center', gap: '0.5rem',
-                padding: '0.5rem 1rem',
-                background: '#ffffff',
-                border: '2px solid #0e4696',
-                borderRadius: '8px',
-                boxShadow: '3px 3px 0px #0e4696',
-                marginBottom: '1.5rem',
-              }}>
-                <span style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }} className="animate-pulse" />
-                <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#0e4696', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Network Status: Optimized</span>
-              </div>
-              <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: '#0e4696', marginBottom: '1.5rem', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
-                Pilih Paket <span style={{ color: '#60a5fa', textDecoration: 'underline', textDecorationColor: '#bfdbfe', textUnderlineOffset: '8px' }}>Voucher</span> Internet.
-              </h2>
-            </div>
+
 
             {/* Quick Actions Mobile */}
             <div className="grid grid-cols-2 gap-3 lg:hidden" style={{ marginTop: '2rem' }}>
@@ -205,18 +189,18 @@ function Home() {
       {/* Packages Grid - Neo Brutalism, single dark blue */}
       <section id="packages" style={{ padding: '3rem 0', background: '#ffffff', flex: 1 }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: '64px', height: '64px', borderRadius: '16px',
+              width: '56px', height: '56px', borderRadius: '16px',
               background: 'linear-gradient(135deg, #0e4696, #1877f2)',
-              border: '3px solid #0e4696', boxShadow: '4px 4px 0px #0e4696',
-              marginBottom: '1rem', color: '#fff', fontSize: '1.5rem',
+              border: '3px solid #0e4696', boxShadow: '3px 3px 0px #0e4696',
+              marginBottom: '0.5rem', color: '#fff', fontSize: '1.25rem',
             }}>
               <FaIcon name="wifi" />
             </div>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0e4696', letterSpacing: '-0.03em' }}>Pilih Paket Voucher</h2>
-            <p style={{ color: '#64748b', fontWeight: 700, marginTop: '0.5rem' }}>Koneksi cepat untuk aktivitas online Anda</p>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0e4696', letterSpacing: '-0.03em', marginBottom: 0 }}>Pilih Paket Voucher</h2>
+            <p style={{ color: '#64748b', fontWeight: 700, marginTop: '0.25rem', fontSize: '0.8rem' }}>Koneksi cepat untuk aktivitas online Anda</p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-8">
