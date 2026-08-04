@@ -583,7 +583,7 @@ const AdminDashboard = () => {
                     {/* Router Status */}
                     <div className="mt-8 p-4 rounded border border-admin-border bg-admin-base text-center">
                         <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider mb-2">KONEKSI MIKROTIK</p>
-                        {routerConnected ? (
+                        {routerStatus.online ? (
                             <div className="flex flex-col items-center justify-center gap-2">
                                 <Icon name="network" className="w-8 h-8 text-emerald-500" />
                                 <p className="text-sm font-bold text-emerald-500 uppercase tracking-widest">TERHUBUNG</p>
