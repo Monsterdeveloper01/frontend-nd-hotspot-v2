@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const Icon = ({ name, className = "w-5 h-5" }) => {
@@ -47,6 +47,12 @@ const AdminLayout = ({ children, title, subtitle }) => {
   
   // Theme state
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
+
+  // Complaints state
+  const [complaints, setComplaints] = useState([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [showComplaints, setShowComplaints] = useState(false)
+  const complaintRef = useRef(null)
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -107,6 +113,61 @@ const AdminLayout = ({ children, title, subtitle }) => {
     const interval = setInterval(checkRouterStatus, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  // Fetch complaints for bell icon
+  const fetchComplaints = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/complaints?limit=5`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setComplaints(data.complaints || [])
+        setUnreadCount(data.unread_count || 0)
+      }
+    } catch (err) {
+      // Silently fail
+    }
+  }
+
+  useEffect(() => {
+    fetchComplaints()
+    const interval = setInterval(fetchComplaints, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Close complaint dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (complaintRef.current && !complaintRef.current.contains(e.target)) {
+        setShowComplaints(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const markComplaintRead = async (id) => {
+    try {
+      const token = localStorage.getItem('token')
+      await fetch(`${import.meta.env.VITE_API_URL}/admin/complaints/${id}/read`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      })
+      fetchComplaints()
+    } catch (err) {
+      // Silently fail
+    }
+  }
+
+  const formatTimeAgo = (dateStr) => {
+    const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+    if (diff < 60) return 'Baru saja'
+    if (diff < 3600) return `${Math.floor(diff / 60)} menit lalu`
+    if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`
+    return `${Math.floor(diff / 86400)} hari lalu`
+  }
 
     const menuItems = [
     { name: 'Dashboard', path: '/admin-dashboard-access-granted', icon: 'dashboard', section: 'GENERAL' },
@@ -214,9 +275,87 @@ const AdminLayout = ({ children, title, subtitle }) => {
           </div>
           
           <div className="flex items-center gap-3">
-            <button className="p-2 text-admin-muted hover:text-admin-text transition-colors hidden sm:block">
-              <Icon name="bell" className="w-4 h-4" />
-            </button>
+            <div className="relative" ref={complaintRef}>
+              <button 
+                onClick={() => setShowComplaints(!showComplaints)}
+                className="p-2 text-admin-muted hover:text-admin-text transition-colors hidden sm:block relative"
+              >
+                <Icon name="bell" className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Complaint Dropdown */}
+              {showComplaints && (
+                <div className="absolute right-0 top-12 w-[380px] bg-admin-card border border-admin-border rounded-xl shadow-2xl z-50 overflow-hidden animate-fadeIn">
+                  <div className="px-4 py-3 border-b border-admin-border bg-admin-base/50 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black text-admin-text uppercase tracking-widest">Laporan Pelanggan</span>
+                      {unreadCount > 0 && (
+                        <span className="px-1.5 py-0.5 bg-rose-500/10 text-rose-500 text-[9px] font-black rounded-full">{unreadCount} baru</span>
+                      )}
+                    </div>
+                    <button onClick={() => setShowComplaints(false)} className="text-admin-muted hover:text-admin-text">
+                      <Icon name="close" className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div className="max-h-[360px] overflow-y-auto custom-scrollbar">
+                    {complaints.length > 0 ? complaints.map((c) => (
+                      <div 
+                        key={c.id} 
+                        className={`px-4 py-3 border-b border-admin-border/50 hover:bg-admin-base/30 transition-colors ${
+                          c.status === 'new' ? 'bg-rose-500/5' : ''
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <div className="flex items-center gap-2 min-w-0">
+                            {c.status === 'new' && (
+                              <span className="w-2 h-2 bg-rose-500 rounded-full flex-shrink-0 animate-pulse"></span>
+                            )}
+                            <span className="text-xs font-bold text-admin-text truncate">
+                              {c.phone_number}
+                            </span>
+                          </div>
+                          <span className="text-[9px] text-admin-muted flex-shrink-0 font-medium">
+                            {formatTimeAgo(c.created_at)}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-admin-muted leading-relaxed mb-2 line-clamp-2">
+                          {c.ai_summary || c.raw_message}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <a 
+                            href={`https://wa.me/${c.phone_number}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[9px] font-bold text-emerald-500 hover:text-emerald-400 uppercase tracking-wider flex items-center gap-1"
+                          >
+                            <Icon name="whatsapp" className="w-3 h-3" /> Balas WA
+                          </a>
+                          {c.status === 'new' && (
+                            <button 
+                              onClick={() => markComplaintRead(c.id)}
+                              className="text-[9px] font-bold text-blue-500 hover:text-blue-400 uppercase tracking-wider"
+                            >
+                              ✓ Tandai Dibaca
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )) : (
+                      <div className="px-4 py-8 text-center">
+                        <div className="text-admin-muted text-2xl mb-2">🎉</div>
+                        <p className="text-[11px] text-admin-muted font-medium">Tidak ada laporan terbaru.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <button onClick={toggleTheme} className="p-2 text-admin-muted hover:text-admin-text transition-colors">
               <Icon name={theme === 'dark' ? 'sun' : 'moon'} className="w-4 h-4" />
             </button>
