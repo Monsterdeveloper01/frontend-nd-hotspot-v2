@@ -7,7 +7,7 @@ const BotTutorial = () => {
     const waNumber = '6285129391531' // The admin number from backend
     
     const handleWhatsAppClick = () => {
-        window.open(`https://wa.me/${waNumber}?text=Halo%20ND-HOTSPOT`, '_blank');
+        window.open(`https://wa.me/${waNumber}?text=/menu`, '_blank');
     };
 
     return (
