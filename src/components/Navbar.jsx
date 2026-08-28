@@ -69,9 +69,10 @@ const Navbar = ({ toggleMenu }) => {
                     
                     <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {[
-                            { to: '/', label: 'Home', icon: 'home' },
-                            { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card' },
-                            { to: '/check-voucher', label: 'Cek Voucher', icon: 'search' },
+                            { to: '/', label: 'Home', icon: 'home', type: 'fas' },
+                            { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card', type: 'fas' },
+                            { to: '/check-voucher', label: 'Cek Voucher', icon: 'search', type: 'fas' },
+                            { to: '/bot-tutorial', label: 'Bot WA', icon: 'whatsapp', type: 'fab', color: '#25D366' },
                         ].map((item) => (
                             <Link key={item.to} to={item.to} style={{
                                 padding: '0.6rem 1.25rem',
@@ -96,7 +97,7 @@ const Navbar = ({ toggleMenu }) => {
                             onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `3px 3px 0px ${nb.dark}` }}
                             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `3px 3px 0px ${nb.dark}`; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = nb.dark }}
                             >
-                                <i className={`fas fa-${item.icon}`} style={{ fontSize: '0.7rem' }} />
+                                <i className={`${item.type} fa-${item.icon}`} style={{ fontSize: '0.7rem', color: item.color || 'inherit' }} />
                                 {item.label}
                             </Link>
                         ))}
