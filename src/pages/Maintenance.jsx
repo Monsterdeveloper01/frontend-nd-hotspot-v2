@@ -20,6 +20,11 @@ const Maintenance = () => {
                 setCurrentSessionId(res.data.session_id)
                 if (!res.data.maintenance_mode) {
                     navigate('/')
+                } else {
+                    const bypassToken = localStorage.getItem('maintenance_bypass')
+                    if (bypassToken && res.data.session_id && bypassToken === res.data.session_id) {
+                        navigate('/')
+                    }
                 }
             } catch (err) {
                 console.error('Status check failed')

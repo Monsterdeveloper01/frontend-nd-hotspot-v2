@@ -36,8 +36,9 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     const isMaintenancePage = window.location.pathname === '/maintenance';
+    const isAdminRoute = window.location.pathname.startsWith('/admin') || window.location.pathname === '/portal-secret-nd-admin';
     if (error.response?.status === 503 && error.response?.data?.error === 'maintenance_mode') {
-      if (!isMaintenancePage) {
+      if (!isMaintenancePage && !isAdminRoute) {
         window.location.href = '/maintenance';
       }
     }
@@ -53,22 +54,80 @@ const PrivateRoute = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/portal-secret-nd-admin" />
 }
 
+// Public Maintenance Guard
+const PublicMaintenanceGuard = () => {
+  const [loading, setLoading] = useState(true)
+  const [inMaintenance, setInMaintenance] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const checkMaintenance = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/maintenance/status`)
+        if (!isMounted) return
+
+        if (res.data.maintenance_mode) {
+          const bypassToken = localStorage.getItem('maintenance_bypass')
+          if (bypassToken && res.data.session_id && bypassToken === res.data.session_id) {
+            axios.defaults.headers.common['X-Maintenance-Bypass'] = bypassToken
+            setInMaintenance(false)
+          } else {
+            localStorage.removeItem('maintenance_bypass')
+            delete axios.defaults.headers.common['X-Maintenance-Bypass']
+            setInMaintenance(true)
+          }
+        } else {
+          setInMaintenance(false)
+        }
+      } catch (err) {
+        if (err.response?.status === 503 && err.response?.data?.error === 'maintenance_mode') {
+          if (isMounted) setInMaintenance(true)
+        }
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    checkMaintenance()
+    return () => { isMounted = false }
+  }, [])
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ffffff' }}>
+        <div style={{ width: '40px', height: '40px', border: '4px solid #0e4696', borderTopColor: 'transparent', borderRadius: '50%' }} className="animate-spin" />
+      </div>
+    )
+  }
+
+  if (inMaintenance) {
+    return <Navigate to="/maintenance" replace />
+  }
+
+  return <Outlet />
+}
+
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/gaming-area" element={<GamingArea />} />
-        <Route path="/gaming-checkout" element={<GamingCheckout />} />
-        <Route path="/gaming-success" element={<GamingSuccess />} />
-        <Route path="/bot-tutorial" element={<BotTutorial />} />
-        <Route path="/checkout" element={<Checkout />} />
+        {/* Protected by Public Maintenance Guard */}
+        <Route element={<PublicMaintenanceGuard />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/gaming-area" element={<GamingArea />} />
+          <Route path="/gaming-checkout" element={<GamingCheckout />} />
+          <Route path="/gaming-success" element={<GamingSuccess />} />
+          <Route path="/bot-tutorial" element={<BotTutorial />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/check-voucher" element={<CheckVoucher />} />
+          <Route path="/payment" element={<BillLookup />} />
+          <Route path="/bill-lookup" element={<BillLookup />} />
+        </Route>
+
+        {/* Maintenance Page */}
         <Route path="/maintenance" element={<Maintenance />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/check-voucher" element={<CheckVoucher />} />
-        <Route path="/payment" element={<BillLookup />} />
-        <Route path="/bill-lookup" element={<BillLookup />} />
 
         {/* HIDDEN ADMIN LOGIN */}
         <Route path="/portal-secret-nd-admin" element={<AdminLogin />} />
