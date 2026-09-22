@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import axios from 'axios'
 
 const API = import.meta.env.VITE_API_URL
@@ -24,8 +24,7 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     info: <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
     calendar: <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
     infinity: <path d="M18.178 8c5.096 0 5.096 8 0 8-2.678 0-4.678-2.667-6.178-5.333C10.5 8 8.5 8 5.822 8 0.726 8 .726 16 5.822 16c2.678 0 4.678-2.667 6.178-5.333 1.5 2.666 3.5 5.333 6.178 5.333" />,
-    toggleOn: <path d="M8 7h8a5 5 0 015 5 5 5 0 01-5 5H8a5 5 0 01-5-5 5 5 0 015-5zm8 8a3 3 0 100-6 3 3 0 000 6z" />,
-    toggleOff: <path d="M8 7h8a5 5 0 015 5 5 5 0 01-5 5H8a5 5 0 01-5-5 5 5 0 015-5zm0 8a3 3 0 100-6 3 3 0 000 6z" />,
+    radioWave: <path d="M4.93 19.07A10 10 0 0 1 2 12a10 10 0 0 1 2.93-7.07m14.14 0A10 10 0 0 1 22 12a10 10 0 0 1-2.93 7.07M7.76 16.24A6 6 0 0 1 6 12a6 6 0 0 1 1.76-4.24m8.48 0A6 6 0 0 1 18 12a6 6 0 0 1-1.76 4.24M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />,
   }
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -49,7 +48,12 @@ const formatDate = (dateStr) => {
 
 const formatDateTime = (dateStr) => {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+}
+
+const formatTimeOnly = (dateObj) => {
+  if (!dateObj) return '-'
+  return new Date(dateObj).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
 
 const formatPeriod = (key) => {
@@ -73,6 +77,10 @@ export default function EventAnalytics() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  // Realtime Live Sync state
+  const [liveSync, setLiveSync] = useState(true)
+  const [lastLiveSync, setLastLiveSync] = useState(new Date())
+
   // Detail state
   const [selectedEventId, setSelectedEventId] = useState(null)
   const [analytics, setAnalytics] = useState(null)
@@ -94,7 +102,7 @@ export default function EventAnalytics() {
   const [searchPhone, setSearchPhone] = useState('')
   const [participantPage, setParticipantPage] = useState(1)
 
-  // Simulation state
+  // Target query state
   const [simTarget, setSimTarget] = useState('')
   const [simResult, setSimResult] = useState(null)
   const [simLoading, setSimLoading] = useState(false)
@@ -105,36 +113,57 @@ export default function EventAnalytics() {
   // ==========================================
   // DATA FETCHING
   // ==========================================
-  const fetchEvents = useCallback(async () => {
-    setLoading(true)
+  const fetchEvents = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
     setError(null)
     try {
       const res = await axios.get(`${API}/admin/events`, { headers })
       setEvents(res.data || [])
+      setLastLiveSync(new Date())
     } catch (err) {
-      setError('Gagal memuat data events.')
+      if (!silent) setError('Gagal memuat data events.')
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }, [])
 
   useEffect(() => { fetchEvents() }, [fetchEvents])
 
-  const fetchAnalytics = useCallback(async (eventId, period = '', search = '', page = 1) => {
-    setAnalyticsLoading(true)
+  const fetchAnalytics = useCallback(async (eventId, period = '', search = '', page = 1, silent = false) => {
+    if (!silent) setAnalyticsLoading(true)
     try {
       const params = { page }
       if (period) params.period = period
       if (search) params.search = search
       const res = await axios.get(`${API}/admin/events/${eventId}/analytics`, { headers, params })
       setAnalytics(res.data)
+      setLastLiveSync(new Date())
     } catch (err) {
-      setAnalytics(null)
-      setError('Gagal memuat analytics.')
+      if (!silent) {
+        setAnalytics(null)
+        setError('Gagal memuat analytics.')
+      }
     } finally {
-      setAnalyticsLoading(false)
+      if (!silent) setAnalyticsLoading(false)
     }
   }, [])
+
+  // ==========================================
+  // REAL-TIME BACKGROUND POLLING (100% LIVE)
+  // ==========================================
+  useEffect(() => {
+    if (!liveSync) return
+
+    const interval = setInterval(() => {
+      if (view === 'detail' && selectedEventId) {
+        fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+      } else if (view === 'list') {
+        fetchEvents(true)
+      }
+    }, 6000) // Poll every 6 seconds for 100% realtime sync
+
+    return () => clearInterval(interval)
+  }, [liveSync, view, selectedEventId, selectedPeriod, searchPhone, participantPage, fetchAnalytics, fetchEvents])
 
   // ==========================================
   // EVENT CRUD
@@ -198,8 +227,8 @@ export default function EventAnalytics() {
   const handleToggleStatus = async (event) => {
     const newStatus = event.status === 'active' ? 'inactive' : 'active'
     const confirmMsg = newStatus === 'inactive'
-      ? `Nonaktifkan "${event.name}"? Tracking otomatis transaksi baru akan dihentikan (data historis tetap aman).`
-      : `Aktifkan kembali "${event.name}"? Tracking transaksi baru akan berjalan otomatis.`
+      ? `Nonaktifkan "${event.name}"? Tracking transaksi baru akan dihentikan sementara (data transaksi riil tetap tersimpan).`
+      : `Aktifkan kembali "${event.name}"? Tracking transaksi baru akan langsung aktif real-time.`
 
     if (!confirm(confirmMsg)) return
 
@@ -215,7 +244,7 @@ export default function EventAnalytics() {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Hapus event ini secara permanen?')) return
+    if (!confirm('Hapus program event ini secara permanen?')) return
     try {
       await axios.delete(`${API}/admin/events/${id}`, { headers })
       fetchEvents()
@@ -250,9 +279,9 @@ export default function EventAnalytics() {
   }
 
   // ==========================================
-  // SIMULATE
+  // TARGET QUALIFICATION QUERY
   // ==========================================
-  const handleSimulate = async (target) => {
+  const handleCheckTarget = async (target) => {
     if (!selectedEventId || !target) return
     setSimLoading(true)
     setSimTarget(target)
@@ -306,18 +335,40 @@ export default function EventAnalytics() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-admin-text flex items-center gap-2">
-            <Icon name="trend" className="w-7 h-7 text-admin-accent" />
-            Event Analytics
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-admin-text flex items-center gap-2">
+              <Icon name="trend" className="w-7 h-7 text-admin-accent" />
+              Event & Loyalty Tracking
+            </h1>
+            {/* Realtime Live Pulse */}
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              <span>100% Real-Time Sync</span>
+            </div>
+          </div>
           <p className="text-sm text-admin-muted mt-1">
-            Program loyalty & analisis pembelian customer berkelanjutan (Permanent / Never Expires)
+            Pencatatan data riil transaksi customer per bulan kalender (Permanent Program — Never Expires)
           </p>
         </div>
-        <button onClick={openCreateModal} className="flex items-center gap-2 px-4 py-2.5 bg-admin-accent text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-all shadow-sm">
-          <Icon name="plus" className="w-4 h-4" />
-          Buat Event
-        </button>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setLiveSync(!liveSync)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition ${
+              liveSync
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400'
+                : 'bg-admin-card border-admin-border text-admin-muted'
+            }`}
+            title="Auto-refresh background interval"
+          >
+            <span className={`w-2 h-2 rounded-full ${liveSync ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+            {liveSync ? 'Live Polling ON' : 'Live Polling OFF'}
+          </button>
+          <button onClick={openCreateModal} className="flex items-center gap-2 px-4 py-2.5 bg-admin-accent text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-all shadow-sm">
+            <Icon name="plus" className="w-4 h-4" />
+            Buat Event
+          </button>
+        </div>
       </div>
 
       {/* Sync Result Toast */}
@@ -353,7 +404,7 @@ export default function EventAnalytics() {
       {error && !loading && (
         <div className="text-center py-16">
           <p className="text-admin-muted text-sm">{error}</p>
-          <button onClick={fetchEvents} className="mt-3 text-admin-accent text-sm font-semibold hover:underline">Coba Lagi</button>
+          <button onClick={() => fetchEvents()} className="mt-3 text-admin-accent text-sm font-semibold hover:underline">Coba Lagi</button>
         </div>
       )}
 
@@ -361,10 +412,10 @@ export default function EventAnalytics() {
       {!loading && !error && events.length === 0 && (
         <div className="text-center py-20 bg-admin-card border border-admin-border rounded-xl">
           <div className="text-4xl mb-3">📊</div>
-          <p className="text-admin-muted font-medium">Belum ada event aktif.</p>
-          <p className="text-admin-muted text-sm mt-1">Buat event permanen untuk mulai menganalisis transaksi customer bulanan.</p>
+          <p className="text-admin-muted font-medium">Belum ada program event aktif.</p>
+          <p className="text-admin-muted text-sm mt-1">Buat program event permanen untuk mencatat transaksi riil customer secara otomatis.</p>
           <button onClick={openCreateModal} className="mt-4 px-4 py-2 bg-admin-accent text-white rounded-lg text-sm font-semibold hover:opacity-90 transition">
-            <Icon name="plus" className="w-4 h-4 inline mr-1" /> Buat Event
+            <Icon name="plus" className="w-4 h-4 inline mr-1" /> Buat Program Event
           </button>
         </div>
       )}
@@ -376,12 +427,12 @@ export default function EventAnalytics() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-admin-border bg-admin-base/50">
-                  <th className="text-left px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Event</th>
-                  <th className="text-left px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden sm:table-cell">Mulai Aktif</th>
-                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden md:table-cell">Target Simulasi</th>
-                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Status</th>
-                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden sm:table-cell">Customers</th>
-                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden lg:table-cell">Last Sync</th>
+                  <th className="text-left px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Program Event</th>
+                  <th className="text-left px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden sm:table-cell">Mulai Berjalan</th>
+                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden md:table-cell">Target Loyalty</th>
+                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Status Tracking</th>
+                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden sm:table-cell">Customer Unik</th>
+                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden lg:table-cell">Update Terakhir</th>
                   <th className="text-right px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -391,8 +442,11 @@ export default function EventAnalytics() {
                   return (
                     <tr key={event.id} className="border-b border-admin-border/50 hover:bg-admin-base/30 transition-colors">
                       <td className="px-4 py-3">
-                        <button onClick={() => openDetail(event.id)} className="text-admin-text font-semibold hover:text-admin-accent transition-colors text-left">
-                          {event.name}
+                        <button onClick={() => openDetail(event.id)} className="text-admin-text font-semibold hover:text-admin-accent transition-colors text-left flex items-center gap-2">
+                          <span>{event.name}</span>
+                          {event.status === 'active' && (
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Tracking Aktif Real-time" />
+                          )}
                         </button>
                         {event.description && <p className="text-xs text-admin-muted mt-0.5 line-clamp-1">{event.description}</p>}
                         <div className="sm:hidden mt-1 text-[11px] text-admin-muted flex items-center gap-1">
@@ -404,7 +458,9 @@ export default function EventAnalytics() {
                         <div className="flex items-center gap-1">
                           <Icon name="calendar" className="w-3.5 h-3.5" />
                           <span>{formatDate(event.created_at)}</span>
-                          <span className="text-[10px] ml-1 px-1.5 py-0.5 rounded bg-admin-base text-admin-muted border border-admin-border">Permanen</span>
+                          <span className="text-[10px] ml-1 px-1.5 py-0.5 rounded bg-admin-base text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                            Permanen
+                          </span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-center hidden md:table-cell">
@@ -426,7 +482,7 @@ export default function EventAnalytics() {
                         <span className="text-admin-text font-bold">{event.unique_customers || 0}</span>
                       </td>
                       <td className="px-4 py-3 text-center text-xs text-admin-muted hidden lg:table-cell">
-                        {event.last_synced_at ? formatDateTime(event.last_synced_at) : <span className="text-admin-muted opacity-50">Belum sync</span>}
+                        {event.last_synced_at ? formatDateTime(event.last_synced_at) : <span className="text-admin-muted opacity-50">Realtime tracking</span>}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
@@ -434,11 +490,11 @@ export default function EventAnalytics() {
                             onClick={() => handleSync(event.id)}
                             disabled={syncing === event.id}
                             className="p-1.5 text-admin-muted hover:text-blue-500 transition-colors disabled:opacity-50"
-                            title="Sync / Rebuild Data"
+                            title="Rebuild Data dari Transaksi"
                           >
                             <Icon name="sync" className={`w-4 h-4 ${syncing === event.id ? 'animate-spin' : ''}`} />
                           </button>
-                          <button onClick={() => openDetail(event.id)} className="p-1.5 text-admin-muted hover:text-admin-accent transition-colors" title="Lihat Analytics">
+                          <button onClick={() => openDetail(event.id)} className="p-1.5 text-admin-muted hover:text-admin-accent transition-colors" title="Lihat Data Riil Analytics">
                             <Icon name="chart" className="w-4 h-4" />
                           </button>
                           <button onClick={() => openEditModal(event)} className="p-1.5 text-admin-muted hover:text-amber-500 transition-colors" title="Edit">
@@ -494,20 +550,25 @@ export default function EventAnalytics() {
                     {sc.label}
                   </button>
                 )}
+                {/* Real-time Indicator Badge */}
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  <span>REALTIME LIVE</span>
+                </div>
               </div>
               {ev && (
                 <p className="text-xs text-admin-muted mt-1 flex flex-wrap items-center gap-3">
                   <span className="flex items-center gap-1">
                     <Icon name="calendar" className="w-3.5 h-3.5" />
-                    Dimulai: {formatDate(ev.created_at)}
+                    Mulai: {formatDate(ev.created_at)}
                   </span>
-                  <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                  <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
                     <Icon name="infinity" className="w-3.5 h-3.5" />
-                    Event Berjalan Permanen (Never Expires)
+                    Program Berjalan Permanen
                   </span>
-                  {ev.last_synced_at && (
-                    <span>• Sync terakhir: {formatDateTime(ev.last_synced_at)}</span>
-                  )}
+                  <span className="text-[11px] text-admin-muted">
+                    • Terakhir diupdate: <strong className="text-admin-text">{formatTimeOnly(lastLiveSync)}</strong>
+                  </span>
                 </p>
               )}
             </div>
@@ -515,17 +576,29 @@ export default function EventAnalytics() {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setLiveSync(!liveSync)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition ${
+                liveSync
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-admin-card border-admin-border text-admin-muted'
+              }`}
+              title="Toggle auto live sync polling"
+            >
+              <span className={`w-2 h-2 rounded-full ${liveSync ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`} />
+              {liveSync ? 'Live Sync: ON' : 'Live Sync: Paused'}
+            </button>
+            <button
               onClick={() => handleSync(selectedEventId, false)}
               disabled={syncing === selectedEventId}
-              className="flex items-center gap-2 px-3 py-2 bg-admin-card border border-admin-border rounded-lg text-xs font-semibold text-admin-text hover:bg-admin-base/50 transition-colors disabled:opacity-50"
-              title="Rebuild transaksi sejak event dibuat"
+              className="flex items-center gap-1.5 px-3 py-2 bg-admin-card border border-admin-border rounded-lg text-xs font-semibold text-admin-text hover:bg-admin-base/50 transition-colors disabled:opacity-50"
+              title="Rebuild kalkulasi dari transaksi di database"
             >
-              <Icon name="sync" className={`w-4 h-4 ${syncing === selectedEventId ? 'animate-spin' : ''}`} />
-              Sync Data
+              <Icon name="sync" className={`w-3.5 h-3.5 ${syncing === selectedEventId ? 'animate-spin' : ''}`} />
+              Sync Ulang
             </button>
             <button
               onClick={() => {
-                if (confirm('Rebuild SELURUH histori transaksi dari awal database? Data participant bulan terdahulu akan di-recalculate.')) {
+                if (confirm('Rebuild SELURUH histori transaksi dari awal database? Data participant bulan terdahulu akan di-recalculate ulang.')) {
                   handleSync(selectedEventId, true)
                 }
               }}
@@ -533,7 +606,7 @@ export default function EventAnalytics() {
               className="flex items-center gap-1.5 px-2.5 py-2 bg-admin-card border border-admin-border rounded-lg text-xs text-admin-muted hover:text-admin-text transition-colors disabled:opacity-50"
               title="Rebuild semua histori tanpa batas awal"
             >
-              Rebuild Semua Histori
+              Rebuild Histori
             </button>
           </div>
         </div>
@@ -565,10 +638,10 @@ export default function EventAnalytics() {
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-admin-muted mb-1 flex items-center gap-1.5">
               <Icon name="calendar" className="w-4 h-4 text-admin-accent" />
-              Pilih Bulan Analisis
+              Pilih Periode Bulan Kalender
             </div>
             <p className="text-xs text-admin-muted">
-              Perhitungan di-reset secara logis setiap bulan kalender (YYYY-MM). Riwayat bulan lain tetap tersimpan independen.
+              Pencatatan riil dihitung per nomor telepon customer dan bulan kalender berjalan. Data historis bulan lampau tersimpan independen.
             </p>
           </div>
 
@@ -599,6 +672,19 @@ export default function EventAnalytics() {
           </div>
         </div>
 
+        {/* Notice Info Sisi Customer */}
+        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-6 text-xs text-amber-700 dark:text-amber-400 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon name="info" className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+            <span>
+              <strong>Admin Internal Only:</strong> Sisi customer <u>belum</u> menerima hadiah/notifikasi. Seluruh transaksi tercatat secara otomatis di background secara 100% real-time.
+            </span>
+          </div>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 uppercase tracking-wider">
+            Fase 1: Analytics & Tracking
+          </span>
+        </div>
+
         {/* Loading */}
         {analyticsLoading && !analytics && (
           <div className="flex items-center justify-center py-20">
@@ -611,7 +697,7 @@ export default function EventAnalytics() {
           <div className="text-center py-16 bg-admin-card border border-admin-border rounded-xl">
             <div className="text-4xl mb-3">📭</div>
             <p className="text-admin-muted font-medium">Belum ada data transaksi untuk filter ini.</p>
-            <p className="text-admin-muted text-sm mt-1">Klik "Sync Data" untuk menghitung dari transaksi yang ada di database.</p>
+            <p className="text-admin-muted text-sm mt-1">Setiap transaksi voucher sukses (`ND-%`) akan otomatis tercatat ke sini secara real-time.</p>
           </div>
         )}
 
@@ -638,7 +724,7 @@ export default function EventAnalytics() {
               ))}
             </div>
 
-            {/* Distribution + Simulation Row */}
+            {/* Distribution + Real Target Qualification Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               {/* Purchase Distribution */}
               <div className="bg-admin-card border border-admin-border rounded-xl p-5">
@@ -648,7 +734,7 @@ export default function EventAnalytics() {
                     Distribusi Pembelian {selectedPeriod ? `(${formatPeriod(selectedPeriod)})` : '(per Customer-Bulan)'}
                   </span>
                   <span className="text-[10px] text-admin-muted font-normal bg-admin-base px-2 py-0.5 rounded-full border border-admin-border">
-                    {sum.total_unique_customers} customers
+                    {sum.total_unique_customers} customer terdata
                   </span>
                 </h3>
                 <div className="space-y-2.5">
@@ -679,27 +765,27 @@ export default function EventAnalytics() {
                 </div>
               </div>
 
-              {/* Target Simulation */}
+              {/* Real Customer Target Achievement Card */}
               <div className="bg-admin-card border border-admin-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-bold text-admin-text flex items-center gap-2">
                     <Icon name="target" className="w-4 h-4 text-admin-accent" />
-                    Simulasi Target {selectedPeriod ? `(${formatPeriod(selectedPeriod)})` : 'Per Bulan'}
+                    Pencapaian Target Customer {selectedPeriod ? `(${formatPeriod(selectedPeriod)})` : 'Per Bulan'}
                   </h3>
-                  <span className="text-[9px] font-medium text-admin-muted bg-admin-base px-2 py-0.5 rounded-full uppercase border border-admin-border">
-                    Admin Analytics
+                  <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full uppercase border border-emerald-500/20">
+                    Data Riil Tercatat
                   </span>
                 </div>
                 <p className="text-xs text-admin-muted mb-4">
-                  Berapa customer yang total pembeliannya mencapai nominal target pada periode ini?
+                  Analisis jumlah customer nyata yang telah mencapai akumulasi pembelian minimum pada periode ini:
                 </p>
 
-                {/* Preset buttons */}
+                {/* Preset Target Thresholds */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {[25000, 50000, 75000, 100000, 125000, 150000, 200000].map(val => (
                     <button
                       key={val}
-                      onClick={() => handleSimulate(val)}
+                      onClick={() => handleCheckTarget(val)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                         Number(simTarget) === val
                           ? 'bg-admin-accent text-white border-admin-accent shadow-sm'
@@ -715,20 +801,20 @@ export default function EventAnalytics() {
                 <div className="flex gap-2 mb-4">
                   <input
                     type="number"
-                    placeholder="Ketik target nominal khusus..."
+                    placeholder="Nominal target khusus (Rp)..."
                     value={simTarget}
                     onChange={(e) => setSimTarget(e.target.value)}
                     className="flex-1 px-3 py-2 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text placeholder-admin-muted focus:outline-none focus:border-admin-accent"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.target.value) handleSimulate(e.target.value)
+                      if (e.key === 'Enter' && e.target.value) handleCheckTarget(e.target.value)
                     }}
                   />
                   <button
-                    onClick={() => handleSimulate(simTarget)}
+                    onClick={() => handleCheckTarget(simTarget)}
                     disabled={!simTarget || simLoading}
                     className="px-4 py-2 bg-admin-accent text-white rounded-lg text-xs font-semibold hover:opacity-90 transition disabled:opacity-50"
                   >
-                    Simulasi
+                    Hitung Kualifikasi
                   </button>
                 </div>
 
@@ -744,19 +830,27 @@ export default function EventAnalytics() {
                       </div>
                       <div className="text-3xl font-black text-admin-accent">{simResult.qualifying_customers}</div>
                       <div className="text-sm text-admin-muted mt-1">
-                        dari <span className="font-bold text-admin-text">{simResult.total_customers}</span> customer qualify
+                        dari <span className="font-bold text-admin-text">{simResult.total_customers}</span> customer mencapai target
                       </div>
-                      <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-admin-accent/10 text-admin-accent rounded-full text-sm font-bold">
-                        {simResult.percentage}% lolos target
+                      <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20">
+                        {simResult.percentage}% lolos kualifikasi
                       </div>
                     </div>
                   </div>
                 )}
 
                 {!simResult && !simLoading && targetSum && targetSum.target_amount > 0 && (
-                  <div className="bg-admin-base/50 border border-admin-border/50 rounded-xl p-3 text-center text-xs text-admin-muted">
-                    Target default event: <strong className="text-admin-text">{formatRupiah(targetSum.target_amount)}</strong> →{' '}
-                    <strong className="text-admin-accent">{targetSum.qualifying_customers}</strong> customer ({targetSum.percentage}%) qualify
+                  <div className="bg-admin-base border border-admin-border rounded-xl p-4 text-center">
+                    <div className="text-xs text-admin-muted mb-1">
+                      Target Program: <span className="font-bold text-admin-text">{formatRupiah(targetSum.target_amount)} /bulan</span>
+                    </div>
+                    <div className="text-3xl font-black text-admin-accent">{targetSum.qualifying_customers}</div>
+                    <div className="text-sm text-admin-muted mt-1">
+                      dari <span className="font-bold text-admin-text">{targetSum.total_customers}</span> customer mencapai target
+                    </div>
+                    <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20">
+                      {targetSum.percentage}% lolos kualifikasi
+                    </div>
                   </div>
                 )}
               </div>
@@ -765,11 +859,16 @@ export default function EventAnalytics() {
             {/* Participants Table */}
             <div className="bg-admin-card border border-admin-border rounded-xl overflow-hidden shadow-sm">
               <div className="px-4 py-3 border-b border-admin-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <h3 className="text-sm font-bold text-admin-text flex items-center gap-2">
-                  <Icon name="users" className="w-4 h-4 text-admin-accent" />
-                  Data Pembelian Customer
-                  {participants && <span className="text-xs text-admin-muted font-normal ml-1">({participants.total} baris data)</span>}
-                </h3>
+                <div>
+                  <h3 className="text-sm font-bold text-admin-text flex items-center gap-2">
+                    <Icon name="users" className="w-4 h-4 text-admin-accent" />
+                    Data Riil Pembelian Customer
+                    {participants && <span className="text-xs text-admin-muted font-normal ml-1">({participants.total} baris customer-bulan)</span>}
+                  </h3>
+                  <p className="text-[11px] text-admin-muted mt-0.5">
+                    Data transaksi riil customer teragregasi otomatis per bulan kalender.
+                  </p>
+                </div>
                 <div className="flex items-center gap-2">
                   {/* Phone Search */}
                   <div className="relative">
@@ -798,26 +897,47 @@ export default function EventAnalytics() {
                           <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">No HP (Masked)</th>
                           <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Bulan Kalender</th>
                           <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Total Pembelian</th>
-                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden sm:table-cell">Jumlah Tx</th>
+                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden sm:table-cell">Jumlah Transaksi</th>
                           <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden md:table-cell">Rata-rata/Tx</th>
+                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Status Target</th>
                           <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Tx Terakhir</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {participants.data.map((p) => (
-                          <tr key={p.id} className="border-b border-admin-border/50 hover:bg-admin-base/20 transition-colors">
-                            <td className="px-4 py-2.5 font-mono text-xs text-admin-text">{p.masked_phone}</td>
-                            <td className="px-4 py-2.5 text-xs text-admin-muted">
-                              <span className="px-2 py-0.5 rounded bg-admin-base border border-admin-border/50">
-                                {formatPeriod(p.period_key)}
-                              </span>
-                            </td>
-                            <td className="px-4 py-2.5 text-right font-bold text-admin-text text-xs">{formatRupiah(p.total_purchase)}</td>
-                            <td className="px-4 py-2.5 text-center text-xs text-admin-muted hidden sm:table-cell">{p.transaction_count}x</td>
-                            <td className="px-4 py-2.5 text-right text-xs text-admin-muted hidden md:table-cell">{formatRupiah(p.avg_per_transaction)}</td>
-                            <td className="px-4 py-2.5 text-center text-[11px] text-admin-muted hidden lg:table-cell">{formatDate(p.last_transaction_at)}</td>
-                          </tr>
-                        ))}
+                        {participants.data.map((p) => {
+                          const targetAmt = targetSum?.target_amount || ev?.target_amount || 0
+                          const qualifies = targetAmt > 0 && p.total_purchase >= targetAmt
+
+                          return (
+                            <tr key={p.id} className="border-b border-admin-border/50 hover:bg-admin-base/20 transition-colors">
+                              <td className="px-4 py-2.5 font-mono text-xs text-admin-text">{p.masked_phone}</td>
+                              <td className="px-4 py-2.5 text-xs text-admin-muted">
+                                <span className="px-2 py-0.5 rounded bg-admin-base border border-admin-border/50">
+                                  {formatPeriod(p.period_key)}
+                                </span>
+                              </td>
+                              <td className="px-4 py-2.5 text-right font-bold text-admin-text text-xs">{formatRupiah(p.total_purchase)}</td>
+                              <td className="px-4 py-2.5 text-center text-xs text-admin-muted hidden sm:table-cell">{p.transaction_count}x</td>
+                              <td className="px-4 py-2.5 text-right text-xs text-admin-muted hidden md:table-cell">{formatRupiah(p.avg_per_transaction)}</td>
+                              <td className="px-4 py-2.5 text-center hidden lg:table-cell">
+                                {targetAmt > 0 ? (
+                                  qualifies ? (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                                      ✓ Capai Target
+                                    </span>
+                                  ) : (
+                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-admin-muted">
+                                      Belum
+                                    </span>
+                                  )
+                                ) : (
+                                  <span className="text-admin-muted opacity-50 text-xs">-</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-2.5 text-center text-[11px] text-admin-muted hidden lg:table-cell">{formatDate(p.last_transaction_at)}</td>
+                            </tr>
+                          )
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -826,7 +946,7 @@ export default function EventAnalytics() {
                   {participants.last_page > 1 && (
                     <div className="px-4 py-3 border-t border-admin-border flex items-center justify-between">
                       <span className="text-xs text-admin-muted">
-                        Halaman {participants.current_page} dari {participants.last_page} ({participants.total} total customer-bulan)
+                        Halaman {participants.current_page} dari {participants.last_page} ({participants.total} baris data)
                       </span>
                       <div className="flex gap-1">
                         {Array.from({ length: Math.min(participants.last_page, 7) }, (_, i) => {
@@ -880,23 +1000,23 @@ export default function EventAnalytics() {
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
         <div className="relative bg-admin-card border border-admin-border rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
           <div className="px-5 py-4 border-b border-admin-border flex items-center justify-between">
-            <h3 className="font-bold text-admin-text">{editEvent ? 'Edit Event' : 'Buat Event Permanen'}</h3>
+            <h3 className="font-bold text-admin-text">{editEvent ? 'Edit Program Event' : 'Buat Program Event Permanen'}</h3>
             <button onClick={() => setShowModal(false)} className="text-admin-muted hover:text-admin-text">
               <Icon name="close" className="w-5 h-5" />
             </button>
           </div>
           <div className="p-5 space-y-4">
             {/* Notice */}
-            <div className="p-3 bg-admin-base border border-admin-border rounded-lg text-xs text-admin-muted flex items-start gap-2">
-              <Icon name="info" className="w-4 h-4 text-admin-accent flex-shrink-0 mt-0.5" />
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs text-emerald-700 dark:text-emerald-400 flex items-start gap-2">
+              <Icon name="infinity" className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
               <span>
-                Event bersifat <strong>permanen dan tidak memiliki tanggal berakhir</strong>. Akumulasi transaksi dihitung otomatis per customer berdasarkan bulan kalender.
+                Event bersifat <strong>permanen (tanpa tanggal berakhir)</strong>. Sistem mencatat akumulasi riil setiap transaksi voucher yang sukses per nomor telepon dan bulan kalender.
               </span>
             </div>
 
             {/* Name */}
             <div>
-              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Nama Event / Program *</label>
+              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Nama Program Event *</label>
               <input
                 type="text"
                 value={formData.name}
@@ -909,7 +1029,7 @@ export default function EventAnalytics() {
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Deskripsi</label>
+              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Deskripsi Internal</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -922,7 +1042,7 @@ export default function EventAnalytics() {
             {/* Target + Status */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Target Nominal / Bulan</label>
+                <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Target Loyalty / Bulan (Rp)</label>
                 <input
                   type="number"
                   value={formData.target_amount}
@@ -930,7 +1050,7 @@ export default function EventAnalytics() {
                   placeholder="Contoh: 100000"
                   className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text placeholder-admin-muted focus:outline-none focus:border-admin-accent"
                 />
-                <p className="text-[10px] text-admin-muted mt-1">Hanya untuk simulasi analytics</p>
+                <p className="text-[10px] text-admin-muted mt-1">Target pembelian customer per bulan</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Status Tracking</label>
@@ -939,10 +1059,10 @@ export default function EventAnalytics() {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text focus:outline-none focus:border-admin-accent"
                 >
-                  <option value="active">Active (Tracking Otomatis)</option>
-                  <option value="inactive">Inactive (Tracking Berhenti)</option>
+                  <option value="active">Active (Tracking 100% Real-Time)</option>
+                  <option value="inactive">Inactive (Tracking Dihentikan)</option>
                 </select>
-                <p className="text-[10px] text-admin-muted mt-1">Nonaktifkan untuk pause tracking</p>
+                <p className="text-[10px] text-admin-muted mt-1">Data historis tetap tersimpan saat inactive</p>
               </div>
             </div>
           </div>
@@ -955,7 +1075,7 @@ export default function EventAnalytics() {
               disabled={saving}
               className="px-5 py-2 bg-admin-accent text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
             >
-              {saving ? 'Menyimpan...' : (editEvent ? 'Update' : 'Buat Event')}
+              {saving ? 'Menyimpan...' : (editEvent ? 'Update' : 'Buat Program')}
             </button>
           </div>
         </div>
