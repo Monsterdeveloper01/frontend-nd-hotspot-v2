@@ -3,8 +3,6 @@ import { useLocation, Link } from 'react-router-dom'
 import axios from 'axios'
 import PublicLayout from '../components/PublicLayout'
 
-const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
-
 const PaymentSuccess = () => {
     const location = useLocation()
     const searchParams = new URLSearchParams(location.search)
@@ -12,6 +10,7 @@ const PaymentSuccess = () => {
     
     const [voucher, setVoucher] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [copied, setCopied] = useState(false)
 
     useEffect(() => {
         if (!orderId) { setLoading(false); return }
@@ -38,80 +37,127 @@ const PaymentSuccess = () => {
 
     return (
         <PublicLayout>
-            <div style={{ minHeight: '100vh', background: '#ffffff', display: 'flex', alignItems: 'center', justifyItems: 'center', padding: '3rem 1rem' }}>
+            <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem 5rem' }}>
                 <div style={{ width: '100%', maxWidth: '28rem', margin: '0 auto' }}>
                     {loading ? (
-                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, padding: '4rem 2rem', textAlign: 'center', boxShadow: `8px 8px 0px ${nb.dark}` }}>
-                            <div style={{ width: '48px', height: '48px', border: `4px solid ${nb.dark}`, borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 1.5rem' }} className="animate-spin" />
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase' }}>Memuat Detail...</h2>
+                        <div className="card-nd-elevated" style={{ padding: '4rem 2rem', textAlign: 'center' }}>
+                            <div style={{ width: '48px', height: '48px', border: '4px solid #00a884', borderTopColor: 'transparent', borderRadius: '50%', margin: '0 auto 1.5rem' }} className="animate-spin" />
+                            <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em' }}>Memuat Detail Voucher...</h2>
                         </div>
                     ) : voucher ? (
-                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, boxShadow: `8px 8px 0px ${nb.dark}` }}>
-                            <div style={{ background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, padding: '2.5rem 2rem 2rem', textAlign: 'center', color: '#fff', position: 'relative', borderTopLeftRadius: '21px', borderTopRightRadius: '21px' }}>
-                                <div style={{ position: 'absolute', top: '-24px', left: '50%', transform: 'translateX(-50%)', width: '48px', height: '48px', background: '#10b981', borderRadius: '50%', border: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', color: '#fff', boxShadow: `2px 2px 0px ${nb.dark}` }}>
-                                    <i className="fas fa-check" />
-                                </div>
-                                <h1 style={{ fontSize: '1.5rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>Pembayaran Sukses</h1>
-                                <p style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.9 }}>Ini Kode Akses Internet Anda</p>
+                        <div className="card-nd-elevated" style={{ overflow: 'visible', position: 'relative' }}>
+                            {/* Floating Green Checkmark Badge */}
+                            <div style={{
+                                position: 'absolute', top: '-24px', left: '50%', transform: 'translateX(-50%)',
+                                width: '48px', height: '48px', background: '#00a884', borderRadius: '50%',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontSize: '1.3rem', color: '#fff', boxShadow: '0 4px 14px rgba(0, 168, 132, 0.4)'
+                            }}>
+                                <i className="fas fa-check" />
+                            </div>
+
+                            {/* Card Header */}
+                            <div style={{ background: '#f8fafc', padding: '2.5rem 2rem 1.5rem', textAlign: 'center', borderBottom: '1px solid #f1f5f9', borderTopLeftRadius: '20px', borderTopRightRadius: '20px' }}>
+                                <h1 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                                    Pembayaran Sukses
+                                </h1>
+                                <p style={{ fontSize: '0.75rem', fontWeight: 800, color: '#00a884', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                    Ini Kode Akses Internet Anda
+                                </p>
                             </div>
 
                             <div style={{ padding: '2rem' }}>
-                                <div style={{ background: '#f8fafc', borderRadius: '16px', border: `3px dashed ${nb.dark}`, padding: '2rem', textAlign: 'center', marginBottom: '2rem' }}>
-                                    <p style={{ color: '#64748b', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.5rem' }}>Kode Voucher</p>
-                                    <h2 style={{ fontSize: '3rem', fontWeight: 900, color: nb.dark, letterSpacing: '0.1em', fontFamily: 'monospace' }}>
+                                {/* Dashed Voucher Code Box */}
+                                <div style={{
+                                    background: '#f8fafc', borderRadius: '18px',
+                                    border: '2px dashed #00a884', padding: '1.75rem 1.25rem',
+                                    textAlign: 'center', marginBottom: '1.75rem'
+                                }}>
+                                    <p style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '0.5rem' }}>
+                                        Kode Voucher
+                                    </p>
+                                    <h2 style={{ fontSize: '2.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '0.12em', fontFamily: 'monospace', lineHeight: 1.1 }}>
                                         {voucher.voucher_code}
                                     </h2>
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(voucher.voucher_code)
+                                            setCopied(true)
+                                            setTimeout(() => setCopied(false), 2500)
+                                        }}
+                                        style={{
+                                            marginTop: '0.85rem', padding: '0.35rem 0.95rem',
+                                            borderRadius: '9999px', background: copied ? '#ecfdf5' : '#ffffff',
+                                            border: copied ? '1px solid #00a884' : '1px solid #e2e8f0',
+                                            color: copied ? '#00a884' : '#64748b',
+                                            fontSize: '0.72rem', fontWeight: 800, cursor: 'pointer',
+                                            display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                                            boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                    >
+                                        <i className={copied ? "fas fa-check" : "far fa-copy"} />
+                                        <span>{copied ? 'Tersalin!' : 'Salin Kode'}</span>
+                                    </button>
                                 </div>
 
-                                <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '1rem', borderBottom: `2px solid ${nb.dark}15` }}>
-                                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-wifi" style={{ color: nb.mid, marginRight: '0.5rem' }} /> Paket</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{voucher.plan_name}</span>
+                                {/* Plan Details */}
+                                <div style={{ display: 'grid', gap: '0.85rem', marginBottom: '1.75rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.85rem', borderBottom: '1px solid #f1f5f9' }}>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                                            <i className="fas fa-wifi" style={{ color: '#00a884', marginRight: '0.5rem' }} /> Paket
+                                        </span>
+                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1e293b' }}>{voucher.plan_name}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '1rem', borderBottom: `2px solid ${nb.dark}15` }}>
-                                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-clock" style={{ color: nb.mid, marginRight: '0.5rem' }} /> Durasi</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{formatDuration(voucher.plan?.duration)}</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.85rem', borderBottom: '1px solid #f1f5f9' }}>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                                            <i className="fas fa-clock" style={{ color: '#00a884', marginRight: '0.5rem' }} /> Durasi
+                                        </span>
+                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1e293b' }}>{formatDuration(voucher.plan?.duration)}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '0.65rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.1em' }}><i className="fas fa-tachometer-alt" style={{ color: nb.mid, marginRight: '0.5rem' }} /> Speed</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark }}>{voucher.plan?.upload_limit}M / {voucher.plan?.download_limit}M</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b' }}>
+                                            <i className="fas fa-tachometer-alt" style={{ color: '#00a884', marginRight: '0.5rem' }} /> Speed
+                                        </span>
+                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1e293b' }}>{voucher.plan?.upload_limit}M / {voucher.plan?.download_limit}M</span>
                                     </div>
                                 </div>
 
-                                <div style={{ background: '#eff6ff', borderRadius: '12px', padding: '1.25rem', border: `2px solid ${nb.light}30`, marginBottom: '1.5rem' }}>
-                                    <h4 style={{ fontSize: '0.7rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                        <i className="fas fa-info-circle" /> Cara Menggunakan:
+                                {/* How to Use Guide */}
+                                <div style={{ background: '#ecfdf5', borderRadius: '16px', padding: '1.25rem', border: '1px solid #a7f3d0', marginBottom: '1.75rem' }}>
+                                    <h4 style={{ fontSize: '0.75rem', fontWeight: 800, color: '#065f46', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <i className="fas fa-info-circle text-emerald-600" /> Cara Menggunakan:
                                     </h4>
-                                    <ol style={{ paddingLeft: '1.25rem', margin: 0, fontSize: '0.75rem', color: '#475569', fontWeight: 600, lineHeight: 1.6 }}>
+                                    <ol style={{ paddingLeft: '1.25rem', margin: 0, fontSize: '0.78rem', color: '#065f46', fontWeight: 600, lineHeight: 1.6 }}>
                                         <li>Hubungkan ke WiFi <b>ND-HOTSPOT</b>.</li>
                                         <li>Buka browser, halaman login akan muncul.</li>
                                         <li>Masukkan kode voucher di atas, lalu klik <b>Login</b>.</li>
                                     </ol>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                    <Link to="/" style={{
-                                        display: 'block', flex: 1, padding: '1.25rem',
-                                        background: '#f1f5f9', color: nb.dark, fontWeight: 900, textTransform: 'uppercase',
-                                        letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
-                                        borderRadius: '16px', border: `3px solid ${nb.dark}`,
-                                        boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
-                                    }}
-                                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
-                                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                {/* Pill Action Buttons */}
+                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                    <Link 
+                                        to="/" 
+                                        style={{
+                                            flex: 1, padding: '0.95rem',
+                                            background: '#ffffff', color: '#475569',
+                                            fontWeight: 700, fontSize: '0.88rem', textAlign: 'center',
+                                            borderRadius: '9999px', border: '1px solid #e2e8f0',
+                                            boxShadow: '0 2px 6px rgba(0,0,0,0.03)', textDecoration: 'none',
+                                            transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                        }}
                                     >
                                         Selesai
                                     </Link>
-                                    <a href="http://ndnet.login" style={{
-                                        display: 'block', flex: 1, padding: '1.25rem',
-                                        background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
-                                        color: '#fff', fontWeight: 900, textTransform: 'uppercase',
-                                        letterSpacing: '0.15em', fontSize: '0.85rem', textAlign: 'center',
-                                        borderRadius: '16px', border: `3px solid ${nb.dark}`,
-                                        boxShadow: `4px 4px 0px ${nb.dark}`, textDecoration: 'none',
-                                    }}
-                                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = `0px 0px 0px ${nb.dark}` }}
-                                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `4px 4px 0px ${nb.dark}` }}
+                                    <a 
+                                        href="http://ndnet.login" 
+                                        className="btn-nd-pill"
+                                        style={{
+                                            flex: 1, padding: '0.95rem',
+                                            fontSize: '0.88rem', textAlign: 'center',
+                                            textDecoration: 'none',
+                                        }}
                                     >
                                         <i className="fas fa-sign-in-alt" /> Login
                                     </a>
@@ -119,13 +165,15 @@ const PaymentSuccess = () => {
                             </div>
                         </div>
                     ) : (
-                        <div style={{ background: '#fff', borderRadius: '24px', border: `3px solid ${nb.dark}`, padding: '4rem 2rem', textAlign: 'center', boxShadow: `8px 8px 0px ${nb.dark}` }}>
-                            <div style={{ width: '64px', height: '64px', background: '#fef2f2', color: '#ef4444', borderRadius: '16px', border: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2rem' }}>
+                        <div className="card-nd-elevated" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
+                            <div style={{ width: '56px', height: '56px', background: '#fee2e2', color: '#ef4444', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', fontSize: '1.5rem' }}>
                                 <i className="fas fa-exclamation-triangle" />
                             </div>
-                            <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Data Tidak Ditemukan</h2>
-                            <p style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 700, marginBottom: '2rem' }}>Voucher tidak dapat ditemukan atau order ID salah.</p>
-                            <Link to="/" style={{ padding: '1rem 2rem', background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`, color: '#fff', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.8rem', borderRadius: '12px', border: `3px solid ${nb.dark}`, boxShadow: `3px 3px 0px ${nb.dark}`, textDecoration: 'none', display: 'inline-block' }}>Kembali</Link>
+                            <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1e293b', marginBottom: '0.5rem' }}>Data Tidak Ditemukan</h2>
+                            <p style={{ color: '#64748b', fontSize: '0.85rem', marginBottom: '1.75rem' }}>Tidak dapat menemukan informasi transaksi untuk order ini.</p>
+                            <Link to="/" className="btn-nd-pill" style={{ padding: '0.85rem 1.75rem', fontSize: '0.85rem' }}>
+                                Kembali ke Beranda
+                            </Link>
                         </div>
                     )}
                 </div>

@@ -158,8 +158,6 @@ function App() {
 import AdminLayout from './components/AdminLayout'
 import { Outlet } from 'react-router-dom'
 const AdminLayoutWrapper = () => {
-  // We can extract title/subtitle from location if needed, 
-  // but for now let's keep it simple or use a context.
   return (
     <AdminLayout title="Admin System" subtitle="Management & Monitoring Core">
       <Outlet />
@@ -315,7 +313,7 @@ function Home() {
                     )}
 
                     <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                      {/* Top Row: Duration & Price matching reference layout */}
+                      {/* Top Row: Duration & Price matching reference layout (NO Tarif label) */}
                       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                         <div>
                           <div style={{
@@ -327,13 +325,12 @@ function Home() {
                           }}>
                             {durationLabel}
                           </div>
-                          <h3 style={{ fontWeight: 900, fontSize: '1.35rem', color: '#1e293b', letterSpacing: '-0.02em' }}>
+                          <h3 style={{ fontWeight: 900, fontSize: '1.35rem', color: '#1e293b', letterSpacing: '-0.02em', margin: 0 }}>
                             {plan.name}
                           </h3>
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, display: 'block' }}>Tarif</span>
                           <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#00a884', letterSpacing: '-0.02em' }}>
                             Rp {plan.price.toLocaleString('id-ID')}
                           </span>
@@ -342,7 +339,6 @@ function Home() {
 
                       <div style={{ height: '1px', background: '#f1f5f9', margin: '0 0 1.25rem' }} />
 
-                      {/* Features summary */}
                       <div style={{ marginBottom: '1.5rem', flex: 1 }}>
                         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                           <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>

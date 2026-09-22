@@ -78,7 +78,7 @@ const Checkout = () => {
                                     </div>
                                     <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.75rem', color: '#b45309', background: '#fef3c7', padding: '0.75rem', borderRadius: '12px' }}>
                                         <i className="fas fa-info-circle" style={{ marginTop: '2px' }} />
-                                        <span>Pastikan nomor aktif di WhatsApp.</span>
+                                        <span>Pastikan nomor aktif di WhatsApp. Kesalahan nomor telpon bukan tanggung jawab kami.</span>
                                     </div>
                                 </div>
                                 <div style={{ padding: '0 1.5rem 1.5rem', display: 'flex', gap: '0.75rem' }}>
