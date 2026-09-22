@@ -15,7 +15,6 @@ import NetworkCenter from './pages/admin/NetworkCenter'
 import CheckVoucher from './pages/CheckVoucher'
 import Maintenance from './pages/Maintenance'
 import PaymentSuccess from './pages/PaymentSuccess'
-import BotTutorial from './pages/BotTutorial'
 import GamingArea from './pages/GamingArea'
 import GamingCheckout from './pages/GamingCheckout'
 import GamingSuccess from './pages/GamingSuccess'
@@ -118,7 +117,6 @@ function App() {
           <Route path="/gaming-area" element={<GamingArea />} />
           <Route path="/gaming-checkout" element={<GamingCheckout />} />
           <Route path="/gaming-success" element={<GamingSuccess />} />
-          <Route path="/bot-tutorial" element={<BotTutorial />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/check-voucher" element={<CheckVoucher />} />
@@ -244,22 +242,6 @@ function Home() {
                   <i className="fas fa-search" /> Cek Voucher
                 </Link>
               </div>
-
-              {/* Banner Bot WhatsApp */}
-              <Link to="/bot-tutorial" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                padding: '0.85rem', borderRadius: '12px',
-                background: 'linear-gradient(135deg, #25D366, #128C7E)',
-                color: '#fff', fontWeight: 800, fontSize: '0.8rem',
-                border: '3px solid #128C7E', boxShadow: '4px 4px 0px #128C7E',
-                textDecoration: 'none', textTransform: 'uppercase',
-                transition: 'transform 0.1s ease',
-              }}
-              onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-              onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              >
-                <i className="fab fa-whatsapp" style={{ fontSize: '1.2rem' }} /> ND-Hotspot Bot (AI)
-              </Link>
             </div>
           </div>
         </div>

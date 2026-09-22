@@ -72,7 +72,6 @@ const Navbar = ({ toggleMenu }) => {
                             { to: '/', label: 'Home', icon: 'home', type: 'fas' },
                             { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card', type: 'fas' },
                             { to: '/check-voucher', label: 'Cek Voucher', icon: 'search', type: 'fas' },
-                            { to: '/bot-tutorial', label: 'Bot WA', icon: 'whatsapp', type: 'fab', color: '#25D366' },
                         ].map((item) => (
                             <Link key={item.to} to={item.to} style={{
                                 padding: '0.6rem 1.25rem',
