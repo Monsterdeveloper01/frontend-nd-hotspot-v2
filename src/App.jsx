@@ -209,30 +209,9 @@ function Home() {
   return (
     <PublicLayout>
 
-      {/* Hero Section */}
-      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '2.5rem', paddingBottom: '2rem', overflow: 'hidden', background: '#f8fafc' }}>
-        {/* Background Subtle Gradient */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0, background: 'radial-gradient(circle at top, rgba(0, 168, 132, 0.06) 0%, transparent 70%)' }} />
-
+      {/* Quick Action Buttons on Mobile */}
+      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.25rem', overflow: 'hidden', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            padding: '0.4rem 1rem', borderRadius: '9999px',
-            background: '#ffffff', border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            marginBottom: '1rem', color: '#00a884', fontSize: '0.75rem', fontWeight: 800
-          }}>
-            <i className="fas fa-wifi" /> INTERNET CEPAT & STABIL
-          </div>
-
-          <h1 style={{ fontSize: '2rem', fontWeight: 900, color: '#1e293b', lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
-            Hotspot Cepat <br/>
-            <span style={{ color: '#00a884' }}>Kapan Saja</span>
-          </h1>
-
-          <p style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, maxWidth: '360px', margin: '0 auto 1.75rem' }}>
-            Pilih paket voucher internet unlimited sesuai kebutuhan harian, mingguan, atau bulanan Anda.
-          </p>
 
           {/* Quick Action Pill Buttons */}
           <div className="grid grid-cols-2 gap-3" style={{ maxWidth: '380px', margin: '0 auto' }}>
