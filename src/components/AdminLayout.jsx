@@ -21,7 +21,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     user: <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />,
     fullscreen: <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />,
     chevronDown: <path d="M19 9l-7 7-7-7" />,
-    clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
+    trend: <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
   };
 
   return (
@@ -180,6 +181,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { name: 'Manajemen OLT', path: '/admin/olt-management', icon: 'master', section: 'INFRASTRUCTURE' },
     { name: 'Network Monitoring', path: '/admin/network-center', icon: 'network' },
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp', section: 'MESSAGING' },
+    { name: 'Event Analytics', path: '/admin/event-analytics', icon: 'trend', section: 'EVENT SYSTEM' },
   ]
 
   const handleLogout = () => {

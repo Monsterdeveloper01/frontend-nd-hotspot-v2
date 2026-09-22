@@ -12,6 +12,7 @@ import VoucherOnline from './pages/admin/VoucherOnline'
 import VoucherSold from './pages/admin/VoucherSold'
 import RadiusSettings from './pages/admin/RadiusSettings'
 import NetworkCenter from './pages/admin/NetworkCenter'
+import EventAnalytics from './pages/admin/EventAnalytics'
 import CheckVoucher from './pages/CheckVoucher'
 import Maintenance from './pages/Maintenance'
 import PaymentSuccess from './pages/PaymentSuccess'
@@ -142,6 +143,7 @@ function App() {
           <Route path="/admin/voucher-plans" element={<VoucherPlans />} />
           <Route path="/admin/whatsapp" element={<WhatsAppSettings />} />
           <Route path="/admin/customers" element={<CustomerManagement />} />
+          <Route path="/admin/event-analytics" element={<EventAnalytics />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
