@@ -405,7 +405,14 @@ const VoucherPlans = () => {
                                         <div className="font-black text-admin-text text-lg tracking-tighter">Rp {plan.price.toLocaleString('id-ID')}</div>
                                     </td>
                                     <td className="px-8 py-6 text-center">
-                                        <span className="text-sm font-black text-admin-text">{plan.stock ?? '—'}</span>
+                                        <span className={`px-3.5 py-1.5 rounded-xl text-xs font-black inline-flex items-center gap-2 border ${
+                                            (plan.stock || 0) > 0 
+                                                ? 'bg-emerald-50 text-emerald-600 border-emerald-200' 
+                                                : 'bg-slate-100 text-slate-500 border-slate-200'
+                                        }`}>
+                                            <span className={`w-2 h-2 rounded-full ${(plan.stock || 0) > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                                            {(plan.stock || 0)} Voucher
+                                        </span>
                                     </td>
                                     <td className="px-8 py-6 text-right">
                                         <div className="flex items-center justify-end gap-2">
