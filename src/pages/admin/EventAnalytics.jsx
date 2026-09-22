@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import axios from 'axios'
+import { io } from 'socket.io-client'
 
 const API = import.meta.env.VITE_API_URL
+const WA_SOCKET_URL = import.meta.env.VITE_WA_URL || 'http://localhost:5000'
 
 // ==========================================
 // ICON HELPER
@@ -24,7 +26,7 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     info: <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
     calendar: <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
     infinity: <path d="M18.178 8c5.096 0 5.096 8 0 8-2.678 0-4.678-2.667-6.178-5.333C10.5 8 8.5 8 5.822 8 0.726 8 .726 16 5.822 16c2.678 0 4.678-2.667 6.178-5.333 1.5 2.666 3.5 5.333 6.178 5.333" />,
-    radioWave: <path d="M4.93 19.07A10 10 0 0 1 2 12a10 10 0 0 1 2.93-7.07m14.14 0A10 10 0 0 1 22 12a10 10 0 0 1-2.93 7.07M7.76 16.24A6 6 0 0 1 6 12a6 6 0 0 1 1.76-4.24m8.48 0A6 6 0 0 1 18 12a6 6 0 0 1-1.76 4.24M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />,
+    bolt: <path d="M13 10V3L4 14h7v7l9-11h-7z" />,
   }
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +50,7 @@ const formatDate = (dateStr) => {
 
 const formatDateTime = (dateStr) => {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 const formatTimeOnly = (dateObj) => {
@@ -77,9 +79,10 @@ export default function EventAnalytics() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Realtime Live Sync state
-  const [liveSync, setLiveSync] = useState(true)
-  const [lastLiveSync, setLastLiveSync] = useState(new Date())
+  // Real-time WebSocket connection state
+  const [wsConnected, setWsConnected] = useState(false)
+  const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState(new Date())
+  const [liveFlashNotice, setLiveFlashNotice] = useState(null)
 
   // Detail state
   const [selectedEventId, setSelectedEventId] = useState(null)
@@ -97,15 +100,25 @@ export default function EventAnalytics() {
   const [syncing, setSyncing] = useState(null)
   const [syncResult, setSyncResult] = useState(null)
 
-  // Analytics filters
+  // Filters
   const [selectedPeriod, setSelectedPeriod] = useState('')
   const [searchPhone, setSearchPhone] = useState('')
   const [participantPage, setParticipantPage] = useState(1)
 
-  // Target query state
-  const [simTarget, setSimTarget] = useState('')
-  const [simResult, setSimResult] = useState(null)
-  const [simLoading, setSimLoading] = useState(false)
+  // Refs for current filter state (used inside WebSocket callbacks without re-attaching listeners)
+  const selectedEventIdRef = useRef(selectedEventId)
+  const selectedPeriodRef = useRef(selectedPeriod)
+  const searchPhoneRef = useRef(searchPhone)
+  const participantPageRef = useRef(participantPage)
+  const viewRef = useRef(view)
+
+  useEffect(() => {
+    selectedEventIdRef.current = selectedEventId
+    selectedPeriodRef.current = selectedPeriod
+    searchPhoneRef.current = searchPhone
+    participantPageRef.current = participantPage
+    viewRef.current = view
+  }, [selectedEventId, selectedPeriod, searchPhone, participantPage, view])
 
   const token = localStorage.getItem('token')
   const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json' }
@@ -119,7 +132,7 @@ export default function EventAnalytics() {
     try {
       const res = await axios.get(`${API}/admin/events`, { headers })
       setEvents(res.data || [])
-      setLastLiveSync(new Date())
+      setLastRealtimeUpdate(new Date())
     } catch (err) {
       if (!silent) setError('Gagal memuat data events.')
     } finally {
@@ -137,7 +150,7 @@ export default function EventAnalytics() {
       if (search) params.search = search
       const res = await axios.get(`${API}/admin/events/${eventId}/analytics`, { headers, params })
       setAnalytics(res.data)
-      setLastLiveSync(new Date())
+      setLastRealtimeUpdate(new Date())
     } catch (err) {
       if (!silent) {
         setAnalytics(null)
@@ -149,21 +162,63 @@ export default function EventAnalytics() {
   }, [])
 
   // ==========================================
-  // REAL-TIME BACKGROUND POLLING (100% LIVE)
+  // WEBSOCKET (SOCKET.IO) REALTIME LISTENER
   // ==========================================
   useEffect(() => {
-    if (!liveSync) return
+    let socket = null
 
-    const interval = setInterval(() => {
-      if (view === 'detail' && selectedEventId) {
-        fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
-      } else if (view === 'list') {
+    try {
+      socket = io(WA_SOCKET_URL, {
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 2000,
+      })
+
+      socket.on('connect', () => {
+        setWsConnected(true)
+      })
+
+      socket.on('disconnect', () => {
+        setWsConnected(false)
+      })
+
+      // Listen to real-time analytics broadcast triggered by payment callback
+      socket.on('analytics_updated', (data) => {
+        setLastRealtimeUpdate(new Date())
+        setLiveFlashNotice(`⚡ Transaksi voucher baru masuk: ${data?.phone || 'Customer'} (${formatRupiah(data?.amount || 0)})`)
+        setTimeout(() => setLiveFlashNotice(null), 5000)
+
+        // Instantly refresh active view with ZERO delay
+        if (viewRef.current === 'detail' && selectedEventIdRef.current) {
+          fetchAnalytics(selectedEventIdRef.current, selectedPeriodRef.current, searchPhoneRef.current, participantPageRef.current, true)
+        } else {
+          fetchEvents(true)
+        }
+      })
+    } catch (err) {
+      console.warn('WebSocket connection error:', err)
+    }
+
+    // Fallback reconciliation interval (every 45s just in case socket disconnects)
+    const fallbackInterval = setInterval(() => {
+      if (viewRef.current === 'detail' && selectedEventIdRef.current) {
+        fetchAnalytics(selectedEventIdRef.current, selectedPeriodRef.current, searchPhoneRef.current, participantPageRef.current, true)
+      } else {
         fetchEvents(true)
       }
-    }, 6000) // Poll every 6 seconds for 100% realtime sync
+    }, 45000)
 
-    return () => clearInterval(interval)
-  }, [liveSync, view, selectedEventId, selectedPeriod, searchPhone, participantPage, fetchAnalytics, fetchEvents])
+    return () => {
+      clearInterval(fallbackInterval)
+      if (socket) {
+        socket.off('connect')
+        socket.off('disconnect')
+        socket.off('analytics_updated')
+        socket.disconnect()
+      }
+    }
+  }, [fetchAnalytics, fetchEvents])
 
   // ==========================================
   // EVENT CRUD
@@ -189,7 +244,7 @@ export default function EventAnalytics() {
 
   const handleSave = async () => {
     const errors = {}
-    if (!formData.name.trim()) errors.name = 'Nama event wajib diisi'
+    if (!formData.name.trim()) errors.name = 'Nama program event wajib diisi'
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
       return
@@ -227,8 +282,8 @@ export default function EventAnalytics() {
   const handleToggleStatus = async (event) => {
     const newStatus = event.status === 'active' ? 'inactive' : 'active'
     const confirmMsg = newStatus === 'inactive'
-      ? `Nonaktifkan "${event.name}"? Tracking transaksi baru akan dihentikan sementara (data transaksi riil tetap tersimpan).`
-      : `Aktifkan kembali "${event.name}"? Tracking transaksi baru akan langsung aktif real-time.`
+      ? `Nonaktifkan "${event.name}"? Tracking transaksi baru akan dihentikan (data historis tetap tersimpan utuh).`
+      : `Aktifkan kembali "${event.name}"? Tracking transaksi voucher baru akan langsung berjalan secara real-time.`
 
     if (!confirm(confirmMsg)) return
 
@@ -279,28 +334,6 @@ export default function EventAnalytics() {
   }
 
   // ==========================================
-  // TARGET QUALIFICATION QUERY
-  // ==========================================
-  const handleCheckTarget = async (target) => {
-    if (!selectedEventId || !target) return
-    setSimLoading(true)
-    setSimTarget(target)
-    try {
-      const params = { target }
-      if (selectedPeriod) params.period = selectedPeriod
-      const res = await axios.get(`${API}/admin/events/${selectedEventId}/simulate`, {
-        headers,
-        params,
-      })
-      setSimResult(res.data)
-    } catch (err) {
-      setSimResult(null)
-    } finally {
-      setSimLoading(false)
-    }
-  }
-
-  // ==========================================
   // NAVIGATE TO DETAIL
   // ==========================================
   const openDetail = (eventId) => {
@@ -309,8 +342,6 @@ export default function EventAnalytics() {
     setSelectedPeriod('')
     setSearchPhone('')
     setParticipantPage(1)
-    setSimResult(null)
-    setSimTarget('')
     fetchAnalytics(eventId)
   }
 
@@ -338,38 +369,36 @@ export default function EventAnalytics() {
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-admin-text flex items-center gap-2">
               <Icon name="trend" className="w-7 h-7 text-admin-accent" />
-              Event & Loyalty Tracking
+              Loyalty Analytics
             </h1>
-            {/* Realtime Live Pulse */}
-            <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span>100% Real-Time Sync</span>
+            {/* Realtime WebSocket Badge */}
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+              wsConnected
+                ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                : 'bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'}`} />
+              <span>{wsConnected ? 'WebSocket Real-Time Live' : 'Reconnecting WebSocket'}</span>
             </div>
           </div>
           <p className="text-sm text-admin-muted mt-1">
-            Pencatatan data riil transaksi customer per bulan kalender (Permanent Program — Never Expires)
+            Pencatatan data riil transaksi pembeli voucher per bulan kalender (Permanent Program — Never Expires)
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setLiveSync(!liveSync)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition ${
-              liveSync
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400'
-                : 'bg-admin-card border-admin-border text-admin-muted'
-            }`}
-            title="Auto-refresh background interval"
-          >
-            <span className={`w-2 h-2 rounded-full ${liveSync ? 'bg-emerald-500' : 'bg-gray-400'}`} />
-            {liveSync ? 'Live Polling ON' : 'Live Polling OFF'}
-          </button>
-          <button onClick={openCreateModal} className="flex items-center gap-2 px-4 py-2.5 bg-admin-accent text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-all shadow-sm">
-            <Icon name="plus" className="w-4 h-4" />
-            Buat Event
-          </button>
-        </div>
+        <button onClick={openCreateModal} className="flex items-center gap-2 px-4 py-2.5 bg-admin-accent text-white rounded-lg font-semibold text-sm hover:opacity-90 transition-all shadow-sm">
+          <Icon name="plus" className="w-4 h-4" />
+          Buat Program Event
+        </button>
       </div>
+
+      {/* Live Flash Notice Banner */}
+      {liveFlashNotice && (
+        <div className="mb-4 px-4 py-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center gap-2 animate-bounce">
+          <Icon name="bolt" className="w-4 h-4" />
+          <span>{liveFlashNotice}</span>
+        </div>
+      )}
 
       {/* Sync Result Toast */}
       {syncResult && (
@@ -383,7 +412,7 @@ export default function EventAnalytics() {
             <span>{syncResult.message}</span>
             {syncResult.stats && (
               <span className="text-xs opacity-75 ml-2">
-                ({syncResult.stats.valid_transactions} transaksi valid sejak {formatDate(syncResult.stats.start_date)}, {syncResult.stats.participant_rows} baris participant)
+                ({syncResult.stats.valid_transactions} transaksi voucher sejak {formatDate(syncResult.stats.start_date)}, {syncResult.stats.participant_rows} rows)
               </span>
             )}
           </div>
@@ -413,7 +442,7 @@ export default function EventAnalytics() {
         <div className="text-center py-20 bg-admin-card border border-admin-border rounded-xl">
           <div className="text-4xl mb-3">📊</div>
           <p className="text-admin-muted font-medium">Belum ada program event aktif.</p>
-          <p className="text-admin-muted text-sm mt-1">Buat program event permanen untuk mencatat transaksi riil customer secara otomatis.</p>
+          <p className="text-admin-muted text-sm mt-1">Buat program event permanen untuk mencatat transaksi riil pembeli voucher.</p>
           <button onClick={openCreateModal} className="mt-4 px-4 py-2 bg-admin-accent text-white rounded-lg text-sm font-semibold hover:opacity-90 transition">
             <Icon name="plus" className="w-4 h-4 inline mr-1" /> Buat Program Event
           </button>
@@ -432,7 +461,7 @@ export default function EventAnalytics() {
                   <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden md:table-cell">Target Loyalty</th>
                   <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Status Tracking</th>
                   <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden sm:table-cell">Customer Unik</th>
-                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden lg:table-cell">Update Terakhir</th>
+                  <th className="text-center px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider hidden lg:table-cell">Terakhir Diupdate</th>
                   <th className="text-right px-4 py-3 font-semibold text-admin-muted text-xs uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -471,7 +500,7 @@ export default function EventAnalytics() {
                       <td className="px-4 py-3 text-center">
                         <button
                           onClick={() => handleToggleStatus(event)}
-                          title={`Klik untuk ubah ke ${event.status === 'active' ? 'Inactive' : 'Active'}`}
+                          title={`Klik untuk ubah status ke ${event.status === 'active' ? 'Inactive' : 'Active'}`}
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-opacity hover:opacity-80 ${sc.bg} ${sc.text}`}
                         >
                           <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
@@ -482,7 +511,7 @@ export default function EventAnalytics() {
                         <span className="text-admin-text font-bold">{event.unique_customers || 0}</span>
                       </td>
                       <td className="px-4 py-3 text-center text-xs text-admin-muted hidden lg:table-cell">
-                        {event.last_synced_at ? formatDateTime(event.last_synced_at) : <span className="text-admin-muted opacity-50">Realtime tracking</span>}
+                        {event.last_synced_at ? formatDateTime(event.last_synced_at) : <span className="text-admin-muted opacity-50">Real-time tracking</span>}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
@@ -490,11 +519,11 @@ export default function EventAnalytics() {
                             onClick={() => handleSync(event.id)}
                             disabled={syncing === event.id}
                             className="p-1.5 text-admin-muted hover:text-blue-500 transition-colors disabled:opacity-50"
-                            title="Rebuild Data dari Transaksi"
+                            title="Rebuild Data Transaksi"
                           >
                             <Icon name="sync" className={`w-4 h-4 ${syncing === event.id ? 'animate-spin' : ''}`} />
                           </button>
-                          <button onClick={() => openDetail(event.id)} className="p-1.5 text-admin-muted hover:text-admin-accent transition-colors" title="Lihat Data Riil Analytics">
+                          <button onClick={() => openDetail(event.id)} className="p-1.5 text-admin-muted hover:text-admin-accent transition-colors" title="Lihat Dashboard Detail">
                             <Icon name="chart" className="w-4 h-4" />
                           </button>
                           <button onClick={() => openEditModal(event)} className="p-1.5 text-admin-muted hover:text-amber-500 transition-colors" title="Edit">
@@ -524,7 +553,7 @@ export default function EventAnalytics() {
   const renderDetail = () => {
     const ev = analytics?.event
     const sum = analytics?.summary
-    const targetSum = analytics?.target_summary
+    const targetAch = analytics?.target_achievement
     const dist = analytics?.distribution
     const periods = analytics?.periods || []
     const participants = analytics?.participants
@@ -532,6 +561,17 @@ export default function EventAnalytics() {
 
     return (
       <div>
+        {/* Live Flash Notice Banner */}
+        {liveFlashNotice && (
+          <div className="mb-4 px-4 py-2.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between shadow-sm animate-pulse">
+            <div className="flex items-center gap-2">
+              <Icon name="bolt" className="w-4 h-4 text-emerald-500" />
+              <span>{liveFlashNotice}</span>
+            </div>
+            <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase">Realtime Live</span>
+          </div>
+        )}
+
         {/* Back Button + Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
@@ -551,9 +591,13 @@ export default function EventAnalytics() {
                   </button>
                 )}
                 {/* Real-time Indicator Badge */}
-                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span>REALTIME LIVE</span>
+                <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  wsConnected
+                    ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'}`} />
+                  <span>{wsConnected ? '100% REAL-TIME LIVE' : 'WS RECONNECTING'}</span>
                 </div>
               </div>
               {ev && (
@@ -567,7 +611,7 @@ export default function EventAnalytics() {
                     Program Berjalan Permanen
                   </span>
                   <span className="text-[11px] text-admin-muted">
-                    • Terakhir diupdate: <strong className="text-admin-text">{formatTimeOnly(lastLiveSync)}</strong>
+                    • Terakhir diperbarui: <strong className="text-admin-text">{formatTimeOnly(lastRealtimeUpdate)}</strong>
                   </span>
                 </p>
               )}
@@ -576,29 +620,17 @@ export default function EventAnalytics() {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setLiveSync(!liveSync)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border transition ${
-                liveSync
-                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400'
-                  : 'bg-admin-card border-admin-border text-admin-muted'
-              }`}
-              title="Toggle auto live sync polling"
-            >
-              <span className={`w-2 h-2 rounded-full ${liveSync ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'}`} />
-              {liveSync ? 'Live Sync: ON' : 'Live Sync: Paused'}
-            </button>
-            <button
               onClick={() => handleSync(selectedEventId, false)}
               disabled={syncing === selectedEventId}
               className="flex items-center gap-1.5 px-3 py-2 bg-admin-card border border-admin-border rounded-lg text-xs font-semibold text-admin-text hover:bg-admin-base/50 transition-colors disabled:opacity-50"
               title="Rebuild kalkulasi dari transaksi di database"
             >
               <Icon name="sync" className={`w-3.5 h-3.5 ${syncing === selectedEventId ? 'animate-spin' : ''}`} />
-              Sync Ulang
+              Sync Data
             </button>
             <button
               onClick={() => {
-                if (confirm('Rebuild SELURUH histori transaksi dari awal database? Data participant bulan terdahulu akan di-recalculate ulang.')) {
+                if (confirm('Rebuild SELURUH histori transaksi voucher dari awal database? Data participant bulan terdahulu akan di-recalculate ulang.')) {
                   handleSync(selectedEventId, true)
                 }
               }}
@@ -606,7 +638,7 @@ export default function EventAnalytics() {
               className="flex items-center gap-1.5 px-2.5 py-2 bg-admin-card border border-admin-border rounded-lg text-xs text-admin-muted hover:text-admin-text transition-colors disabled:opacity-50"
               title="Rebuild semua histori tanpa batas awal"
             >
-              Rebuild Histori
+              Rebuild Semua Histori
             </button>
           </div>
         </div>
@@ -641,7 +673,7 @@ export default function EventAnalytics() {
               Pilih Periode Bulan Kalender
             </div>
             <p className="text-xs text-admin-muted">
-              Pencatatan riil dihitung per nomor telepon customer dan bulan kalender berjalan. Data historis bulan lampau tersimpan independen.
+              Pencatatan riil transaksi pembeli voucher dipisahkan per bulan kalender. Riwayat bulan lampau tersimpan independen.
             </p>
           </div>
 
@@ -673,15 +705,15 @@ export default function EventAnalytics() {
         </div>
 
         {/* Notice Info Sisi Customer */}
-        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl mb-6 text-xs text-amber-700 dark:text-amber-400 flex items-center justify-between">
+        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-6 text-xs text-blue-700 dark:text-blue-300 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon name="info" className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+            <Icon name="info" className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
             <span>
-              <strong>Admin Internal Only:</strong> Sisi customer <u>belum</u> menerima hadiah/notifikasi. Seluruh transaksi tercatat secara otomatis di background secara 100% real-time.
+              <strong>Admin Internal Only:</strong> Sistem ini mencatat data riil pembeli voucher hotspot. Customer <u>belum</u> menerima reward/notifikasi apa pun.
             </span>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 uppercase tracking-wider">
-            Fase 1: Analytics & Tracking
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 uppercase tracking-wider">
+            Fase 1: Real Data Tracking
           </span>
         </div>
 
@@ -696,8 +728,8 @@ export default function EventAnalytics() {
         {!analyticsLoading && analytics && sum && sum.total_transactions === 0 && (
           <div className="text-center py-16 bg-admin-card border border-admin-border rounded-xl">
             <div className="text-4xl mb-3">📭</div>
-            <p className="text-admin-muted font-medium">Belum ada data transaksi untuk filter ini.</p>
-            <p className="text-admin-muted text-sm mt-1">Setiap transaksi voucher sukses (`ND-%`) akan otomatis tercatat ke sini secara real-time.</p>
+            <p className="text-admin-muted font-medium">Belum ada data transaksi voucher untuk filter ini.</p>
+            <p className="text-admin-muted text-sm mt-1">Setiap pembelian voucher sukses (`ND-%`) akan otomatis tercatat seketika tanpa perlu refresh.</p>
           </div>
         )}
 
@@ -708,8 +740,8 @@ export default function EventAnalytics() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
               {[
                 { label: selectedPeriod ? 'Customer Unik (Bulan Ini)' : 'Customer Unik Total', value: sum.total_unique_customers, icon: 'users', color: 'text-blue-500' },
-                { label: 'Total Transaksi', value: sum.total_transactions, icon: 'chart', color: 'text-indigo-500' },
-                { label: 'Total Revenue', value: formatRupiah(sum.total_revenue), icon: 'revenue', color: 'text-emerald-500' },
+                { label: 'Total Transaksi Voucher', value: sum.total_transactions, icon: 'chart', color: 'text-indigo-500' },
+                { label: 'Total Revenue Voucher', value: formatRupiah(sum.total_revenue), icon: 'revenue', color: 'text-emerald-500' },
                 { label: 'Rata-rata/Customer', value: formatRupiah(sum.avg_purchase_per_customer_month), icon: 'trend', color: 'text-amber-500' },
                 { label: 'Median/Customer', value: formatRupiah(sum.median_purchase_per_customer_month), icon: 'info', color: 'text-cyan-500' },
                 { label: 'Tertinggi/Bulan', value: formatRupiah(sum.highest_monthly_purchase), icon: 'target', color: 'text-rose-500' },
@@ -724,7 +756,7 @@ export default function EventAnalytics() {
               ))}
             </div>
 
-            {/* Distribution + Real Target Qualification Row */}
+            {/* Distribution + Real Target Achievement Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
               {/* Purchase Distribution */}
               <div className="bg-admin-card border border-admin-border rounded-xl p-5">
@@ -765,108 +797,64 @@ export default function EventAnalytics() {
                 </div>
               </div>
 
-              {/* Real Customer Target Achievement Card */}
-              <div className="bg-admin-card border border-admin-border rounded-xl p-5">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-bold text-admin-text flex items-center gap-2">
-                    <Icon name="target" className="w-4 h-4 text-admin-accent" />
-                    Pencapaian Target Customer {selectedPeriod ? `(${formatPeriod(selectedPeriod)})` : 'Per Bulan'}
-                  </h3>
-                  <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full uppercase border border-emerald-500/20">
-                    Data Riil Tercatat
-                  </span>
-                </div>
-                <p className="text-xs text-admin-muted mb-4">
-                  Analisis jumlah customer nyata yang telah mencapai akumulasi pembelian minimum pada periode ini:
-                </p>
-
-                {/* Preset Target Thresholds */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {[25000, 50000, 75000, 100000, 125000, 150000, 200000].map(val => (
-                    <button
-                      key={val}
-                      onClick={() => handleCheckTarget(val)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                        Number(simTarget) === val
-                          ? 'bg-admin-accent text-white border-admin-accent shadow-sm'
-                          : 'bg-admin-base border-admin-border text-admin-text hover:border-admin-accent/50'
-                      }`}
-                    >
-                      {formatRupiah(val)}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Custom input */}
-                <div className="flex gap-2 mb-4">
-                  <input
-                    type="number"
-                    placeholder="Nominal target khusus (Rp)..."
-                    value={simTarget}
-                    onChange={(e) => setSimTarget(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text placeholder-admin-muted focus:outline-none focus:border-admin-accent"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && e.target.value) handleCheckTarget(e.target.value)
-                    }}
-                  />
-                  <button
-                    onClick={() => handleCheckTarget(simTarget)}
-                    disabled={!simTarget || simLoading}
-                    className="px-4 py-2 bg-admin-accent text-white rounded-lg text-xs font-semibold hover:opacity-90 transition disabled:opacity-50"
-                  >
-                    Hitung Kualifikasi
-                  </button>
-                </div>
-
-                {/* Result */}
-                {simLoading && <div className="text-center py-4"><div className="w-5 h-5 border-2 border-admin-accent border-t-transparent rounded-full animate-spin mx-auto" /></div>}
-                
-                {simResult && !simLoading && (
-                  <div className="bg-admin-base border border-admin-border rounded-xl p-4">
-                    <div className="text-center">
-                      <div className="text-xs text-admin-muted mb-1">
-                        Target: <span className="font-bold text-admin-text">{formatRupiah(simResult.target_amount)} /bulan</span>
-                        {simResult.period !== 'all' && ` • ${formatPeriod(simResult.period)}`}
-                      </div>
-                      <div className="text-3xl font-black text-admin-accent">{simResult.qualifying_customers}</div>
-                      <div className="text-sm text-admin-muted mt-1">
-                        dari <span className="font-bold text-admin-text">{simResult.total_customers}</span> customer mencapai target
-                      </div>
-                      <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20">
-                        {simResult.percentage}% lolos kualifikasi
-                      </div>
-                    </div>
+              {/* Target Pencapaian Loyalty Customer (DATA AKTUAL) */}
+              <div className="bg-admin-card border border-admin-border rounded-xl p-5 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-bold text-admin-text flex items-center gap-2">
+                      <Icon name="target" className="w-4 h-4 text-admin-accent" />
+                      Target Pencapaian Loyalty Customer {selectedPeriod ? `(${formatPeriod(selectedPeriod)})` : 'Per Bulan'}
+                    </h3>
+                    <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full uppercase border border-emerald-500/20">
+                      Data Aktual
+                    </span>
                   </div>
-                )}
+                  <p className="text-xs text-admin-muted mb-4">
+                    Kondisi riil pencapaian target loyalty pelanggan berdasarkan transaksi voucher yang sudah terjadi:
+                  </p>
+                </div>
 
-                {!simResult && !simLoading && targetSum && targetSum.target_amount > 0 && (
-                  <div className="bg-admin-base border border-admin-border rounded-xl p-4 text-center">
+                {targetAch && targetAch.target_amount > 0 ? (
+                  <div className="bg-admin-base border border-admin-border rounded-xl p-6 text-center my-auto">
                     <div className="text-xs text-admin-muted mb-1">
-                      Target Program: <span className="font-bold text-admin-text">{formatRupiah(targetSum.target_amount)} /bulan</span>
+                      Target Program: <strong className="text-admin-text text-sm">{formatRupiah(targetAch.target_amount)} /bulan</strong>
+                      {selectedPeriod && ` • ${formatPeriod(selectedPeriod)}`}
                     </div>
-                    <div className="text-3xl font-black text-admin-accent">{targetSum.qualifying_customers}</div>
-                    <div className="text-sm text-admin-muted mt-1">
-                      dari <span className="font-bold text-admin-text">{targetSum.total_customers}</span> customer mencapai target
+                    <div className="text-4xl font-black text-admin-accent my-2">{targetAch.qualifying_customers}</div>
+                    <div className="text-sm text-admin-muted">
+                      dari total <strong className="text-admin-text">{targetAch.total_customers}</strong> customer telah mencapai target
                     </div>
-                    <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20">
-                      {targetSum.percentage}% lolos kualifikasi
+                    <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-full text-xs font-bold border border-emerald-500/20">
+                      ✓ {targetAch.percentage}% customer memenuhi kualifikasi
                     </div>
                   </div>
+                ) : (
+                  <div className="bg-admin-base border border-admin-border rounded-xl p-6 text-center my-auto">
+                    <Icon name="target" className="w-8 h-8 text-admin-muted mx-auto mb-2 opacity-50" />
+                    <p className="text-sm font-semibold text-admin-text">Target Nominal Belum Ditentukan</p>
+                    <p className="text-xs text-admin-muted mt-1">
+                      Edit program event untuk menetapkan target nominal bulanan (misal: Rp 100.000).
+                    </p>
+                  </div>
                 )}
+
+                <div className="mt-3 text-[11px] text-admin-muted text-center">
+                  * Evaluasi dilakukan independen per customer per bulan kalender.
+                </div>
               </div>
             </div>
 
-            {/* Participants Table */}
+            {/* Participants Table (FULL RAW PHONE NUMBER - NO MASKING) */}
             <div className="bg-admin-card border border-admin-border rounded-xl overflow-hidden shadow-sm">
               <div className="px-4 py-3 border-b border-admin-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-sm font-bold text-admin-text flex items-center gap-2">
                     <Icon name="users" className="w-4 h-4 text-admin-accent" />
-                    Data Riil Pembelian Customer
+                    Data Riil Pembelian Customer Voucher
                     {participants && <span className="text-xs text-admin-muted font-normal ml-1">({participants.total} baris customer-bulan)</span>}
                   </h3>
                   <p className="text-[11px] text-admin-muted mt-0.5">
-                    Data transaksi riil customer teragregasi otomatis per bulan kalender.
+                    Nomor WhatsApp / HP ditampilkan lengkap (tanpa masking) untuk keperluan identifikasi admin.
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -895,38 +883,48 @@ export default function EventAnalytics() {
                       <thead>
                         <tr className="bg-admin-base/50 border-b border-admin-border">
                           <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">No HP / WhatsApp</th>
-                          <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Bulan Kalender</th>
+                          <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Periode</th>
                           <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Total Pembelian</th>
                           <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden sm:table-cell">Jumlah Transaksi</th>
                           <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden md:table-cell">Rata-rata/Tx</th>
-                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Status Target</th>
-                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Tx Terakhir</th>
+                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Target</th>
+                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Status Pencapaian</th>
+                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden xl:table-cell">Last Purchase</th>
                         </tr>
                       </thead>
                       <tbody>
                         {participants.data.map((p) => {
-                          const targetAmt = targetSum?.target_amount || ev?.target_amount || 0
-                          const qualifies = targetAmt > 0 && p.total_purchase >= targetAmt
+                          const targetAmt = p.target_amount || targetAch?.target_amount || ev?.target_amount || 0
+                          const qualifies = p.is_target_achieved !== undefined
+                            ? p.is_target_achieved
+                            : (targetAmt > 0 && p.total_purchase >= targetAmt)
 
                           return (
                             <tr key={p.id} className="border-b border-admin-border/50 hover:bg-admin-base/20 transition-colors">
-                              <td className="px-4 py-2.5 font-mono text-xs text-admin-text font-semibold">{p.phone || p.masked_phone}</td>
+                              {/* FULL UNMASKED PHONE NUMBER */}
+                              <td className="px-4 py-2.5 font-mono text-xs text-admin-text font-bold tracking-tight">
+                                {p.phone || p.masked_phone}
+                              </td>
                               <td className="px-4 py-2.5 text-xs text-admin-muted">
-                                <span className="px-2 py-0.5 rounded bg-admin-base border border-admin-border/50">
+                                <span className="px-2 py-0.5 rounded bg-admin-base border border-admin-border/50 font-medium">
                                   {formatPeriod(p.period_key)}
                                 </span>
                               </td>
-                              <td className="px-4 py-2.5 text-right font-bold text-admin-text text-xs">{formatRupiah(p.total_purchase)}</td>
+                              <td className="px-4 py-2.5 text-right font-extrabold text-admin-text text-xs">{formatRupiah(p.total_purchase)}</td>
                               <td className="px-4 py-2.5 text-center text-xs text-admin-muted hidden sm:table-cell">{p.transaction_count}x</td>
                               <td className="px-4 py-2.5 text-right text-xs text-admin-muted hidden md:table-cell">{formatRupiah(p.avg_per_transaction)}</td>
+                              <td className="px-4 py-2.5 text-center text-xs text-admin-muted hidden lg:table-cell">
+                                {targetAmt > 0 ? formatRupiah(targetAmt) : '-'}
+                              </td>
                               <td className="px-4 py-2.5 text-center hidden lg:table-cell">
                                 {targetAmt > 0 ? (
                                   qualifies ? (
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                                      ✓ Capai Target
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                      <Icon name="check" className="w-3 h-3" />
+                                      Capai Target
                                     </span>
                                   ) : (
-                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-admin-muted">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-admin-muted">
                                       Belum
                                     </span>
                                   )
@@ -934,7 +932,9 @@ export default function EventAnalytics() {
                                   <span className="text-admin-muted opacity-50 text-xs">-</span>
                                 )}
                               </td>
-                              <td className="px-4 py-2.5 text-center text-[11px] text-admin-muted hidden lg:table-cell">{formatDate(p.last_transaction_at)}</td>
+                              <td className="px-4 py-2.5 text-center text-[11px] text-admin-muted hidden xl:table-cell">
+                                {p.last_transaction_at ? formatDateTime(p.last_transaction_at) : '-'}
+                              </td>
                             </tr>
                           )
                         })}
@@ -946,7 +946,7 @@ export default function EventAnalytics() {
                   {participants.last_page > 1 && (
                     <div className="px-4 py-3 border-t border-admin-border flex items-center justify-between">
                       <span className="text-xs text-admin-muted">
-                        Halaman {participants.current_page} dari {participants.last_page} ({participants.total} baris data)
+                        Halaman {participants.current_page} dari {participants.last_page} ({participants.total} baris customer-bulan)
                       </span>
                       <div className="flex gap-1">
                         {Array.from({ length: Math.min(participants.last_page, 7) }, (_, i) => {
@@ -1010,7 +1010,7 @@ export default function EventAnalytics() {
             <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs text-emerald-700 dark:text-emerald-400 flex items-start gap-2">
               <Icon name="infinity" className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
               <span>
-                Event bersifat <strong>permanen (tanpa tanggal berakhir)</strong>. Sistem mencatat akumulasi riil setiap transaksi voucher yang sukses per nomor telepon dan bulan kalender.
+                Event bersifat <strong>permanen (tanpa batas waktu)</strong>. Sistem secara otomatis mencatat transaksi riil pembeli voucher hotspot per nomor telepon dan bulan kalender.
               </span>
             </div>
 
@@ -1050,7 +1050,7 @@ export default function EventAnalytics() {
                   placeholder="Contoh: 100000"
                   className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text placeholder-admin-muted focus:outline-none focus:border-admin-accent"
                 />
-                <p className="text-[10px] text-admin-muted mt-1">Target pembelian customer per bulan</p>
+                <p className="text-[10px] text-admin-muted mt-1">Syarat target nominal belanja per bulan</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">Status Tracking</label>
@@ -1059,10 +1059,10 @@ export default function EventAnalytics() {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text focus:outline-none focus:border-admin-accent"
                 >
-                  <option value="active">Active (Tracking 100% Real-Time)</option>
+                  <option value="active">Active (Tracking Real-Time Aktif)</option>
                   <option value="inactive">Inactive (Tracking Dihentikan)</option>
                 </select>
-                <p className="text-[10px] text-admin-muted mt-1">Data historis tetap tersimpan saat inactive</p>
+                <p className="text-[10px] text-admin-muted mt-1">Data historis tetap aman saat inactive</p>
               </div>
             </div>
           </div>
