@@ -9,8 +9,14 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
         calendar: <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
         device: <path d="M9 3H5a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2zM19 3h-4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2zM9 13H5a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-4a2 2 0 00-2-2zM19 13h-4a2 2 0 00-2 2v4a2 2 0 002 2h4a2 2 0 002-2v-4a2 2 0 00-2-2z" />,
-        x: <path d="M6 18L18 6M6 6l18 18" />,
-        plus: <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        x: <path d="M6 18L18 6M6 6l12 12" />,
+        plus: <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" />,
+        copy: <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />,
+        check: <path d="M5 13l4 4L19 7" />,
+        shopping: <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />,
+        phone: <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />,
+        ticket: <path d="M15 5v2m-6-2v2M3 10V6a2 2 0 012-2h14a2 2 0 012 2v4M3 10h18M3 10v10a2 2 0 002 2h14a2 2 0 002-2V10M7 14h10" />,
+        external: <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
     };
 
     return (
@@ -21,91 +27,252 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
 };
 
 const VoucherDetailModal = ({ voucher, onClose }) => {
+    const [copied, setCopied] = useState(false);
     if (!voucher) return null;
 
+    const handleCopy = () => {
+        if (!voucher.code) return;
+        navigator.clipboard.writeText(voucher.code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return null;
+        return d.toLocaleString('id-ID', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    const purchaseDate = voucher.transaction?.created_at || (voucher.status !== 'available' ? (voucher.created_at || voucher.updated_at) : null);
+    const formattedPurchaseDate = formatDate(purchaseDate);
+
+    const getStatusBadge = (status) => {
+        if (status === 'used') {
+            return {
+                label: 'Sedang Digunakan',
+                bg: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+                dot: 'bg-amber-500'
+            };
+        }
+        if (status === 'sold') {
+            return {
+                label: 'Terjual (Aktif)',
+                bg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+                dot: 'bg-blue-500'
+            };
+        }
+        if (status === 'available') {
+            return {
+                label: 'Tersedia di Stok',
+                bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+                dot: 'bg-emerald-500'
+            };
+        }
+        return {
+            label: status?.toUpperCase() || 'Expired',
+            bg: 'bg-rose-500/10 text-rose-500 border-rose-500/20',
+            dot: 'bg-rose-500'
+        };
+    };
+
+    const statusBadge = getStatusBadge(voucher.status);
+    const cleanPhone = voucher.customer_phone ? voucher.customer_phone.replace(/[^0-9]/g, '') : '';
+    const waUrl = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone}` : null;
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-admin-card w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                <div className="px-10 py-8 bg-admin-base border-b border-admin-border flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                            <Icon name="info" className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-admin-card w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-admin-border animate-in zoom-in-95 duration-200 flex flex-col max-h-[92vh]">
+                
+                {/* Header */}
+                <div className="px-6 py-4 bg-admin-base border-b border-admin-border flex items-center justify-between shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                            <Icon name="ticket" className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black text-admin-text uppercase tracking-tight leading-none">Detail Voucher</h3>
-                            <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest mt-1">Informasi penggunaan & riwayat</p>
+                            <h3 className="text-base font-bold text-admin-text leading-tight">Detail Voucher</h3>
+                            <p className="text-[11px] text-admin-muted font-medium">Informasi kode, pembelian & riwayat penggunaan</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-xl transition-colors">
-                        <svg className="w-6 h-6 text-admin-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    <button 
+                        onClick={onClose} 
+                        className="p-1.5 text-admin-muted hover:text-admin-text hover:bg-admin-card rounded-lg transition-colors"
+                        title="Tutup"
+                    >
+                        <Icon name="x" className="w-5 h-5" />
                     </button>
                 </div>
 
-                <div className="p-10 space-y-8">
-                    {/* Code Section */}
-                    <div className="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 text-center">
-                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2">Voucher Code</p>
-                        <h2 className="text-4xl font-black text-blue-600 tracking-[0.2em]">{voucher.code}</h2>
-                    </div>
+                {/* Modal Body */}
+                <div className="p-6 overflow-y-auto space-y-5">
+                    
+                    {/* Modern Voucher Ticket Card */}
+                    <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 text-white rounded-2xl p-5 shadow-lg shadow-blue-500/15 overflow-hidden">
+                        {/* Decorative background glow */}
+                        <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+                        <div className="absolute -left-8 -bottom-8 w-32 h-32 bg-black/10 rounded-full blur-2xl pointer-events-none" />
 
-                    <div className="grid grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest">Status</p>
-                            <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest inline-block border ${voucher.status === 'available' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
-                                {voucher.status}
+                        {/* Top: Plan Name & Duration */}
+                        <div className="flex items-center justify-between gap-2 relative z-10">
+                            <div className="flex items-center gap-2">
+                                <span className="px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-sm">
+                                    {voucher.plan?.name || 'Voucher Hotspot'}
+                                </span>
+                                {voucher.plan?.duration && (
+                                    <span className="text-xs text-blue-100 font-medium flex items-center gap-1">
+                                        <Icon name="clock" className="w-3.5 h-3.5" />
+                                        {voucher.plan.duration}
+                                    </span>
+                                )}
+                            </div>
+                            <span className="text-sm font-bold text-white tracking-tight">
+                                Rp {Math.floor(voucher.price || 0).toLocaleString('id-ID')}
                             </span>
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest">Price</p>
-                            <p className="font-black text-admin-text">Rp {voucher.price.toLocaleString('id-ID')}</p>
+
+                        {/* Middle: Code & Quick Copy */}
+                        <div className="my-4 pt-2 text-center relative z-10">
+                            <p className="text-[10px] font-bold text-blue-200 uppercase tracking-widest mb-1">KODE VOUCHER</p>
+                            <div className="inline-flex items-center justify-center gap-3 bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-xl border border-white/10">
+                                <span className="font-mono text-3xl sm:text-4xl font-black tracking-[0.25em] select-all">
+                                    {voucher.code}
+                                </span>
+                                <button 
+                                    onClick={handleCopy}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
+                                        copied 
+                                            ? 'bg-emerald-500 text-white' 
+                                            : 'bg-white text-blue-700 hover:bg-blue-50'
+                                    }`}
+                                    title="Salin Kode"
+                                >
+                                    <Icon name={copied ? "check" : "copy"} className="w-3.5 h-3.5" />
+                                    <span>{copied ? 'Tersalin!' : 'Salin'}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Bottom: Status Pill */}
+                        <div className="flex items-center justify-center relative z-10 pt-1">
+                            <span className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 text-white">
+                                <span className={`w-2 h-2 rounded-full ${voucher.status === 'used' ? 'bg-amber-300 animate-pulse' : voucher.status === 'available' ? 'bg-emerald-300 animate-pulse' : 'bg-white'}`} />
+                                {statusBadge.label}
+                            </span>
                         </div>
                     </div>
-                    {voucher.customer_phone && (
-                        <div className="flex items-center gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                            <Icon name="device" className="w-5 h-5 text-emerald-500" />
-                            <div>
-                                <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Nomor Telepon Pembeli</p>
-                                <p className="text-sm font-bold text-emerald-700 font-mono">{voucher.customer_phone}</p>
-                            </div>
-                        </div>
-                    )}
 
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-4 p-4 bg-admin-base rounded-2xl border border-admin-border">
-                            <Icon name="clock" className="w-5 h-5 text-admin-muted" />
-                            <div>
-                                <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest">Digunakan Pada</p>
-                                <p className="text-sm font-bold text-admin-text">
-                                    {voucher.used_at ? new Date(voucher.used_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'Belum Digunakan'}
+                    {/* Information Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        
+                        {/* WAKTU PEMBELIAN (Requested Feature!) */}
+                        <div className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-start gap-3 col-span-1 sm:col-span-2">
+                            <div className="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 mt-0.5 shrink-0">
+                                <Icon name="shopping" className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                    <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider">Dibeli Pada (Waktu Beli)</p>
+                                    {voucher.transaction?.external_id && (
+                                        <span className="text-[10px] font-mono text-blue-600 font-bold truncate max-w-[150px]">
+                                            {voucher.transaction.external_id}
+                                        </span>
+                                    )}
+                                </div>
+                                <p className="text-xs sm:text-sm font-bold text-admin-text mt-0.5">
+                                    {formattedPurchaseDate || (voucher.status === 'available' ? 'Belum Terjual (Masih di Stok)' : 'Tidak Ada Data Waktu')}
+                                </p>
+                                {voucher.transaction?.payment_method && (
+                                    <p className="text-[10px] text-admin-muted mt-0.5 uppercase">
+                                        Metode Bayar: <span className="font-semibold text-admin-text">{voucher.transaction.payment_method}</span>
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* NOMOR TELEPON PEMBELI */}
+                        <div className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-start gap-3 col-span-1 sm:col-span-2">
+                            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 mt-0.5 shrink-0">
+                                <Icon name="phone" className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                    <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider">Nomor HP Pembeli</p>
+                                    {waUrl && (
+                                        <a 
+                                            href={waUrl} 
+                                            target="_blank" 
+                                            rel="noreferrer"
+                                            className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 hover:underline"
+                                        >
+                                            Chat WA <Icon name="external" className="w-3 h-3" />
+                                        </a>
+                                    )}
+                                </div>
+                                <p className="text-xs sm:text-sm font-bold text-admin-text font-mono mt-0.5">
+                                    {voucher.customer_phone || <span className="text-admin-muted font-sans font-normal italic">Tidak tercatat</span>}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-4 bg-admin-base rounded-2xl border border-admin-border">
-                            <Icon name="calendar" className="w-5 h-5 text-admin-muted" />
-                            <div>
-                                <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest">Kadaluarsa</p>
-                                <p className="text-sm font-bold text-admin-text">
-                                    {voucher.expires_at ? new Date(voucher.expires_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) : 'Belum Digunakan'}
+
+                        {/* DIGUNAKAN PADA */}
+                        <div className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-start gap-3">
+                            <div className="p-2 rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mt-0.5 shrink-0">
+                                <Icon name="clock" className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider">Digunakan Pada</p>
+                                <p className="text-xs font-bold text-admin-text mt-0.5">
+                                    {formatDate(voucher.used_at) || <span className="text-admin-muted font-normal italic">Belum Digunakan</span>}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-4 bg-admin-base rounded-2xl border border-admin-border">
-                            <Icon name="device" className="w-5 h-5 text-admin-muted" />
-                            <div>
-                                <p className="text-[10px] font-black text-admin-muted uppercase tracking-widest">MAC Address</p>
-                                <p className="text-sm font-bold text-admin-text font-mono">{voucher.mac_address || 'N/A'}</p>
+
+                        {/* KADALUARSA */}
+                        <div className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-start gap-3">
+                            <div className="p-2 rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mt-0.5 shrink-0">
+                                <Icon name="calendar" className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider">Batas Kadaluarsa</p>
+                                <p className="text-xs font-bold text-admin-text mt-0.5">
+                                    {formatDate(voucher.expires_at) || <span className="text-admin-muted font-normal italic">Belum Digunakan</span>}
+                                </p>
                             </div>
                         </div>
+
+                        {/* MAC ADDRESS */}
+                        <div className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-start gap-3 col-span-1 sm:col-span-2">
+                            <div className="p-2 rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 mt-0.5 shrink-0">
+                                <Icon name="device" className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider">MAC Address Perangkat</p>
+                                <p className="text-xs font-mono font-bold text-admin-text mt-0.5">
+                                    {voucher.mac_address || <span className="font-sans text-admin-muted font-normal italic">-</span>}
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <div className="p-10 pt-0">
-                    <button onClick={onClose} className="w-full py-4 bg-slate-900 text-admin-text rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200">
-                        Tutup Detail
+                {/* Footer */}
+                <div className="px-6 py-4 bg-admin-base border-t border-admin-border flex items-center justify-end gap-3 shrink-0">
+                    <button 
+                        onClick={onClose} 
+                        className="px-5 py-2 text-xs font-bold text-admin-text bg-admin-card hover:bg-slate-100 border border-admin-border rounded-xl transition-colors"
+                    >
+                        Tutup
                     </button>
                 </div>
+
             </div>
         </div>
     );
@@ -339,8 +506,12 @@ const VoucherStock = () => {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="font-black text-admin-text text-sm">{v.customer_phone || '-'}</div>
-                                        <div className="text-[10px] font-black text-admin-muted uppercase mt-1 tracking-widest">{v.customer_phone ? 'WhatsApp' : 'Tanpa Info'}</div>
+                                        <div className="font-bold text-admin-text text-sm font-mono">{v.customer_phone || '-'}</div>
+                                        <div className="text-[10px] text-admin-muted mt-0.5 font-medium">
+                                            {v.transaction?.created_at || (v.status !== 'available' ? v.created_at : null)
+                                                ? `Beli: ${new Date(v.transaction?.created_at || v.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`
+                                                : 'Stok Belum Terjual'}
+                                        </div>
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="font-black text-admin-text text-sm">{v.plan?.name}</div>
