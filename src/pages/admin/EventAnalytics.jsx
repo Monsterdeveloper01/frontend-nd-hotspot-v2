@@ -894,7 +894,7 @@ export default function EventAnalytics() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-admin-base/50 border-b border-admin-border">
-                          <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">No HP (Masked)</th>
+                          <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">No HP / WhatsApp</th>
                           <th className="text-left px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Bulan Kalender</th>
                           <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Total Pembelian</th>
                           <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden sm:table-cell">Jumlah Transaksi</th>
@@ -910,7 +910,7 @@ export default function EventAnalytics() {
 
                           return (
                             <tr key={p.id} className="border-b border-admin-border/50 hover:bg-admin-base/20 transition-colors">
-                              <td className="px-4 py-2.5 font-mono text-xs text-admin-text">{p.masked_phone}</td>
+                              <td className="px-4 py-2.5 font-mono text-xs text-admin-text font-semibold">{p.phone || p.masked_phone}</td>
                               <td className="px-4 py-2.5 text-xs text-admin-muted">
                                 <span className="px-2 py-0.5 rounded bg-admin-base border border-admin-border/50">
                                   {formatPeriod(p.period_key)}
