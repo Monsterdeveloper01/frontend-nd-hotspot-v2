@@ -222,7 +222,7 @@ const Checkout = () => {
                                                 <i className="fas fa-qrcode" style={{ fontSize: '1.1rem' }} />
                                             </div>
                                             <div>
-                                                <h4 style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.9rem' }}>QRIS Nasional</h4>
+                                                <h4 style={{ fontWeight: 800, color: '#1e293b', fontSize: '0.9rem' }}>QRIS</h4>
                                                 <p style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Dana, OVO, GoPay, ShopeePay, M-Banking</p>
                                             </div>
                                         </div>

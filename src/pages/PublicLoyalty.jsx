@@ -120,7 +120,7 @@ export default function PublicLoyalty() {
                             <i className="fas fa-chart-line" />
                         </div>
                         <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em' }}>
-                            Loyalty <span style={{ color: '#00a884' }}>Progress</span>
+                            Event <span style={{ color: '#00a884' }}>Progress</span>
                         </h1>
                         <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.85rem', marginTop: '0.35rem' }}>
                             Pantau akumulasi pembelian voucher hotspot Anda bulan ini
@@ -247,7 +247,7 @@ export default function PublicLoyalty() {
                                         Tidak Ada Event Aktif
                                     </h3>
                                     <p style={{ color: '#64748b', fontSize: '0.82rem', fontWeight: 600 }}>
-                                        Saat ini program loyalty ND-HOTSPOT sedang tidak aktif.
+                                        Saat ini program event ND-HOTSPOT sedang tidak aktif.
                                     </p>
                                 </div>
                             ) : !result.found ? (
