@@ -38,7 +38,10 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     trend: <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />,
     bill: <path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.801 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.801 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />,
     check: <path d="M5 13l4 4L19 7" />,
-    close: <path d="M6 18L18 6M6 6l12 12" />
+    close: <path d="M6 18L18 6M6 6l12 12" />,
+    master: <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />,
+    search: <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />,
+    qris: <path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
   };
 
   return (
@@ -56,6 +59,57 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
   );
 };
 
+const getTransactionMeta = (tx) => {
+  const isQrisStatis = tx.payment_method === 'qris_statis' || tx.external_id?.startsWith('QRIS-');
+  const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
+
+  if (isQrisStatis) {
+    return {
+      type: 'qris',
+      title: 'QRIS Statis',
+      subtitle: 'Pembayaran Langsung',
+      logText: 'PEMBAYARAN QRIS STATIS SUKSES',
+      badgeText: 'QRIS Statis',
+      badgeBg: 'bg-amber-50 text-amber-600 border-amber-200',
+      icon: 'qris',
+      iconBg: 'bg-amber-50 text-amber-600',
+      colorClass: 'text-amber-500',
+      phone: null
+    };
+  }
+
+  if (isBill) {
+    const custName = tx.customer?.name || tx.customer_name || 'Pelanggan Bulanan';
+    return {
+      type: 'bill',
+      title: custName,
+      subtitle: 'Tagihan Bulanan',
+      logText: `BAYAR TAGIHAN ${custName.toUpperCase()} SUKSES`,
+      badgeText: 'Tagihan',
+      badgeBg: 'bg-purple-50 text-purple-600 border-purple-200',
+      icon: 'bill',
+      iconBg: 'bg-purple-50 text-purple-600',
+      colorClass: 'text-emerald-500',
+      phone: tx.customer_phone || tx.customer?.whatsapp || null
+    };
+  }
+
+  // Voucher Hotspot - Ganti "Voucher Hotspot" dengan nomor telepon pembeli
+  const phone = tx.customer_phone || tx.customer?.whatsapp || tx.customer?.phone || null;
+  return {
+    type: 'voucher',
+    title: phone || 'Pembeli Voucher',
+    subtitle: tx.voucher?.code ? `Kode: ${tx.voucher.code}` : (tx.plan?.name || 'Voucher Hotspot'),
+    logText: `BELI VOUCHER ${tx.voucher?.code || ''} SUKSES`,
+    badgeText: 'Voucher',
+    badgeBg: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    icon: 'voucher',
+    iconBg: 'bg-emerald-50 text-emerald-600',
+    colorClass: 'text-blue-500',
+    phone: phone
+  };
+};
+
 const AdminDashboard = () => {
   const [data, setData] = useState(null)
   const [peakHours, setPeakHours] = useState([])
@@ -63,11 +117,16 @@ const AdminDashboard = () => {
   const [refreshing, setRefreshing] = useState(false)
   const [time, setTime] = useState(new Date())
   
+  // Log Transaksi Search & Filter State
+  const [logSearch, setLogSearch] = useState('')
+  const [logFilter, setLogFilter] = useState('all')
+
   // History Modal State
   const [modalOpen, setModalOpen] = useState(false)
   const [historyData, setHistoryData] = useState({ data: [], meta: { links: [] } })
   const [historyLoading, setHistoryLoading] = useState(false)
   const [historyFilter, setHistoryFilter] = useState('all')
+  const [historySearch, setHistorySearch] = useState('')
 
   // Chart Modal State
   const [chartModalOpen, setChartModalOpen] = useState(false)
@@ -112,11 +171,12 @@ const AdminDashboard = () => {
     }
   }
 
-  const fetchHistory = async (page = 1, filter = historyFilter) => {
+  const fetchHistory = async (page = 1, filter = historyFilter, search = historySearch) => {
     setHistoryLoading(true)
     try {
       const token = localStorage.getItem('token')
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/dashboard/transactions?page=${page}&filter=${filter}`, {
+      const searchParam = search ? `&search=${encodeURIComponent(search)}` : ''
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/dashboard/transactions?page=${page}&filter=${filter}${searchParam}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setHistoryData({ data: res.data.data, meta: res.data })
@@ -172,7 +232,7 @@ const AdminDashboard = () => {
   }, [])
 
   useEffect(() => {
-    if (modalOpen) fetchHistory(1, historyFilter)
+    if (modalOpen) fetchHistory(1, historyFilter, historySearch)
   }, [modalOpen, historyFilter])
 
   if (loading || !data) return (
@@ -542,48 +602,122 @@ const AdminDashboard = () => {
             </div>
 
             {/* LOG TRANSAKSI */}
-            <div className="bg-admin-card rounded-md shadow-sm border border-admin-border overflow-hidden flex flex-col h-[400px]">
-                <div className="px-4 py-3 border-b border-admin-border flex justify-between items-center bg-admin-card">
-                    <h2 className="text-xs font-bold text-admin-text tracking-wider uppercase flex items-center gap-2">
-                        <Icon name="master" className="w-4 h-4" /> LOG TRANSAKSI
-                    </h2>
-                    <button 
-                        onClick={() => setModalOpen(true)}
-                        className="text-[10px] text-admin-muted hover:text-admin-text font-semibold uppercase tracking-wider"
-                    >
-                        Lihat Semua
-                    </button>
-                </div>
-                <div className="flex-1 overflow-y-auto bg-admin-card p-4 space-y-3">
-                    {data.recent_transactions?.length > 0 ? data.recent_transactions.map((tx) => {
-                        const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
-                        return (
-                            <div key={tx.id} className="flex gap-4">
-                                <div className="mt-1">
-                                    <div className="w-8 h-8 rounded-full bg-admin-base border border-admin-border flex items-center justify-center">
-                                        <Icon name={isBill ? "bill" : "voucher"} className="w-4 h-4 text-admin-muted" />
-                                    </div>
-                                </div>
-                                <div className="flex-1 border-b border-admin-border pb-3">
-                                    <p className="text-xs text-admin-muted font-bold tracking-widest">
-                                        {new Date(tx.paid_at || tx.created_at).toLocaleString('id-ID')}
-                                    </p>
-                                    <p className="text-sm font-bold text-admin-text mt-0.5 tracking-tight uppercase">
-                                        {isBill 
-                                            ? `BAYAR TAGIHAN ${(tx.customer?.name || tx.customer_name || 'PELANGGAN')} SUKSES` 
-                                            : `BELI VOUCHER ${tx.voucher?.code || ''} SUKSES`}
-                                    </p>
-                                    <p className="text-[10px] text-admin-muted font-mono mt-1 font-bold">
-                                        REF: {tx.reference_id || tx.external_id} <span className="mx-2">|</span> <span className={isBill ? "text-emerald-500" : "text-blue-500"}>Rp{formatPrice(tx.amount)}</span>
-                                    </p>
-                                </div>
+            {(() => {
+                const filteredRecentTransactions = (data.recent_transactions || []).filter((tx) => {
+                    const meta = getTransactionMeta(tx);
+                    if (logFilter !== 'all' && meta.type !== logFilter) return false;
+                    if (logSearch.trim()) {
+                        const q = logSearch.toLowerCase().trim();
+                        const phone = (meta.phone || tx.customer_phone || '').toLowerCase();
+                        const extId = (tx.external_id || '').toLowerCase();
+                        const name = (meta.title || '').toLowerCase();
+                        const vCode = (tx.voucher?.code || '').toLowerCase();
+                        const subtitle = (meta.subtitle || '').toLowerCase();
+                        return phone.includes(q) || extId.includes(q) || name.includes(q) || vCode.includes(q) || subtitle.includes(q);
+                    }
+                    return true;
+                });
+
+                return (
+                    <div className="bg-admin-card rounded-md shadow-sm border border-admin-border overflow-hidden flex flex-col h-[460px]">
+                        <div className="px-4 py-3 border-b border-admin-border flex justify-between items-center bg-admin-card">
+                            <h2 className="text-xs font-bold text-admin-text tracking-wider uppercase flex items-center gap-2">
+                                <Icon name="master" className="w-4 h-4" /> LOG TRANSAKSI
+                            </h2>
+                            <button 
+                                onClick={() => setModalOpen(true)}
+                                className="text-[10px] text-admin-muted hover:text-admin-text font-semibold uppercase tracking-wider flex items-center gap-1"
+                            >
+                                Lihat Semua <span>→</span>
+                            </button>
+                        </div>
+
+                        {/* Search & Filter Bar */}
+                        <div className="px-4 py-2.5 bg-admin-base/40 border-b border-admin-border space-y-2">
+                            <div className="relative">
+                                <Icon name="search" className="w-3.5 h-3.5 text-admin-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    placeholder="Cari no. HP, invoice, voucher..."
+                                    value={logSearch}
+                                    onChange={(e) => setLogSearch(e.target.value)}
+                                    className="w-full pl-8 pr-7 py-1.5 text-xs bg-admin-card border border-admin-border rounded-lg text-admin-text placeholder-admin-muted focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                                {logSearch && (
+                                    <button onClick={() => setLogSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-admin-muted hover:text-admin-text text-xs">
+                                        ×
+                                    </button>
+                                )}
                             </div>
-                        )
-                    }) : (
-                        <div className="text-center text-admin-muted text-xs mt-10 font-bold italic">Belum ada log transaksi.</div>
-                    )}
-                </div>
-            </div>
+                            <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+                                {[
+                                    { id: 'all', label: 'Semua' },
+                                    { id: 'voucher', label: 'Voucher' },
+                                    { id: 'bill', label: 'Tagihan' },
+                                    { id: 'qris', label: 'QRIS Statis' }
+                                ].map((btn) => (
+                                    <button
+                                        key={btn.id}
+                                        onClick={() => setLogFilter(btn.id)}
+                                        className={`px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded transition-colors whitespace-nowrap border ${
+                                            logFilter === btn.id
+                                                ? 'bg-admin-text text-white border-admin-text'
+                                                : 'bg-admin-card text-admin-muted border-admin-border hover:bg-slate-100'
+                                        }`}
+                                    >
+                                        {btn.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto bg-admin-card p-4 space-y-3">
+                            {filteredRecentTransactions.length > 0 ? filteredRecentTransactions.map((tx) => {
+                                const meta = getTransactionMeta(tx);
+                                return (
+                                    <div key={tx.id} className="flex gap-3.5 items-start hover:bg-admin-base/30 p-2 rounded-lg transition-colors">
+                                        <div className="mt-0.5 shrink-0">
+                                            <div className={`w-8 h-8 rounded-full border border-admin-border flex items-center justify-center ${meta.iconBg}`}>
+                                                <Icon name={meta.icon} className="w-4 h-4" />
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 border-b border-admin-border/60 pb-2.5 min-w-0">
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className="text-[11px] text-admin-muted font-bold tracking-wider">
+                                                    {new Date(tx.paid_at || tx.created_at).toLocaleString('id-ID')}
+                                                </p>
+                                                <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${meta.badgeBg}`}>
+                                                    {meta.badgeText}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs font-bold text-admin-text mt-0.5 tracking-tight uppercase truncate">
+                                                {meta.logText}
+                                            </p>
+                                            <div className="flex items-center justify-between gap-2 mt-1">
+                                                <p className="text-[10px] text-admin-muted font-mono font-bold truncate">
+                                                    {tx.external_id}
+                                                </p>
+                                                <span className={`text-xs font-bold shrink-0 ${meta.colorClass}`}>
+                                                    Rp {formatPrice(tx.amount)}
+                                                </span>
+                                            </div>
+                                            {meta.phone && (
+                                                <p className="text-[10px] text-admin-muted font-mono font-bold mt-0.5 flex items-center gap-1">
+                                                    <span>📱</span> {meta.phone}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                )
+                            }) : (
+                                <div className="text-center text-admin-muted text-xs mt-10 font-bold italic">
+                                    {logSearch || logFilter !== 'all' ? 'Tidak ada transaksi yang cocok.' : 'Belum ada log transaksi.'}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            })()}
         </div>
 
         {modalOpen && (
@@ -599,16 +733,47 @@ const AdminDashboard = () => {
                                 <Icon name="close" className="w-5 h-5" />
                             </button>
                         </div>
-                        <div className="flex space-x-2 mt-6">
-                            {['all', 'bill', 'voucher'].map(f => (
-                                <button 
-                                    key={f}
-                                    onClick={() => setHistoryFilter(f)}
-                                    className={`px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md transition-colors border ${historyFilter === f ? 'bg-admin-text text-white border-admin-text' : 'bg-admin-base text-admin-muted border-admin-border hover:bg-slate-100'}`}
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mt-6">
+                            <div className="flex space-x-2">
+                                {[
+                                    { id: 'all', label: 'Semua' },
+                                    { id: 'voucher', label: 'Voucher' },
+                                    { id: 'bill', label: 'Tagihan' },
+                                    { id: 'qris', label: 'QRIS Statis' }
+                                ].map(f => (
+                                    <button 
+                                        key={f.id}
+                                        onClick={() => {
+                                            setHistoryFilter(f.id)
+                                            fetchHistory(1, f.id, historySearch)
+                                        }}
+                                        className={`px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider rounded-md transition-colors border ${historyFilter === f.id ? 'bg-admin-text text-white border-admin-text' : 'bg-admin-base text-admin-muted border-admin-border hover:bg-slate-100'}`}
+                                    >
+                                        {f.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="relative flex-1 max-w-md">
+                                <Icon name="search" className="w-4 h-4 text-admin-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    placeholder="Cari no. HP, invoice, voucher, nama..."
+                                    value={historySearch}
+                                    onChange={(e) => setHistorySearch(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            fetchHistory(1, historyFilter, historySearch)
+                                        }
+                                    }}
+                                    className="w-full pl-9 pr-16 py-1.5 text-xs bg-admin-base border border-admin-border rounded-lg text-admin-text placeholder-admin-muted focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                                <button
+                                    onClick={() => fetchHistory(1, historyFilter, historySearch)}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 px-2.5 py-1 text-[10px] font-bold uppercase bg-admin-text text-white rounded hover:opacity-90"
                                 >
-                                    {f === 'all' ? 'Semua' : f === 'bill' ? 'Tagihan' : 'Voucher'}
+                                    Cari
                                 </button>
-                            ))}
+                            </div>
                         </div>
                     </div>
                     
@@ -619,7 +784,7 @@ const AdminDashboard = () => {
                                     <tr className="bg-admin-base border-b border-admin-border text-[10px] font-bold text-admin-muted uppercase tracking-wider">
                                         <th className="px-6 py-4">Waktu</th>
                                         <th className="px-6 py-4">Invoice / Ref</th>
-                                        <th className="px-6 py-4">Tipe & Nama</th>
+                                        <th className="px-6 py-4">Tipe & Nama / No. HP</th>
                                         <th className="px-6 py-4">Metode</th>
                                         <th className="px-6 py-4 text-right">Nominal</th>
                                         <th className="px-6 py-4 text-center">Status</th>
@@ -630,7 +795,7 @@ const AdminDashboard = () => {
                                         <tr><td colSpan="6" className="px-6 py-12 text-center text-admin-muted"><div className="w-6 h-6 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto"></div></td></tr>
                                     ) : historyData?.data?.length > 0 ? (
                                         historyData.data.map((tx) => {
-                                            const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
+                                            const meta = getTransactionMeta(tx);
                                             return (
                                                 <tr key={tx.id} className="hover:bg-admin-base/50 transition-colors">
                                                     <td className="px-6 py-4 text-xs font-medium text-admin-muted">
@@ -638,17 +803,19 @@ const AdminDashboard = () => {
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <p className="text-xs font-mono font-bold text-admin-text">{tx.external_id}</p>
-                                                        <p className="text-[10px] text-admin-accent mt-0.5">{tx.reference_id || '-'}</p>
+                                                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded border mt-0.5 inline-block ${meta.badgeBg}`}>
+                                                            {meta.badgeText}
+                                                        </span>
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className={`p-2 rounded-lg ${isBill ? 'bg-purple-50 text-purple-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                                                                <Icon name={isBill ? "bill" : "voucher"} className="w-5 h-5" />
+                                                            <div className={`p-2 rounded-lg ${meta.iconBg}`}>
+                                                                <Icon name={meta.icon} className="w-5 h-5" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs font-bold text-admin-text">{tx.customer?.name || tx.customer_name || 'Voucher Hotspot'}</p>
+                                                                <p className="text-xs font-bold text-admin-text">{meta.title}</p>
                                                                 <p className="text-[10px] text-admin-muted uppercase tracking-wider font-mono mt-0.5">
-                                                                    {isBill ? 'Tagihan Bulanan' : (tx.voucher?.code || 'Voucher Eceran')}
+                                                                    {meta.subtitle}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -676,7 +843,7 @@ const AdminDashboard = () => {
                         {historyData?.meta && (
                             <Pagination 
                                 meta={historyData.meta} 
-                                onPageChange={(page) => fetchHistory(page, historyFilter)} 
+                                onPageChange={(page) => fetchHistory(page, historyFilter, historySearch)} 
                             />
                         )}
                     </div>
