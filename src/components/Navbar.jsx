@@ -1,102 +1,100 @@
 import { Link } from 'react-router-dom'
 
 const Navbar = ({ toggleMenu }) => {
-    const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
-
     return (
         <>
-            {/* Mobile Header Bar - Neo Brutalism */}
-            <div className="lg:hidden fixed left-0 right-0 z-50 top-0" style={{
-                background: '#ffffff',
-                borderBottom: `3px solid ${nb.dark}`,
-            }}>
+            {/* Mobile Header Bar */}
+            <div className="lg:hidden fixed left-0 right-0 z-50 top-0 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1.25rem' }}>
                     <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
                         <div style={{
-                            width: '42px', height: '42px',
+                            width: '40px', height: '40px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                            background: 'linear-gradient(135deg, #00a884, #00c298)',
                             borderRadius: '12px',
-                            border: `3px solid ${nb.dark}`,
-                            boxShadow: `3px 3px 0px ${nb.dark}`,
+                            boxShadow: '0 4px 12px rgba(0, 168, 132, 0.3)',
                             padding: '6px',
                         }}>
                             <img src="/logo-wifi.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                         </div>
-                        <span style={{ fontWeight: 900, fontSize: '1.1rem', color: nb.dark, letterSpacing: '-0.03em' }}>
-                            ND-HOTSPOT
+                        <span style={{ fontWeight: 900, fontSize: '1.15rem', color: '#1e293b', letterSpacing: '-0.02em' }}>
+                            ND-<span style={{ color: '#00a884' }}>HOTSPOT</span>
                         </span>
                     </Link>
-                    <button onClick={toggleMenu} style={{
-                        width: '42px', height: '42px', borderRadius: '12px',
-                        background: '#ffffff',
-                        border: `3px solid ${nb.dark}`,
-                        boxShadow: `3px 3px 0px ${nb.dark}`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: nb.dark, cursor: 'pointer', fontSize: '1.1rem',
-                    }}
-                    onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(2px, 2px)'; e.currentTarget.style.boxShadow = `1px 1px 0px ${nb.dark}` }}
-                    onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `3px 3px 0px ${nb.dark}` }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `3px 3px 0px ${nb.dark}` }}
+                    <button 
+                        onClick={toggleMenu} 
+                        style={{
+                            width: '40px', height: '40px', borderRadius: '12px',
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: '#1e293b', cursor: 'pointer', fontSize: '1.1rem',
+                            transition: 'all 0.2s ease',
+                        }}
                     >
                         <i className="fas fa-bars" />
                     </button>
                 </div>
             </div>
 
-            {/* Desktop Header - Neo Brutalism */}
-            <header className="hidden lg:block sticky top-0 z-40 w-full" style={{
-                background: '#ffffff',
-                borderBottom: `3px solid ${nb.dark}`,
-            }}>
-                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
+            {/* Desktop Header */}
+            <header className="hidden lg:block sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+                <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0.85rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', textDecoration: 'none' }}>
                         <div style={{
-                            width: '48px', height: '48px',
+                            width: '44px', height: '44px',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                            background: 'linear-gradient(135deg, #00a884, #00c298)',
                             borderRadius: '14px',
-                            border: `3px solid ${nb.dark}`,
-                            boxShadow: `4px 4px 0px ${nb.dark}`,
-                            padding: '8px',
+                            boxShadow: '0 4px 14px rgba(0, 168, 132, 0.3)',
+                            padding: '7px',
                         }}>
                             <img src="/logo-wifi.png" alt="ND-HOTSPOT Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                         </div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: nb.dark, letterSpacing: '-0.04em', margin: 0 }}>
-                            ND-HOTSPOT
+                        <h1 style={{ fontSize: '1.4rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.03em', margin: 0 }}>
+                            ND-<span style={{ color: '#00a884' }}>HOTSPOT</span>
                         </h1>
                     </Link>
                     
-                    <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <nav style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         {[
-                            { to: '/', label: 'Home', icon: 'home', type: 'fas' },
-                            { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card', type: 'fas' },
-                            { to: '/check-voucher', label: 'Cek Voucher', icon: 'search', type: 'fas' },
+                            { to: '/', label: 'Home', icon: 'home' },
+                            { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card' },
+                            { to: '/check-voucher', label: 'Cek Voucher', icon: 'search' },
                         ].map((item) => (
-                            <Link key={item.to} to={item.to} style={{
-                                padding: '0.6rem 1.25rem',
-                                borderRadius: '10px',
-                                border: `2px solid ${nb.dark}`,
-                                background: '#ffffff',
-                                color: nb.dark,
-                                fontWeight: 800,
-                                fontSize: '0.75rem',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.08em',
-                                textDecoration: 'none',
-                                boxShadow: `3px 3px 0px ${nb.dark}`,
-                                transition: 'all 0.15s ease',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '0.4rem',
-                            }}
-                            onMouseOver={(e) => { e.currentTarget.style.background = `linear-gradient(135deg, ${nb.mid}, ${nb.light})`; e.currentTarget.style.color = '#fff' }}
-                            onMouseOut={(e) => { e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = nb.dark }}
-                            onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(2px, 2px)'; e.currentTarget.style.boxShadow = `1px 1px 0px ${nb.dark}` }}
-                            onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `3px 3px 0px ${nb.dark}` }}
-                            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = `3px 3px 0px ${nb.dark}`; e.currentTarget.style.background = '#ffffff'; e.currentTarget.style.color = nb.dark }}
+                            <Link 
+                                key={item.to} 
+                                to={item.to} 
+                                style={{
+                                    padding: '0.6rem 1.25rem',
+                                    borderRadius: '9999px',
+                                    background: '#f8fafc',
+                                    color: '#475569',
+                                    fontWeight: 700,
+                                    fontSize: '0.82rem',
+                                    textDecoration: 'none',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                                    border: '1px solid #e2e8f0',
+                                    transition: 'all 0.2s ease',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                }}
+                                onMouseOver={(e) => {
+                                    e.currentTarget.style.background = '#00a884'
+                                    e.currentTarget.style.color = '#ffffff'
+                                    e.currentTarget.style.borderColor = '#00a884'
+                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 168, 132, 0.3)'
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.background = '#f8fafc'
+                                    e.currentTarget.style.color = '#475569'
+                                    e.currentTarget.style.borderColor = '#e2e8f0'
+                                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.03)'
+                                }}
                             >
-                                <i className={`${item.type} fa-${item.icon}`} style={{ fontSize: '0.7rem', color: item.color || 'inherit' }} />
+                                <i className={`fas fa-${item.icon}`} style={{ fontSize: '0.75rem' }} />
                                 {item.label}
                             </Link>
                         ))}

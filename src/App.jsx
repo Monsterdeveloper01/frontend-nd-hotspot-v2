@@ -211,278 +211,270 @@ function Home() {
   return (
     <PublicLayout>
 
-      {/* Hero Section - Neo Brutalism */}
-      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '2rem', paddingBottom: '2rem', overflow: 'hidden', background: '#ffffff' }}>
-        {/* Background Image with Effects */}
-        <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-          <img src="/logo-wifi-section.png" alt="Background" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.08 }} />
-        </div>
+      {/* Hero Section */}
+      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '2.5rem', paddingBottom: '2rem', overflow: 'hidden', background: '#f8fafc' }}>
+        {/* Background Subtle Gradient */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, background: 'radial-gradient(circle at top, rgba(0, 168, 132, 0.06) 0%, transparent 70%)' }} />
 
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }} className="lg:text-left">
-          <div className="lg:flex items-center justify-between">
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.4rem 1rem', borderRadius: '9999px',
+            background: '#ffffff', border: '1px solid #e2e8f0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            marginBottom: '1rem', color: '#00a884', fontSize: '0.75rem', fontWeight: 800
+          }}>
+            <i className="fas fa-wifi" /> INTERNET CEPAT & STABIL
+          </div>
 
+          <h1 style={{ fontSize: '2rem', fontWeight: 900, color: '#1e293b', lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: '0.75rem' }}>
+            Hotspot Cepat <br/>
+            <span style={{ color: '#00a884' }}>Kapan Saja</span>
+          </h1>
 
-            {/* Quick Actions Mobile */}
-            <div className="flex flex-col gap-3 lg:hidden" style={{ marginTop: '2rem' }}>
-              <div className="grid grid-cols-2 gap-3">
-                <Link to="/payment" style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  padding: '0.85rem', borderRadius: '12px',
-                  background: 'linear-gradient(135deg, #0e4696, #1877f2)',
-                  color: '#fff', fontWeight: 800, fontSize: '0.75rem',
-                  border: '3px solid #0e4696', boxShadow: '4px 4px 0px #0e4696',
-                  textDecoration: 'none', textTransform: 'uppercase',
-                }}>
-                  <i className="fas fa-credit-card" /> Bayar Tagihan
-                </Link>
-                <Link to="/check-voucher" style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  padding: '0.85rem', borderRadius: '12px',
-                  background: '#ffffff',
-                  color: '#0e4696', fontWeight: 800, fontSize: '0.75rem',
-                  border: '3px solid #0e4696', boxShadow: '4px 4px 0px #0e4696',
-                  textDecoration: 'none', textTransform: 'uppercase',
-                }}>
-                  <i className="fas fa-search" /> Cek Voucher
-                </Link>
-              </div>
-            </div>
+          <p style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, maxWidth: '360px', margin: '0 auto 1.75rem' }}>
+            Pilih paket voucher internet unlimited sesuai kebutuhan harian, mingguan, atau bulanan Anda.
+          </p>
+
+          {/* Quick Action Pill Buttons */}
+          <div className="grid grid-cols-2 gap-3" style={{ maxWidth: '380px', margin: '0 auto' }}>
+            <Link to="/payment" className="btn-nd-pill" style={{ fontSize: '0.78rem', padding: '0.8rem 1rem' }}>
+              <i className="fas fa-credit-card" /> Bayar Tagihan
+            </Link>
+            <Link to="/check-voucher" className="btn-nd-pill" style={{
+              fontSize: '0.78rem', padding: '0.8rem 1rem',
+              background: '#ffffff', color: '#00a884',
+              border: '1px solid #00a884',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.06)'
+            }}>
+              <i className="fas fa-search" /> Cek Voucher
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Packages Grid - Neo Brutalism, single dark blue */}
-      <section id="packages" style={{ padding: '3rem 0', background: '#ffffff', flex: 1 }}>
+      {/* Packages Grid */}
+      <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1 }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: '56px', height: '56px', borderRadius: '16px',
-              background: 'linear-gradient(135deg, #0e4696, #1877f2)',
-              border: '3px solid #0e4696', boxShadow: '3px 3px 0px #0e4696',
-              marginBottom: '0.5rem', color: '#fff', fontSize: '1.25rem',
+              width: '52px', height: '52px', borderRadius: '16px',
+              background: '#ecfdf5', color: '#00a884',
+              boxShadow: '0 4px 14px rgba(0, 168, 132, 0.15)',
+              marginBottom: '0.75rem', fontSize: '1.35rem',
             }}>
-              <FaIcon name="wifi" />
+              <FaIcon name="ticket-alt" />
             </div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0e4696', letterSpacing: '-0.03em', marginBottom: 0 }}>Pilih Paket Voucher</h2>
-            <p style={{ color: '#64748b', fontWeight: 700, marginTop: '0.25rem', fontSize: '0.8rem' }}>Koneksi cepat untuk aktivitas online Anda</p>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>
+              Pilih Paket Voucher
+            </h2>
+            <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>
+              Pilihan durasi fleksibel dengan koneksi prioritas tanpa batas kuota
+            </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-8">
+          {/* Elevated Voucher Cards Grid */}
+          <div className="flex flex-wrap justify-center gap-6">
             {loading ? (
               [1, 2, 3, 4, 5].map(i => <div key={i} className="w-full max-w-[340px]"><VoucherSkeleton /></div>)
             ) : (
-              plans.map((plan, index) => (
-                <div key={plan.id} className="w-full max-w-[340px]" style={{
-                  borderRadius: '20px',
-                  overflow: 'hidden',
-                  border: '3px solid #0e4696',
-                  boxShadow: '6px 6px 0px #0e4696',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  background: '#ffffff',
-                  transition: 'all 0.2s ease',
-                  position: 'relative',
-                }}
-                onMouseOver={(e) => { e.currentTarget.style.transform = 'translate(-3px, -3px)'; e.currentTarget.style.boxShadow = '9px 9px 0px #0e4696' }}
-                onMouseOut={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '6px 6px 0px #0e4696' }}
-                >
-                  {index === 2 && (
-                    <div style={{
-                      position: 'absolute', top: 0, right: 0,
-                      background: '#0e4696', color: '#fff',
-                      fontSize: '0.6rem', fontWeight: 900,
-                      padding: '0.4rem 0.8rem',
-                      borderBottomLeftRadius: '12px',
-                      zIndex: 10, display: 'flex', alignItems: 'center', gap: '0.3rem',
-                      textTransform: 'uppercase', letterSpacing: '0.1em',
-                    }}>
-                      <i className="fas fa-fire" style={{ color: '#fbbf24' }} /> BEST SELLER
-                    </div>
-                  )}
+              plans.map((plan, index) => {
+                const durationLabel = plan.duration.endsWith('h') 
+                  ? plan.duration.replace('h', ' Jam') 
+                  : plan.duration.endsWith('d') 
+                  ? plan.duration.replace('d', ' Hari') 
+                  : plan.duration.replace('m', ' Bulan')
 
-                  {/* Top gradient bar */}
-                  <div style={{ height: '6px', background: 'linear-gradient(90deg, #1877f2, #60a5fa)' }} />
-
-                  <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                      <div style={{ textAlign: 'left' }}>
-                        <h3 style={{ fontWeight: 900, fontSize: '1.5rem', color: '#0e4696', lineHeight: 1, letterSpacing: '-0.03em', textTransform: 'uppercase' }}>{plan.name}</h3>
-                        <p style={{ color: '#64748b', fontSize: '0.6rem', marginTop: '0.5rem', fontWeight: 800, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.3rem', letterSpacing: '0.1em' }}>
-                          <i className="fas fa-clock" style={{ fontSize: '0.55rem' }} /> Aktif {plan.duration.endsWith('h') ? plan.duration.replace('h', ' Jam') : plan.duration.endsWith('d') ? plan.duration.replace('d', ' Hari') : plan.duration.replace('m', ' Bulan')} UNLIMITED
-                        </p>
-                      </div>
+                return (
+                  <div 
+                    key={plan.id} 
+                    className="card-nd-elevated w-full max-w-[340px]" 
+                    style={{
+                      borderRadius: '22px',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      position: 'relative',
+                      border: '1px solid rgba(0, 0, 0, 0.05)',
+                    }}
+                  >
+                    {index === 2 && (
                       <div style={{
-                        width: '48px', height: '48px',
-                        background: 'linear-gradient(135deg, #0e4696, #1877f2)',
-                        borderRadius: '14px',
-                        border: '2px solid #0e4696',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#fff', fontSize: '1.2rem', flexShrink: 0,
+                        position: 'absolute', top: 0, right: 0,
+                        background: '#00a884', color: '#fff',
+                        fontSize: '0.65rem', fontWeight: 900,
+                        padding: '0.35rem 0.85rem',
+                        borderBottomLeftRadius: '14px',
+                        zIndex: 10, display: 'flex', alignItems: 'center', gap: '0.3rem',
+                        textTransform: 'uppercase', letterSpacing: '0.08em',
+                        boxShadow: '0 2px 8px rgba(0, 168, 132, 0.3)'
                       }}>
-                        <FaIcon name="wifi" />
+                        <i className="fas fa-fire" style={{ color: '#fef08a' }} /> BEST SELLER
                       </div>
+                    )}
+
+                    <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      {/* Top Row: Duration & Price matching reference layout */}
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                        <div>
+                          <div style={{
+                            display: 'inline-block',
+                            background: '#ecfdf5', color: '#00a884',
+                            fontSize: '0.75rem', fontWeight: 800,
+                            padding: '0.25rem 0.65rem', borderRadius: '8px',
+                            marginBottom: '0.5rem', textTransform: 'uppercase'
+                          }}>
+                            {durationLabel}
+                          </div>
+                          <h3 style={{ fontWeight: 900, fontSize: '1.35rem', color: '#1e293b', letterSpacing: '-0.02em' }}>
+                            {plan.name}
+                          </h3>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, display: 'block' }}>Tarif</span>
+                          <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#00a884', letterSpacing: '-0.02em' }}>
+                            Rp {plan.price.toLocaleString('id-ID')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style={{ height: '1px', background: '#f1f5f9', margin: '0 0 1.25rem' }} />
+
+                      {/* Features summary */}
+                      <div style={{ marginBottom: '1.5rem', flex: 1 }}>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
+                            <span>Unlimited Kuota 100%</span>
+                          </li>
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
+                            <span>Masa aktif {durationLabel}</span>
+                          </li>
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
+                            <span>Koneksi prioritas kecepatan tinggi</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      {/* Pill Button matching uploaded reference */}
+                      <button
+                        onClick={() => navigate('/checkout', { state: { plan } })}
+                        className="btn-nd-pill"
+                        style={{ width: '100%', padding: '0.9rem 1.5rem', fontSize: '0.88rem' }}
+                      >
+                        <i className="fas fa-shopping-cart" /> Beli Sekarang
+                      </button>
                     </div>
-
-                    <div style={{ height: '3px', background: '#0e4696', margin: '0 0 1.5rem', opacity: 0.15 }} />
-
-                    <div style={{ marginBottom: '1.75rem', textAlign: 'left' }}>
-                      <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0e4696', letterSpacing: '-0.03em' }}>Rp {plan.price.toLocaleString()}</div>
-                      <div style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginTop: '0.25rem', letterSpacing: '0.15em' }}>Unlimited Access</div>
-                    </div>
-
-                    <button
-                      onClick={() => navigate('/checkout', { state: { plan } })}
-                      style={{
-                        width: '100%',
-                        padding: '1.25rem',
-                        background: 'linear-gradient(135deg, #0e4696, #1877f2)',
-                        color: '#fff',
-                        fontWeight: 900,
-                        fontSize: '0.9rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.12em',
-                        borderRadius: '16px',
-                        border: '3px solid #0e4696',
-                        boxShadow: '4px 4px 0px #0e4696',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                      }}
-                      onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(3px, 3px)'; e.currentTarget.style.boxShadow = '1px 1px 0px #0e4696' }}
-                      onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '4px 4px 0px #0e4696' }}
-                    >
-                      <i className="fas fa-shopping-cart" /> Beli Sekarang
-                    </button>
                   </div>
-                </div>
-              ))
+                )
+              })
             )}
           </div>
         </div>
       </section>
 
-      {/* High-Speed Zone Section (was Gaming Area) - Neo Brutalism */}
+      {/* High-Speed Zone Section */}
       {!loading && (
-        <section style={{ padding: '5rem 0', background: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ padding: '4rem 0', background: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
           <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', position: 'relative', zIndex: 10 }}>
-            <div style={{
-              background: '#ffffff',
-              borderRadius: '24px',
-              border: '3px solid #0e4696',
-              boxShadow: '8px 8px 0px #0e4696',
-              padding: '3rem 2rem',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2rem',
-            }} className="lg:flex-row lg:p-16">
+            <div 
+              className="card-nd-elevated"
+              style={{
+                borderRadius: '24px',
+                padding: '3rem 2rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '2rem',
+                border: '1px solid rgba(0,0,0,0.04)'
+              }} 
+            >
+              <div className="text-center max-w-2xl">
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                  padding: '0.35rem 0.9rem', borderRadius: '9999px',
+                  background: '#ecfdf5', color: '#00a884',
+                  fontSize: '0.75rem', fontWeight: 800, marginBottom: '1rem',
+                }}>
+                  <i className="fas fa-bolt" /> PRIORITAS JARINGAN
+                </div>
 
-              <div className="lg:w-1/2 text-center lg:text-left">
-                <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, color: '#0e4696', lineHeight: 0.95, letterSpacing: '-0.04em', textTransform: 'uppercase', marginBottom: '1.5rem' }}>
-                  ZONA<br/>
-                  <span style={{ color: '#60a5fa' }}>KECEPATAN</span>
+                <h2 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#1e293b', lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: '1rem' }}>
+                  Zona Internet <span style={{ color: '#00a884' }}>Super Cepat</span>
                 </h2>
 
-                <p style={{ color: '#64748b', fontWeight: 700, fontSize: '1rem', lineHeight: 1.7, marginBottom: '2rem', maxWidth: '500px' }}>
-                  Streaming YouTube tanpa buffering, push rank tanpa lag, dan live streaming tanpa gangguan. Bandwidth prioritas untuk semua aktivitas online Anda.
+                <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.95rem', lineHeight: 1.7, marginBottom: '1.75rem' }}>
+                  Streaming video tanpa buffering, push rank tanpa lag, dan video call tanpa gangguan dengan bandwidth optimal.
                 </p>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }} className="lg:justify-start">
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
                   {[
-                    { icon: 'play-circle', label: 'YouTube', color: '#ef4444' },
-                    { icon: 'gamepad', label: 'Gaming', color: '#8b5cf6' },
-                    { icon: 'video', label: 'Live Stream', color: '#60a5fa' },
-                    { icon: 'bolt', label: 'Turbo Speed', color: '#f59e0b' },
+                    { icon: 'play-circle', label: 'YouTube 4K', color: '#ef4444' },
+                    { icon: 'gamepad', label: 'Low Latency Gaming', color: '#8b5cf6' },
+                    { icon: 'video', label: 'Live Streaming', color: '#0284c7' },
+                    { icon: 'bolt', label: 'Turbo Speed', color: '#00a884' },
                   ].map((tag) => (
                     <div key={tag.label} style={{
                       display: 'flex', alignItems: 'center', gap: '0.5rem',
-                      padding: '0.6rem 1rem',
-                      background: '#ffffff',
-                      border: '2px solid #0e4696',
-                      borderRadius: '10px',
-                      boxShadow: '3px 3px 0px #0e4696',
+                      padding: '0.55rem 1rem',
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '9999px',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
                     }}>
                       <i className={`fas fa-${tag.icon}`} style={{ color: tag.color }} />
-                      <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#0e4696', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{tag.label}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>{tag.label}</span>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              <div className="lg:w-1/2 flex flex-col items-center lg:items-end">
-                <Link to="/gaming-area" style={{
-                  width: '100%', maxWidth: '380px',
-                  padding: '1.25rem',
-                  background: 'linear-gradient(135deg, #1877f2, #60a5fa)',
-                  color: '#fff',
-                  borderRadius: '16px',
-                  border: '3px solid #0e4696',
-                  boxShadow: '6px 6px 0px #0e4696',
-                  fontWeight: 900,
-                  textTransform: 'uppercase',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.15em',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                  textDecoration: 'none',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseDown={(e) => { e.currentTarget.style.transform = 'translate(4px, 4px)'; e.currentTarget.style.boxShadow = '2px 2px 0px #0e4696' }}
-                onMouseUp={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '6px 6px 0px #0e4696' }}
-                >
-                  BUKA ZONA KECEPATAN <i className="fas fa-chevron-right" />
+                <Link to="/gaming-area" className="btn-nd-pill" style={{ padding: '0.9rem 2.2rem', fontSize: '0.9rem' }}>
+                  Buka Zona Kecepatan <i className="fas fa-chevron-right text-xs" />
                 </Link>
               </div>
-
             </div>
           </div>
         </section>
       )}
 
-      {/* Cara Beli Section - Neo Brutalism */}
-      <section style={{ padding: '4rem 0', background: '#f8fafc', borderTop: '3px solid #0e4696' }}>
+      {/* Cara Beli Section */}
+      <section style={{ padding: '4rem 0', background: '#ffffff', borderTop: '1px solid #f1f5f9' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center' }}>
           <div style={{ marginBottom: '3rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0e4696', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>Cara Beli Voucher</h2>
-            <p style={{ color: '#64748b', fontWeight: 700, marginTop: '0.25rem' }}>3 langkah mudah mendapatkan voucher internet</p>
+            <h2 style={{ fontSize: '1.65rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em' }}>Cara Pembelian Voucher</h2>
+            <p style={{ color: '#64748b', fontWeight: 600, marginTop: '0.35rem', fontSize: '0.85rem' }}>3 langkah mudah mendapatkan akses internet instan</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { num: '1', icon: 'mouse-pointer', title: 'Pilih Paket', desc: 'Tentukan durasi internet sesuai kebutuhan aktivitas online Anda.', color: '#60a5fa' },
-              { num: '2', icon: 'qrcode', title: 'Scan QRIS', desc: 'Bayar instan via Dana, OVO, Gopay, atau aplikasi M-Banking Anda.', color: '#0e4696' },
-              { num: '3', icon: 'ticket-alt', title: 'Voucher Aktif', desc: 'Kode voucher langsung aktif dan dikirimkan otomatis ke WhatsApp Anda.', color: '#1877f2' },
+              { num: '1', icon: 'mouse-pointer', title: 'Pilih Paket', desc: 'Tentukan durasi internet sesuai kebutuhan online Anda.' },
+              { num: '2', icon: 'qrcode', title: 'Bayar via QRIS', desc: 'Scan QRIS via Dana, OVO, GoPay, ShopeePay, atau M-Banking.' },
+              { num: '3', icon: 'ticket-alt', title: 'Voucher Otomatis', desc: 'Kode voucher langsung aktif dan dikirimkan ke WhatsApp Anda.' },
             ].map((step) => (
-              <div key={step.num} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                background: '#ffffff',
-                padding: '2rem',
-                borderRadius: '18px',
-                border: '3px solid #0e4696',
-                boxShadow: '5px 5px 0px #0e4696',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseOver={(e) => { e.currentTarget.style.transform = 'translate(-3px, -3px)'; e.currentTarget.style.boxShadow = '8px 8px 0px #0e4696' }}
-              onMouseOut={(e) => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '5px 5px 0px #0e4696' }}
+              <div 
+                key={step.num} 
+                className="card-nd-elevated"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  padding: '2.25rem 1.75rem',
+                  borderRadius: '22px',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                }}
               >
                 <div style={{
-                  width: '56px', height: '56px',
-                  background: step.color, color: '#fff',
-                  borderRadius: '14px',
-                  border: '3px solid #0e4696',
+                  width: '52px', height: '52px',
+                  background: '#ecfdf5', color: '#00a884',
+                  borderRadius: '16px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '1rem', fontWeight: 900, fontSize: '1.5rem',
+                  marginBottom: '1rem', fontWeight: 900, fontSize: '1.25rem',
+                  boxShadow: '0 4px 10px rgba(0, 168, 132, 0.15)'
                 }}>{step.num}</div>
-                <div style={{
-                  width: '44px', height: '44px',
-                  background: '#f1f5f9',
-                  borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: '0.75rem', color: step.color, fontSize: '1.2rem',
-                }}>
-                  <FaIcon name={step.icon} />
-                </div>
-                <h4 style={{ fontWeight: 900, color: '#0e4696', fontSize: '1.05rem', marginBottom: '0.5rem' }}>{step.title}</h4>
+
+                <h4 style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.1rem', marginBottom: '0.5rem' }}>{step.title}</h4>
                 <p style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600, lineHeight: 1.6 }}>{step.desc}</p>
               </div>
             ))}
@@ -490,29 +482,26 @@ function Home() {
         </div>
       </section>
 
-      {/* Mobile Bottom Nav - Neo Brutalism */}
-      <div className="lg:hidden fixed left-0 right-0 z-50 bottom-0" style={{
-        background: '#ffffff',
-        borderTop: '3px solid #0e4696',
-      }}>
-        <div className="grid grid-cols-4" style={{ padding: '0.6rem 0' }}>
-          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: '#0e4696' }}>
+      {/* Mobile Bottom Nav */}
+      <div className="lg:hidden fixed left-0 right-0 z-50 bottom-0 bg-white/95 backdrop-blur-md border-t border-slate-100 shadow-lg">
+        <div className="grid grid-cols-4" style={{ padding: '0.65rem 0' }}>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: '#00a884' }}>
             <FaIcon name="home" className="text-xl" style={{ marginBottom: '2px' }} />
-            <span style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase' }}>Home</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>Home</span>
           </button>
-          <button onClick={() => document.getElementById('packages').scrollIntoView({ behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: '#60a5fa' }}>
+          <button onClick={() => document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
             <FaIcon name="wifi" className="text-xl" style={{ marginBottom: '2px' }} />
-            <span style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase' }}>Paket</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>Paket</span>
           </button>
           <button onClick={handleWhatsAppClick} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: '#25D366' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{ marginBottom: '2px' }}>
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
             </svg>
-            <span style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase' }}>WA</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>WA</span>
           </button>
           <Link to="/check-voucher" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textDecoration: 'none', color: '#64748b' }}>
             <FaIcon name="search" className="text-xl" style={{ marginBottom: '2px' }} />
-            <span style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase' }}>Cek</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: 800 }}>Cek</span>
           </Link>
         </div>
       </div>

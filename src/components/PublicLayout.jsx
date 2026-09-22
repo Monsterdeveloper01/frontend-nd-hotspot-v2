@@ -3,49 +3,45 @@ import { Link } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
-const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
-
 const PublicLayout = ({ children }) => {
     const [showMenu, setShowMenu] = useState(false)
     const toggleMenu = () => setShowMenu(!showMenu)
 
     return (
-        <div style={{ minHeight: '100vh', background: '#ffffff', display: 'flex', flexDirection: 'column' }} className="pt-16 lg:pt-0">
+        <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }} className="pt-16 lg:pt-0">
             <Navbar toggleMenu={toggleMenu} />
 
-            {/* Mobile Menu Overlay - Neo Brutalism */}
+            {/* Mobile Menu Overlay */}
             <div className={`fixed inset-0 z-[100] transition-all duration-300 lg:hidden ${showMenu ? 'visible opacity-100' : 'invisible opacity-0'}`}>
-                <div style={{ position: 'absolute', inset: 0, background: 'rgba(30,58,138,0.5)' }} onClick={toggleMenu} />
-                <div className={`absolute right-0 top-0 bottom-0 w-[80%] max-w-sm transition-transform duration-300 transform ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
-                    style={{ background: '#ffffff', borderLeft: `3px solid ${nb.dark}` }}
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)' }} onClick={toggleMenu} />
+                <div className={`absolute right-0 top-0 bottom-0 w-[82%] max-w-sm transition-transform duration-300 transform ${showMenu ? 'translate-x-0' : 'translate-x-full'} flex flex-col bg-white shadow-2xl`}
                 >
-                    <div style={{ padding: '1.5rem', borderBottom: `3px solid ${nb.dark}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                             <div style={{
-                                width: '40px', height: '40px',
+                                width: '38px', height: '38px',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
-                                borderRadius: '10px',
-                                border: `2px solid ${nb.dark}`,
-                                boxShadow: `3px 3px 0px ${nb.dark}`,
+                                background: 'linear-gradient(135deg, #00a884, #00c298)',
+                                borderRadius: '12px',
+                                boxShadow: '0 4px 10px rgba(0, 168, 132, 0.3)',
+                                padding: '6px',
                             }}>
                                 <img src="/logo-wifi.png" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                             </div>
-                            <span style={{ fontWeight: 900, color: nb.dark, fontSize: '1.1rem', letterSpacing: '-0.03em' }}>ND-HOTSPOT</span>
+                            <span style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.1rem', letterSpacing: '-0.02em' }}>ND-<span style={{ color: '#00a884' }}>HOTSPOT</span></span>
                         </div>
                         <button onClick={toggleMenu} style={{
-                            width: '40px', height: '40px', borderRadius: '10px',
-                            background: '#ffffff',
-                            border: `2px solid ${nb.dark}`,
-                            boxShadow: `2px 2px 0px ${nb.dark}`,
+                            width: '36px', height: '36px', borderRadius: '10px',
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: nb.dark, cursor: 'pointer', fontSize: '1rem',
+                            color: '#64748b', cursor: 'pointer', fontSize: '1rem',
                         }}>
                             <i className="fas fa-times" />
                         </button>
                     </div>
 
-                    <div style={{ flex: 1, overflowY: 'auto', padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {[
                             { to: '/', icon: 'home', label: 'Beranda' },
                             { to: '/check-voucher', icon: 'search', label: 'Cek Voucher' },
@@ -53,20 +49,22 @@ const PublicLayout = ({ children }) => {
                         ].map((item) => (
                             <Link key={item.to} to={item.to} onClick={toggleMenu} style={{
                                 display: 'flex', alignItems: 'center', gap: '1rem',
-                                padding: '1rem 1.25rem', borderRadius: '14px',
-                                border: `3px solid ${nb.dark}`, background: '#ffffff',
-                                boxShadow: `4px 4px 0px ${nb.dark}`,
+                                padding: '0.9rem 1.15rem', borderRadius: '16px',
+                                background: '#ffffff',
+                                border: '1px solid #f1f5f9',
+                                boxShadow: '0 4px 14px rgba(0,0,0,0.03)',
                                 textDecoration: 'none',
+                                transition: 'all 0.2s ease',
                             }}>
                                 <div style={{
-                                    width: '44px', height: '44px', borderRadius: '12px',
-                                    background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
+                                    width: '40px', height: '40px', borderRadius: '12px',
+                                    background: '#ecfdf5',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    color: '#fff', fontSize: '1.1rem',
+                                    color: '#00a884', fontSize: '1rem',
                                 }}>
                                     <i className={`fas fa-${item.icon}`} />
                                 </div>
-                                <span style={{ fontWeight: 800, color: nb.dark, fontSize: '1.05rem' }}>{item.label}</span>
+                                <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>{item.label}</span>
                             </Link>
                         ))}
                     </div>

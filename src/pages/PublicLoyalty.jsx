@@ -3,7 +3,6 @@ import axios from 'axios'
 import { io } from 'socket.io-client'
 import PublicLayout from '../components/PublicLayout'
 
-const nb = { dark: '#0e4696', mid: '#1877f2', light: '#60a5fa' }
 const API = import.meta.env.VITE_API_URL
 const WA_SOCKET_URL = import.meta.env.VITE_WA_URL || 'http://localhost:5000'
 
@@ -48,7 +47,6 @@ export default function PublicLoyalty() {
             socket.on('disconnect', () => setWsConnected(false))
 
             socket.on('analytics_updated', (data) => {
-                // If the user is currently viewing this exact phone's progress, update instantly
                 if (activePhoneRef.current && data?.phone && data.phone === activePhoneRef.current) {
                     fetchProgress(activePhoneRef.current, true)
                     setLiveFlash(true)
@@ -93,7 +91,6 @@ export default function PublicLoyalty() {
         e.preventDefault()
         if (!phone.trim() || cooldown > 0 || loading) return
 
-        // Short 2s anti-spam button lock
         setCooldown(2)
         fetchProgress(phone.trim(), false)
     }
@@ -108,52 +105,45 @@ export default function PublicLoyalty() {
 
     return (
         <PublicLayout>
-            <div style={{ minHeight: '100vh', background: '#ffffff', padding: '2.5rem 1rem 4rem' }}>
+            <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '3rem 1rem 5rem' }}>
                 <div style={{ maxWidth: '32rem', margin: '0 auto' }}>
                     {/* Header */}
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                         <div style={{
-                            width: '72px', height: '72px',
-                            background: `linear-gradient(135deg, ${nb.mid}, ${nb.light})`,
-                            borderRadius: '22px', border: `3px solid ${nb.dark}`,
-                            boxShadow: `5px 5px 0px ${nb.dark}`,
+                            width: '64px', height: '64px',
+                            background: '#ecfdf5',
+                            borderRadius: '20px',
+                            boxShadow: '0 4px 14px rgba(0, 168, 132, 0.2)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            margin: '0 auto 1.25rem', color: '#fff', fontSize: '2rem',
+                            margin: '0 auto 1.25rem', color: '#00a884', fontSize: '1.75rem',
                         }}>
                             <i className="fas fa-chart-line" />
                         </div>
-                        <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: nb.dark, letterSpacing: '-0.03em', textTransform: 'uppercase' }}>
-                            Loyalty <span style={{ color: nb.light }}>Progress</span>
+                        <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em' }}>
+                            Loyalty <span style={{ color: '#00a884' }}>Progress</span>
                         </h1>
-                        <p style={{ color: '#64748b', fontWeight: 700, fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                        <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.85rem', marginTop: '0.35rem' }}>
                             Pantau akumulasi pembelian voucher hotspot Anda bulan ini
                         </p>
                     </div>
 
                     {/* Live Flash Notice */}
                     {liveFlash && (
-                        <div style={{
-                            background: '#ecfdf5', border: '3px solid #059669',
-                            boxShadow: '4px 4px 0px #059669', borderRadius: '16px',
+                        <div className="card-nd-elevated" style={{
+                            background: '#ecfdf5', border: '1px solid #a7f3d0',
                             padding: '0.85rem 1.25rem', marginBottom: '1.5rem',
                             display: 'flex', alignItems: 'center', gap: '0.75rem',
-                            color: '#065f46', fontWeight: 800, fontSize: '0.85rem',
-                            animation: 'bounce 1s infinite'
+                            color: '#065f46', fontWeight: 700, fontSize: '0.85rem',
                         }}>
-                            <i className="fas fa-bolt text-lg text-emerald-600" />
+                            <i className="fas fa-bolt text-lg text-emerald-600 animate-pulse" />
                             <span>⚡ Pembelian voucher baru terdeteksi! Data terupdate secara realtime.</span>
                         </div>
                     )}
 
-                    {/* Form Card */}
-                    <div style={{
-                        background: '#ffffff', borderRadius: '20px',
-                        border: `3px solid ${nb.dark}`,
-                        boxShadow: `6px 6px 0px ${nb.dark}`,
-                        padding: '1.75rem', marginBottom: '2rem',
-                    }}>
+                    {/* Elevated Form Card */}
+                    <div className="card-nd-elevated" style={{ padding: '2rem', marginBottom: '1.75rem' }}>
                         <form onSubmit={handleSubmit}>
-                            <label style={{ display: 'block', fontWeight: 900, color: nb.dark, fontSize: '0.9rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                            <label style={{ display: 'block', fontWeight: 800, color: '#475569', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
                                 Nomor WhatsApp / HP
                             </label>
                             <div style={{ position: 'relative', marginBottom: '1.25rem' }}>
@@ -165,24 +155,24 @@ export default function PublicLoyalty() {
                                     placeholder="Contoh: 08123456789"
                                     disabled={loading || cooldown > 0}
                                     style={{
-                                        width: '100%', padding: '0.85rem 1.25rem 0.85rem 2.85rem',
-                                        borderRadius: '14px', border: `3px solid ${nb.dark}`,
-                                        fontSize: '1rem', fontWeight: 800, color: nb.dark,
+                                        width: '100%', padding: '0.9rem 1.25rem 0.9rem 2.75rem',
+                                        borderRadius: '9999px', border: '1px solid #cbd5e1',
+                                        fontSize: '1rem', fontWeight: 800, color: '#1e293b',
                                         outline: 'none', background: '#f8fafc',
-                                        boxShadow: 'inset 2px 2px 0px rgba(0,0,0,0.05)',
+                                        boxSizing: 'border-box',
                                     }}
                                 />
                                 <i className="fas fa-phone-alt" style={{
-                                    position: 'absolute', left: '1rem', top: '50%',
-                                    transform: 'translateY(-50%)', color: nb.mid, fontSize: '1.1rem',
+                                    position: 'absolute', left: '1.1rem', top: '50%',
+                                    transform: 'translateY(-50%)', color: '#00a884', fontSize: '1rem',
                                 }} />
                             </div>
 
                             {error && (
                                 <div style={{
                                     padding: '0.85rem 1rem', borderRadius: '12px',
-                                    background: '#fef2f2', border: '2px solid #ef4444',
-                                    color: '#b91c1c', fontSize: '0.85rem', fontWeight: 700,
+                                    background: '#fef2f2', border: '1px solid #fecaca',
+                                    color: '#b91c1c', fontSize: '0.8rem', fontWeight: 600,
                                     marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem'
                                 }}>
                                     <i className="fas fa-exclamation-circle" />
@@ -194,15 +184,11 @@ export default function PublicLoyalty() {
                                 <button
                                     type="submit"
                                     disabled={loading || cooldown > 0 || !phone.trim()}
+                                    className="btn-nd-pill"
                                     style={{
-                                        flex: 1, padding: '0.9rem 1.5rem',
-                                        borderRadius: '14px', border: `3px solid ${nb.dark}`,
-                                        background: (cooldown > 0 || loading) ? '#cbd5e1' : `linear-gradient(135deg, ${nb.mid}, ${nb.dark})`,
-                                        color: '#ffffff', fontWeight: 900, fontSize: '0.95rem',
-                                        cursor: (cooldown > 0 || loading) ? 'not-allowed' : 'pointer',
-                                        boxShadow: (cooldown > 0 || loading) ? 'none' : `4px 4px 0px ${nb.dark}`,
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                                        textTransform: 'uppercase', letterSpacing: '0.02em',
+                                        flex: 1, padding: '0.95rem 1.5rem', fontSize: '0.9rem',
+                                        opacity: (cooldown > 0 || loading || !phone.trim()) ? 0.6 : 1,
+                                        cursor: (cooldown > 0 || loading || !phone.trim()) ? 'not-allowed' : 'pointer',
                                     }}
                                 >
                                     {loading ? (
@@ -228,11 +214,11 @@ export default function PublicLoyalty() {
                                         type="button"
                                         onClick={handleReset}
                                         style={{
-                                            padding: '0.9rem 1.25rem',
-                                            borderRadius: '14px', border: `3px solid ${nb.dark}`,
-                                            background: '#ffffff', color: nb.dark,
-                                            fontWeight: 800, fontSize: '0.95rem', cursor: 'pointer',
-                                            boxShadow: `3px 3px 0px ${nb.dark}`,
+                                            padding: '0.95rem 1.25rem',
+                                            borderRadius: '9999px', border: '1px solid #e2e8f0',
+                                            background: '#ffffff', color: '#475569',
+                                            fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer',
+                                            boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
                                         }}
                                         title="Reset Pencarian"
                                     >
@@ -248,59 +234,50 @@ export default function PublicLoyalty() {
                         <div>
                             {/* State 1: No active event */}
                             {result.has_active_event === false ? (
-                                <div style={{
-                                    background: '#ffffff', borderRadius: '20px',
-                                    border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`,
-                                    padding: '2rem 1.5rem', textAlign: 'center',
-                                }}>
+                                <div className="card-nd-elevated" style={{ padding: '2rem 1.5rem', textAlign: 'center' }}>
                                     <div style={{
-                                        width: '56px', height: '56px', background: '#f1f5f9',
+                                        width: '52px', height: '52px', background: '#f1f5f9',
                                         borderRadius: '50%', display: 'flex', alignItems: 'center',
                                         justifyContent: 'center', margin: '0 auto 1rem',
-                                        color: '#64748b', fontSize: '1.5rem',
+                                        color: '#64748b', fontSize: '1.4rem',
                                     }}>
                                         <i className="fas fa-pause-circle" />
                                     </div>
-                                    <h3 style={{ fontWeight: 900, color: nb.dark, fontSize: '1.1rem', marginBottom: '0.5rem' }}>
+                                    <h3 style={{ fontWeight: 800, color: '#1e293b', fontSize: '1.1rem', marginBottom: '0.4rem' }}>
                                         Tidak Ada Event Aktif
                                     </h3>
-                                    <p style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600 }}>
+                                    <p style={{ color: '#64748b', fontSize: '0.82rem', fontWeight: 600 }}>
                                         Saat ini program loyalty ND-HOTSPOT sedang tidak aktif.
                                     </p>
                                 </div>
                             ) : !result.found ? (
-                                /* State 2: Empty State (no voucher purchases this month) */
-                                <div style={{
-                                    background: '#ffffff', borderRadius: '20px',
-                                    border: `3px solid ${nb.dark}`, boxShadow: `6px 6px 0px ${nb.dark}`,
-                                    padding: '2.25rem 1.5rem', textAlign: 'center',
-                                }}>
+                                /* State 2: Empty State */
+                                <div className="card-nd-elevated" style={{ padding: '2.25rem 1.5rem', textAlign: 'center' }}>
                                     <div style={{
-                                        width: '64px', height: '64px', background: '#fef3c7',
-                                        border: '3px solid #d97706', borderRadius: '18px',
+                                        width: '56px', height: '56px', background: '#fef3c7',
+                                        borderRadius: '18px',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        margin: '0 auto 1.25rem', color: '#d97706', fontSize: '1.75rem',
-                                        boxShadow: '3px 3px 0px #d97706',
+                                        margin: '0 auto 1.25rem', color: '#d97706', fontSize: '1.5rem',
+                                        boxShadow: '0 4px 12px rgba(217, 119, 6, 0.15)',
                                     }}>
                                         <i className="fas fa-ticket-alt" />
                                     </div>
-                                    <h3 style={{ fontWeight: 900, color: nb.dark, fontSize: '1.15rem', marginBottom: '0.5rem' }}>
+                                    <h3 style={{ fontWeight: 900, color: '#1e293b', fontSize: '1.2rem', marginBottom: '0.35rem' }}>
                                         Belum Ada Pembelian Voucher
                                     </h3>
                                     <div style={{
-                                        display: 'inline-block', padding: '0.35rem 0.85rem',
-                                        borderRadius: '999px', background: '#f1f5f9',
-                                        border: `2px solid ${nb.dark}`, fontWeight: 800,
-                                        fontSize: '0.8rem', color: nb.dark, marginBottom: '1rem',
+                                        display: 'inline-block', padding: '0.25rem 0.85rem',
+                                        borderRadius: '9999px', background: '#f1f5f9',
+                                        fontWeight: 700, fontSize: '0.75rem', color: '#475569', marginBottom: '1rem',
                                     }}>
                                         Periode: {result.period_formatted || result.period_key}
                                     </div>
                                     <p style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                                        Nomor <strong style={{ color: nb.dark }}>{result.phone}</strong> belum memiliki transaksi pembelian voucher hotspot yang berhasil pada periode bulan ini.
+                                        Nomor <strong style={{ color: '#1e293b' }}>{result.phone}</strong> belum memiliki transaksi pembelian voucher hotspot pada periode bulan ini.
                                     </p>
                                     <div style={{
                                         background: '#f8fafc', borderRadius: '14px',
-                                        border: '2px dashed #94a3b8', padding: '1rem',
+                                        border: '1px dashed #cbd5e1', padding: '1rem',
                                         fontSize: '0.8rem', color: '#475569', fontWeight: 600,
                                     }}>
                                         💡 Setiap transaksi voucher hotspot yang Anda beli akan langsung tercatat secara otomatis di halaman ini.
@@ -308,32 +285,27 @@ export default function PublicLoyalty() {
                                 </div>
                             ) : (
                                 /* State 3: Actual Progress Display */
-                                <div style={{
-                                    background: '#ffffff', borderRadius: '22px',
-                                    border: `3px solid ${nb.dark}`, boxShadow: `7px 7px 0px ${nb.dark}`,
-                                    overflow: 'hidden',
-                                }}>
+                                <div className="card-nd-elevated" style={{ overflow: 'hidden' }}>
                                     {/* Card Header */}
                                     <div style={{
-                                        background: result.is_target_achieved ? '#ecfdf5' : '#eff6ff',
-                                        borderBottom: `3px solid ${nb.dark}`, padding: '1.5rem',
+                                        background: '#f8fafc',
+                                        borderBottom: '1px solid #f1f5f9', padding: '1.5rem',
                                         display: 'flex', flexDirection: 'column', gap: '0.75rem',
                                     }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                                             <span style={{
-                                                fontSize: '0.75rem', fontWeight: 900,
-                                                color: nb.dark, textTransform: 'uppercase',
-                                                background: '#ffffff', padding: '0.3rem 0.75rem',
-                                                borderRadius: '8px', border: `2px solid ${nb.dark}`,
-                                                boxShadow: '2px 2px 0px rgba(0,0,0,0.1)',
+                                                fontSize: '0.72rem', fontWeight: 800,
+                                                color: '#00a884', textTransform: 'uppercase',
+                                                background: '#ecfdf5', padding: '0.25rem 0.75rem',
+                                                borderRadius: '9999px',
                                             }}>
                                                 {result.event_name}
                                             </span>
                                             <span style={{
-                                                fontSize: '0.75rem', fontWeight: 800,
-                                                color: '#475569', background: '#ffffff',
-                                                padding: '0.3rem 0.75rem', borderRadius: '8px',
-                                                border: `2px solid ${nb.dark}`,
+                                                fontSize: '0.72rem', fontWeight: 700,
+                                                color: '#64748b', background: '#ffffff',
+                                                padding: '0.25rem 0.75rem', borderRadius: '9999px',
+                                                border: '1px solid #e2e8f0',
                                             }}>
                                                 <i className="far fa-calendar-alt mr-1" />
                                                 {result.period_formatted}
@@ -342,10 +314,10 @@ export default function PublicLoyalty() {
 
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '0.25rem' }}>
                                             <div>
-                                                <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>
+                                                <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>
                                                     Nomor Pelanggan
                                                 </span>
-                                                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: nb.dark, letterSpacing: '-0.02em' }}>
+                                                <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>
                                                     {result.phone}
                                                 </div>
                                             </div>
@@ -353,10 +325,10 @@ export default function PublicLoyalty() {
                                             {/* Status Badge */}
                                             {result.is_target_achieved ? (
                                                 <span style={{
-                                                    background: '#10b981', color: '#ffffff',
-                                                    padding: '0.45rem 1rem', borderRadius: '999px',
-                                                    border: `2px solid ${nb.dark}`, fontWeight: 900,
-                                                    fontSize: '0.85rem', boxShadow: `2px 2px 0px ${nb.dark}`,
+                                                    background: '#ecfdf5', color: '#00a884',
+                                                    padding: '0.35rem 0.95rem', borderRadius: '9999px',
+                                                    border: '1px solid #a7f3d0', fontWeight: 800,
+                                                    fontSize: '0.78rem',
                                                     display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
                                                 }}>
                                                     <i className="fas fa-check-circle" />
@@ -365,9 +337,9 @@ export default function PublicLoyalty() {
                                             ) : (
                                                 <span style={{
                                                     background: '#fef3c7', color: '#b45309',
-                                                    padding: '0.45rem 1rem', borderRadius: '999px',
-                                                    border: `2px solid #d97706`, fontWeight: 900,
-                                                    fontSize: '0.85rem', boxShadow: '2px 2px 0px #d97706',
+                                                    padding: '0.35rem 0.95rem', borderRadius: '9999px',
+                                                    border: '1px solid #fde68a', fontWeight: 800,
+                                                    fontSize: '0.78rem',
                                                     display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
                                                 }}>
                                                     <i className="fas fa-clock" />
@@ -378,89 +350,84 @@ export default function PublicLoyalty() {
                                     </div>
 
                                     {/* Progress Bar Section */}
-                                    <div style={{ padding: '1.75rem 1.5rem', borderBottom: `3px solid ${nb.dark}` }}>
+                                    <div style={{ padding: '1.75rem 1.5rem', borderBottom: '1px solid #f1f5f9' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}>
-                                            <span style={{ fontSize: '0.85rem', fontWeight: 900, color: nb.dark, textTransform: 'uppercase' }}>
+                                            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
                                                 Progress Pembelian
                                             </span>
                                             <span style={{
                                                 fontSize: '1.5rem', fontWeight: 900,
-                                                color: result.is_target_achieved ? '#059669' : nb.mid,
+                                                color: result.is_target_achieved ? '#00a884' : '#0ea5e9',
                                             }}>
                                                 {result.progress_percentage}%
                                             </span>
                                         </div>
 
-                                        {/* Neo-brutalist Progress Track */}
+                                        {/* Progress Track */}
                                         <div style={{
-                                            width: '100%', height: '24px', background: '#f1f5f9',
-                                            borderRadius: '999px', border: `3px solid ${nb.dark}`,
-                                            overflow: 'hidden', padding: '2px', position: 'relative',
+                                            width: '100%', height: '18px', background: '#f1f5f9',
+                                            borderRadius: '9999px', overflow: 'hidden', padding: '2px', position: 'relative',
                                         }}>
                                             <div style={{
                                                 width: `${Math.min(100, result.progress_percentage)}%`,
                                                 height: '100%',
                                                 background: result.is_target_achieved
-                                                    ? 'linear-gradient(90deg, #10b981, #059669)'
-                                                    : `linear-gradient(90deg, ${nb.light}, ${nb.mid})`,
-                                                borderRadius: '999px',
+                                                    ? 'linear-gradient(90deg, #34d399, #00a884)'
+                                                    : 'linear-gradient(90deg, #38bdf8, #0ea5e9)',
+                                                borderRadius: '9999px',
                                                 transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
                                             }} />
                                         </div>
 
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem', fontSize: '0.8rem', fontWeight: 800, color: '#64748b' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem', fontSize: '0.78rem', fontWeight: 700, color: '#64748b' }}>
                                             <span>Tercapai: {formatRupiah(result.total_purchase)}</span>
                                             <span>Target: {formatRupiah(result.target_amount)}</span>
                                         </div>
                                     </div>
 
                                     {/* Metrics Grid */}
-                                    <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                                    <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem' }}>
                                         <div style={{
                                             background: '#f8fafc', padding: '1rem',
-                                            borderRadius: '14px', border: `2px solid ${nb.dark}`,
-                                            boxShadow: '3px 3px 0px rgba(14,70,150,0.15)',
+                                            borderRadius: '16px', border: '1px solid #f1f5f9',
                                         }}>
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block' }}>
+                                            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', display: 'block' }}>
                                                 Total Pembelian
                                             </span>
-                                            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: nb.dark }}>
+                                            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1e293b' }}>
                                                 {formatRupiah(result.total_purchase)}
                                             </span>
                                         </div>
 
                                         <div style={{
                                             background: '#f8fafc', padding: '1rem',
-                                            borderRadius: '14px', border: `2px solid ${nb.dark}`,
-                                            boxShadow: '3px 3px 0px rgba(14,70,150,0.15)',
+                                            borderRadius: '16px', border: '1px solid #f1f5f9',
                                         }}>
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block' }}>
+                                            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', display: 'block' }}>
                                                 Jumlah Transaksi
                                             </span>
-                                            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: nb.dark }}>
+                                            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1e293b' }}>
                                                 {result.transaction_count}x Transaksi
                                             </span>
                                         </div>
 
                                         <div style={{
                                             background: '#f8fafc', padding: '1rem',
-                                            borderRadius: '14px', border: `2px solid ${nb.dark}`,
-                                            boxShadow: '3px 3px 0px rgba(14,70,150,0.15)',
+                                            borderRadius: '16px', border: '1px solid #f1f5f9',
                                         }}>
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block' }}>
+                                            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', display: 'block' }}>
                                                 Target Pembelian
                                             </span>
-                                            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: nb.dark }}>
+                                            <span style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1e293b' }}>
                                                 {formatRupiah(result.target_amount)}
                                             </span>
                                         </div>
 
                                         <div style={{
                                             background: result.is_target_achieved ? '#ecfdf5' : '#fef2f2', padding: '1rem',
-                                            borderRadius: '14px', border: `2px solid ${result.is_target_achieved ? '#059669' : '#dc2626'}`,
-                                            boxShadow: `3px 3px 0px ${result.is_target_achieved ? 'rgba(5,150,105,0.2)' : 'rgba(220,38,38,0.2)'}`,
+                                            borderRadius: '16px', border: `1px solid ${result.is_target_achieved ? '#a7f3d0' : '#fecaca'}`,
                                         }}>
-                                            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: result.is_target_achieved ? '#047857' : '#b91c1c', textTransform: 'uppercase', display: 'block' }}>
+                                            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: result.is_target_achieved ? '#047857' : '#b91c1c', textTransform: 'uppercase', display: 'block' }}>
                                                 {result.is_target_achieved ? 'Kelebihan' : 'Kurang'}
                                             </span>
                                             <span style={{ fontSize: '1.15rem', fontWeight: 900, color: result.is_target_achieved ? '#047857' : '#b91c1c' }}>
@@ -474,7 +441,7 @@ export default function PublicLoyalty() {
 
                                     {/* Realtime Footer Status */}
                                     <div style={{
-                                        background: '#f8fafc', borderTop: '2px solid #e2e8f0',
+                                        background: '#f8fafc', borderTop: '1px solid #f1f5f9',
                                         padding: '0.85rem 1.5rem', display: 'flex',
                                         alignItems: 'center', justifyContent: 'space-between',
                                         fontSize: '0.75rem', fontWeight: 700, color: '#64748b',
@@ -482,8 +449,8 @@ export default function PublicLoyalty() {
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <span style={{
                                                 width: '8px', height: '8px', borderRadius: '50%',
-                                                background: wsConnected ? '#10b981' : '#f59e0b',
-                                                boxShadow: wsConnected ? '0 0 6px #10b981' : 'none',
+                                                background: wsConnected ? '#00a884' : '#f59e0b',
+                                                boxShadow: wsConnected ? '0 0 6px #00a884' : 'none',
                                             }} />
                                             <span>{wsConnected ? 'Live Realtime Terhubung' : 'Terhubung Standar'}</span>
                                         </div>
@@ -495,7 +462,7 @@ export default function PublicLoyalty() {
                     )}
 
                     {/* Bottom Security Note */}
-                    <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 700, marginTop: '2.5rem' }}>
+                    <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.75rem', fontWeight: 600, marginTop: '2.5rem' }}>
                         🔒 Sistem pembacaan progress resmi ND-HOTSPOT. Data diperbarui otomatis setiap kali pembayaran voucher berhasil.
                     </p>
                 </div>
