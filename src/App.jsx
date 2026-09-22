@@ -14,6 +14,7 @@ import RadiusSettings from './pages/admin/RadiusSettings'
 import NetworkCenter from './pages/admin/NetworkCenter'
 import EventAnalytics from './pages/admin/EventAnalytics'
 import CheckVoucher from './pages/CheckVoucher'
+import PublicLoyalty from './pages/PublicLoyalty'
 import Maintenance from './pages/Maintenance'
 import PaymentSuccess from './pages/PaymentSuccess'
 import GamingArea from './pages/GamingArea'
@@ -121,6 +122,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/check-voucher" element={<CheckVoucher />} />
+          <Route path="/loyalty" element={<PublicLoyalty />} />
           <Route path="/payment" element={<BillLookup />} />
           <Route path="/bill-lookup" element={<BillLookup />} />
         </Route>
