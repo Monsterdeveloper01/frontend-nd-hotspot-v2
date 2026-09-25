@@ -175,6 +175,7 @@ function Home() {
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
   const [activeEvent, setActiveEvent] = useState(null)
+  const [showTermsModal, setShowTermsModal] = useState(false)
   const navigate = useNavigate()
 
   const toggleMenu = () => setShowMenu(!showMenu);
@@ -277,34 +278,41 @@ function Home() {
               {/* Event Badge */}
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>PROGRAM LOYALTY PELANGGAN AKTIF</span>
+                <span>🔥 BONUS SPESIAL • AUTO CUAN TIAP BULAN</span>
               </div>
 
               {/* Title */}
               <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                Beli Voucher & Dapatkan <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis</span> Otomatis!
+                Makin Sering Internetan, Dapet <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis!</span>
               </h2>
 
               {/* Description */}
               <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
                 {activeEvent ? (
-                  <>Setiap akumulasi pembelian voucher Anda mencapai <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> per bulan kalender, voucher gratis akan <strong>otomatis terbit</strong> seketika ke nomor WhatsApp Anda tanpa undian & tanpa klaim manual!</>
+                  <>Cukup beli voucher seperti biasa sampai totalnya tembus <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> dalam sebulan. Begitu target tercapai, voucher bonus <strong className="text-emerald-300 font-bold">langsung dikirim ke WhatsApp</strong> kamu — tanpa diundi & tanpa ribet klaim!</>
                 ) : (
-                  <>Akumulasi transaksi pembelian voucher hotspot Anda setiap bulannya. Begitu mencapai target nominal event, voucher reward gratis langsung diterbitkan otomatis tanpa undian & tanpa ribet klaim!</>
+                  <>Kumpulin total jajan voucher kamu setiap bulannya. Begitu tembus target, voucher gratis <strong className="text-emerald-300 font-bold">langsung meluncur ke nomor WhatsApp</strong> kamu tanpa undian & tanpa repot!</>
                 )}
               </p>
 
               {/* Feature Chips */}
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-emerald-200 font-semibold">
                 <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                  <i className="fas fa-bolt text-emerald-400" /> Otomatis Terbit
+                  <i className="fas fa-bolt text-emerald-400" /> Langsung Masuk WA
                 </span>
                 <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
                   <i className="fas fa-clock text-emerald-400" /> Masa Aktif 5 Hari
                 </span>
                 <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                  <i className="fas fa-shield-alt text-emerald-400" /> 100% Gratis
+                  <i className="fas fa-gift text-emerald-400" /> 100% Tanpa Diundi
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="flex items-center gap-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white px-2.5 py-1 rounded-lg border border-emerald-400/40 transition-colors cursor-pointer font-bold underline decoration-emerald-400/60 underline-offset-2"
+                >
+                  <i className="fas fa-file-contract text-emerald-400" /> *S&K Berlaku
+                </button>
               </div>
             </div>
 
@@ -316,15 +324,129 @@ function Home() {
                 style={{ textDecoration: 'none' }}
               >
                 <i className="fas fa-gift text-base" />
-                <span>Cek Progres & Reward</span>
+                <span>Cek Progres & Bonus Kamu</span>
                 <i className="fas fa-arrow-right text-xs ml-1" />
               </Link>
-              <span className="text-[11px] text-slate-300 font-medium opacity-85">
-                Masukkan no HP untuk pantau akumulasi belanja
-              </span>
+              <div className="flex flex-col items-start lg:items-end gap-0.5">
+                <span className="text-[11px] text-slate-300 font-medium opacity-85">
+                  Tinggal masukkan nomor HP untuk cek jajanmu
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(true)}
+                  className="text-[11px] text-emerald-300 hover:text-white underline cursor-pointer font-medium transition-colors"
+                >
+                  * Baca Syarat & Ketentuan
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Modal Syarat & Ketentuan */}
+        {showTermsModal && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setShowTermsModal(false)}
+          >
+            <div 
+              className="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-emerald-800 to-teal-700 px-6 py-5 text-white flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-emerald-300 text-lg shadow-inner">
+                    <i className="fas fa-file-contract" />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base sm:text-lg leading-tight">Syarat & Ketentuan Berlaku</h3>
+                    <p className="text-emerald-100 text-xs font-medium">Program Reward Loyalty Pelanggan</p>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setShowTermsModal(false)}
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors cursor-pointer"
+                >
+                  <i className="fas fa-times text-sm" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-start gap-3">
+                  <i className="fas fa-info-circle text-emerald-600 text-base mt-0.5" />
+                  <p className="text-emerald-950 text-xs font-semibold leading-normal">
+                    Program loyalty ini berlaku untuk seluruh pelanggan setia hotspot tanpa perlu daftar dan tanpa diundi. Cukup beli voucher seperti biasa!
+                  </p>
+                </div>
+
+                <div className="space-y-3 font-medium">
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">1</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Periode Bulanan:</strong> Total jajan dihitung kumulatif selama 1 bulan kalender (tanggal 1 s/d hari terakhir bulan tersebut). Progres direset otomatis setiap tanggal 1 awal bulan baru.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">2</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Nomor WhatsApp Harus Sama:</strong> Selalu gunakan nomor WhatsApp yang sama saat checkout voucher agar akumulasi belanja kamu otomatis tercatat rapi ke akunmu.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">3</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Target Belanja:</strong> Reward otomatis diberikan begitu akumulasi pembelian sukses kamu mencapai target <strong>{activeEvent ? activeEvent.target_amount_formatted : 'Rp 100.000'}</strong> dalam bulan yang sama.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">4</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Langsung Masuk WA:</strong> Voucher bonus dikirimkan seketika melalui pesan WhatsApp resmi kami begitu target tembus. Gak perlu repot klik klaim!
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">5</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Masa Aktif Reward:</strong> Voucher reward gratis memiliki masa aktif 5 hari sejak diterbitkan ke WhatsApp Anda.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">6</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Batas Reward:</strong> Reward diberikan maksimal 1 kali per nomor WhatsApp dalam satu periode bulan kalender.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">7</span>
+                    <p>
+                      <strong className="text-slate-900 font-bold">Bantuan Admin:</strong> Jika akumulasi belanjamu sudah tembus target namun voucher bonus belum masuk ke WhatsApp, kamu dapat menghubungi Admin via WA dengan melampirkan screenshot halaman Cek Loyalty.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowTermsModal(false)}
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer"
+                >
+                  Saya Mengerti & Siap Cuan
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Packages Grid */}

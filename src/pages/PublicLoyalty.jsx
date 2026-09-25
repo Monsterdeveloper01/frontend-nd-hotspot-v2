@@ -498,6 +498,98 @@ export default function PublicLoyalty() {
                                             }}>
                                                 ✨ Voucher reward telah aktif otomatis di Sistem kami dan siap digunakan untuk login WiFi.
                                             </div>
+
+                                            {/* Catatan Bantuan & Kirim Bukti SS ke WhatsApp Admin */}
+                                            <div style={{
+                                                marginTop: '1.25rem',
+                                                padding: '1rem 1.15rem',
+                                                borderRadius: '16px',
+                                                background: '#ffffff',
+                                                border: '1px solid #d1fae5',
+                                                boxShadow: '0 4px 14px rgba(0, 168, 132, 0.08)',
+                                                display: 'flex',
+                                                alignItems: 'flex-start',
+                                                gap: '0.85rem',
+                                                textAlign: 'left',
+                                            }}>
+                                                <div style={{
+                                                    width: '40px', height: '40px', borderRadius: '12px',
+                                                    background: '#ecfdf5', color: '#00a884',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    flexShrink: 0, fontSize: '1.25rem',
+                                                }}>
+                                                    <i className="fab fa-whatsapp" />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#064e3b', marginBottom: '0.25rem' }}>
+                                                        Kendala Reward atau Belum Menerima Voucher?
+                                                    </div>
+                                                    <p style={{ fontSize: '0.74rem', color: '#475569', fontWeight: 600, margin: 0, lineHeight: 1.55 }}>
+                                                        Jika Anda sudah mencapai target namun reward belum diterima atau ada kendala saat login WiFi, <strong>silakan kirim bukti screenshot (SS) halaman progres ini</strong> ke nomor WhatsApp Admin kami agar dapat kami bantu proses langsung.
+                                                    </p>
+                                                    <a
+                                                        href={`https://wa.me/6285129391531?text=${encodeURIComponent(`Halo Admin ND-Hotspot, nomor saya ${result.phone} sudah mencapai target loyalty ${result.period_formatted || ''} tapi mengalami kendala reward. Berikut bukti screenshot (SS) halaman loyalty:`)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.45rem',
+                                                            marginTop: '0.65rem',
+                                                            padding: '0.45rem 1rem',
+                                                            borderRadius: '9999px',
+                                                            background: '#00a884',
+                                                            color: '#ffffff',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 800,
+                                                            textDecoration: 'none',
+                                                            boxShadow: '0 2px 8px rgba(0, 168, 132, 0.25)',
+                                                        }}
+                                                    >
+                                                        <i className="fab fa-whatsapp" />
+                                                        <span>Kirim Bukti SS ke WA Admin →</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Fallback jika target tercapai tapi voucher reward belum issued */}
+                                    {result.is_target_achieved && (!result.reward || result.reward.status !== 'issued') && (
+                                        <div style={{
+                                            background: '#fffbeb', borderTop: '2px solid #fde68a', borderBottom: '2px solid #fde68a',
+                                            padding: '1.5rem', textAlign: 'center',
+                                        }}>
+                                            <div style={{
+                                                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                                                padding: '0.4rem 1.15rem', borderRadius: '9999px',
+                                                background: '#d97706', color: '#ffffff',
+                                                fontWeight: 900, fontSize: '0.85rem', marginBottom: '0.75rem',
+                                                boxShadow: '0 4px 14px rgba(217, 119, 6, 0.2)'
+                                            }}>
+                                                🎉 TARGET TERCAPAI!
+                                            </div>
+                                            <div style={{ fontSize: '0.95rem', fontWeight: 900, color: '#92400e', marginBottom: '0.35rem' }}>
+                                                Selamat! Akumulasi Belanja Anda Sudah Memenuhi Target
+                                            </div>
+                                            <p style={{ fontSize: '0.75rem', color: '#78350f', fontWeight: 600, maxWidth: '460px', margin: '0 auto 1rem', lineHeight: 1.55 }}>
+                                                Jika voucher reward Anda belum muncul otomatis, silakan <strong>screenshot (SS) halaman progres ini</strong> dan kirimkan ke nomor WhatsApp Admin kami untuk diproses langsung.
+                                            </p>
+                                            <a
+                                                href={`https://wa.me/6285129391531?text=${encodeURIComponent(`Halo Admin ND-Hotspot, nomor saya ${result.phone} sudah mencapai target loyalty ${result.period_formatted || ''} tapi voucher reward belum muncul. Berikut saya lampirkan bukti screenshot (SS) halaman loyalty:`)}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="btn-nd-pill"
+                                                style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                                                    padding: '0.6rem 1.35rem', fontSize: '0.8rem',
+                                                    background: '#00a884', color: '#ffffff',
+                                                    textDecoration: 'none', boxShadow: '0 4px 14px rgba(0, 168, 132, 0.25)'
+                                                }}
+                                            >
+                                                <i className="fab fa-whatsapp text-sm" />
+                                                <span>Kirim Bukti SS ke WhatsApp Admin →</span>
+                                            </a>
                                         </div>
                                     )}
 
