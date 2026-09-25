@@ -506,9 +506,11 @@ export default function EventAnalytics() {
 
       const payload = {
         phone: testPhone.trim(),
+        amount: Number(testAmount),
         simulated_amount: Number(testAmount),
         period_key: selectedPeriod || undefined,
         use_real_mikrotik: Boolean(testUseRealMikrotik),
+        expiry_minutes: expiryMinutes,
         expiry_override_minutes: expiryMinutes,
         send_whatsapp: Boolean(testSendWhatsapp),
       }
@@ -517,7 +519,8 @@ export default function EventAnalytics() {
       setTestResult(res.data)
       fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Gagal menjalankan loyalty test.'
+      const errData = err.response?.data
+      const msg = errData?.message || (errData?.errors ? Object.values(errData.errors).flat().join(', ') : err.message) || 'Gagal menjalankan loyalty test.'
       setTestError(msg)
     } finally {
       setRunningTest(false)
