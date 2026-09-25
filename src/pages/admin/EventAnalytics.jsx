@@ -115,6 +115,17 @@ export default function EventAnalytics() {
   const [ruleNotice, setRuleNotice] = useState(null)
   const [copiedRewardCode, setCopiedRewardCode] = useState(null)
 
+  // Loyalty Test Mode state
+  const [testPhone, setTestPhone] = useState('081234567890')
+  const [testAmount, setTestAmount] = useState('100000')
+  const [testExpiryOverride, setTestExpiryOverride] = useState('normal')
+  const [testUseRealMikrotik, setTestUseRealMikrotik] = useState(false)
+  const [testSendWhatsapp, setTestSendWhatsapp] = useState(false)
+  const [runningTest, setRunningTest] = useState(false)
+  const [resettingTest, setResettingTest] = useState(false)
+  const [testResult, setTestResult] = useState(null)
+  const [testError, setTestError] = useState(null)
+
   // Filters
   const [selectedPeriod, setSelectedPeriod] = useState('')
   const [searchPhone, setSearchPhone] = useState('')
@@ -471,6 +482,74 @@ export default function EventAnalytics() {
   }
 
   // ==========================================
+  // LOYALTY TEST MODE HANDLERS
+  // ==========================================
+  const handleRunLoyaltyTest = async () => {
+    if (!testPhone.trim()) {
+      alert('Masukkan nomor HP untuk simulasi testing.')
+      return
+    }
+    if (!testAmount || isNaN(testAmount) || Number(testAmount) <= 0) {
+      alert('Masukkan nominal simulasi pembelian.')
+      return
+    }
+
+    setRunningTest(true)
+    setTestResult(null)
+    setTestError(null)
+
+    try {
+      let expiryMinutes = null
+      if (testExpiryOverride === '1m') expiryMinutes = 1
+      else if (testExpiryOverride === '5m') expiryMinutes = 5
+      else if (testExpiryOverride === '1h') expiryMinutes = 60
+
+      const payload = {
+        phone: testPhone.trim(),
+        simulated_amount: Number(testAmount),
+        period_key: selectedPeriod || undefined,
+        use_real_mikrotik: Boolean(testUseRealMikrotik),
+        expiry_override_minutes: expiryMinutes,
+        send_whatsapp: Boolean(testSendWhatsapp),
+      }
+
+      const res = await axios.post(`${API}/admin/events/${selectedEventId}/loyalty-test/run`, payload, { headers })
+      setTestResult(res.data)
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Gagal menjalankan loyalty test.'
+      setTestError(msg)
+    } finally {
+      setRunningTest(false)
+    }
+  }
+
+  const handleResetLoyaltyTest = async (resetAll = false) => {
+    const confirmMsg = resetAll
+      ? 'Yakin ingin mereset SEMUA data Loyalty Test Mode pada event ini? Data transaksi production TIDAK akan terpengaruh.'
+      : `Yakin ingin mereset data test untuk nomor ${testPhone}?`
+
+    if (!confirm(confirmMsg)) return
+
+    setResettingTest(true)
+    try {
+      const payload = {
+        phone: resetAll ? 'all' : testPhone.trim(),
+        period_key: selectedPeriod || undefined,
+      }
+      const res = await axios.post(`${API}/admin/events/${selectedEventId}/loyalty-test/reset`, payload, { headers })
+      alert(res.data?.message || 'Data test berhasil direset.')
+      setTestResult(null)
+      setTestError(null)
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal mereset data test.')
+    } finally {
+      setResettingTest(false)
+    }
+  }
+
+  // ==========================================
   // NAVIGATE TO DETAIL
   // ==========================================
   const openDetail = (eventId) => {
@@ -694,6 +773,7 @@ export default function EventAnalytics() {
     const dist = analytics?.distribution
     const periods = analytics?.periods || []
     const participants = analytics?.participants
+    const testModeInfo = analytics?.test_mode
     const sc = ev ? (statusConfig[ev.status] || statusConfig.active) : statusConfig.active
 
     return (
@@ -861,19 +941,12 @@ export default function EventAnalytics() {
           </div>
         )}
 
-        {/* No Data */}
-        {!analyticsLoading && analytics && sum && sum.total_transactions === 0 && (
-          <div className="text-center py-16 bg-admin-card border border-admin-border rounded-xl">
-            <div className="text-4xl mb-3">📭</div>
-            <p className="text-admin-muted font-medium">Belum ada data transaksi voucher untuk filter ini.</p>
-            <p className="text-admin-muted text-sm mt-1">Setiap pembelian voucher sukses (`ND-%`) akan otomatis tercatat seketika tanpa perlu refresh.</p>
-          </div>
-        )}
-
         {/* Analytics Content */}
-        {analytics && sum && sum.total_transactions > 0 && (
+        {!analyticsLoading && analytics && (
           <>
-            {/* Summary Cards */}
+            {sum && sum.total_transactions > 0 ? (
+              <>
+                {/* Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
               {[
                 { label: selectedPeriod ? 'Customer Unik (Bulan Ini)' : 'Customer Unik Total', value: sum.total_unique_customers, icon: 'users', color: 'text-blue-500' },
@@ -980,8 +1053,18 @@ export default function EventAnalytics() {
                 </div>
               </div>
             </div>
+          </>
+        ) : (
+          <div className="text-center py-10 bg-admin-card border border-admin-border rounded-xl mb-6">
+            <div className="text-4xl mb-3">📭</div>
+            <p className="text-admin-muted font-medium">Belum ada transaksi riil voucher untuk program/periode ini.</p>
+            <p className="text-admin-muted text-xs mt-1">
+              Gunakan <strong>Loyalty Test Mode</strong> di bawah untuk mensimulasikan pencapaian target dan otomatisasi reward voucher secara aman tanpa transaksi palsu.
+            </p>
+          </div>
+        )}
 
-            {/* Phase 2: Automatic Reward System Card */}
+        {/* Phase 2: Automatic Reward System Card */}
             <div className="bg-admin-card border border-admin-border rounded-xl p-5 mb-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div>
@@ -1126,6 +1209,335 @@ export default function EventAnalytics() {
                   <span className="text-[11px] opacity-75">
                     * Masa berlaku reward voucher adalah 5 hari sejak diterbitkan.
                   </span>
+                </div>
+              )}
+            </div>
+
+            {/* Phase 2: Loyalty Test Mode Card */}
+            <div className="bg-admin-card border border-admin-border rounded-xl p-5 mb-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    <Icon name="bolt" className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-admin-text">
+                        Loyalty Test Mode
+                      </h3>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                        testModeInfo?.enabled
+                          ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                      }`}>
+                        {testModeInfo?.enabled ? 'Test Mode Active (Isolated)' : 'Test Mode Disabled'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-admin-muted">
+                      Simulasi akumulasi belanja dan otomatisasi penerbitan reward voucher secara terisolasi tanpa transaksi palsu.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {!testModeInfo?.enabled ? (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-300">
+                  <div className="font-bold flex items-center gap-1.5 mb-1">
+                    <Icon name="info" className="w-4 h-4 text-amber-500" />
+                    Loyalty Test Mode is disabled.
+                  </div>
+                  <p>
+                    Set <code className="px-1.5 py-0.5 rounded bg-amber-500/20 font-mono font-bold">LOYALTY_TEST_MODE=true</code> pada file <code className="px-1.5 py-0.5 rounded bg-amber-500/20 font-mono">backend/.env</code> untuk mengaktifkan fitur pengujian ini.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  {/* Safety Assurance Banner */}
+                  <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-4 text-xs text-blue-700 dark:text-blue-300 flex items-start gap-2">
+                    <Icon name="check" className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Keamanan Data Terjamin:</strong> Simulasi ini <u>tidak membuat record</u> di tabel <code className="font-mono bg-blue-500/20 px-1 py-0.5 rounded">transactions</code>, tidak membuat transaksi Midtrans palsu, dan tidak memengaruhi laporan omset/revenue penjualan riil.
+                    </span>
+                  </div>
+
+                  {/* Form Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Event Name */}
+                    <div>
+                      <label className="block text-xs font-semibold text-admin-text mb-1">
+                        Program Event
+                      </label>
+                      <input
+                        type="text"
+                        readOnly
+                        value={ev?.name || 'Selected Event'}
+                        className="w-full px-3 py-2 bg-admin-base/70 border border-admin-border rounded-lg text-xs text-admin-muted font-medium cursor-not-allowed"
+                      />
+                    </div>
+
+                    {/* Phone Number */}
+                    <div>
+                      <label className="block text-xs font-semibold text-admin-text mb-1">
+                        Nomor HP / WhatsApp Customer
+                      </label>
+                      <input
+                        type="text"
+                        value={testPhone}
+                        onChange={(e) => setTestPhone(e.target.value)}
+                        placeholder="081234567890"
+                        className="w-full px-3 py-2 bg-admin-base border border-admin-border rounded-lg text-xs text-admin-text focus:outline-none focus:border-admin-accent font-mono"
+                      />
+                      <span className="text-[10px] text-admin-muted mt-0.5 block">Format: 081234567890 atau 6281234567890</span>
+                    </div>
+
+                    {/* Simulated Purchase Amount */}
+                    <div>
+                      <label className="block text-xs font-semibold text-admin-text mb-1">
+                        Simulated Purchase Amount (Rp)
+                      </label>
+                      <input
+                        type="number"
+                        value={testAmount}
+                        onChange={(e) => setTestAmount(e.target.value)}
+                        placeholder="100000"
+                        className="w-full px-3 py-2 bg-admin-base border border-admin-border rounded-lg text-xs text-admin-text focus:outline-none focus:border-admin-accent font-mono"
+                      />
+                      {/* Presets */}
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={() => setTestAmount(String(Math.round((ev?.target_amount || 100000) * 0.5)))}
+                          className="text-[10px] px-2 py-0.5 bg-admin-base border border-admin-border rounded hover:border-admin-accent text-admin-muted hover:text-admin-text transition-colors"
+                        >
+                          50% ({formatRupiah((ev?.target_amount || 100000) * 0.5)})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setTestAmount(String(ev?.target_amount || 100000))}
+                          className="text-[10px] px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 rounded text-emerald-600 dark:text-emerald-400 font-semibold transition-colors"
+                        >
+                          Target ({formatRupiah(ev?.target_amount || 100000)})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setTestAmount(String((ev?.target_amount || 100000) + 50000))}
+                          className="text-[10px] px-2 py-0.5 bg-admin-base border border-admin-border rounded hover:border-admin-accent text-admin-muted hover:text-admin-text transition-colors"
+                        >
+                          Lebih Target ({formatRupiah((ev?.target_amount || 100000) + 50000)})
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Expiry Override */}
+                    <div>
+                      <label className="block text-xs font-semibold text-admin-text mb-1">
+                        Reward Expiry Test
+                      </label>
+                      <select
+                        value={testExpiryOverride}
+                        onChange={(e) => setTestExpiryOverride(e.target.value)}
+                        className="w-full px-3 py-2 bg-admin-base border border-admin-border rounded-lg text-xs text-admin-text focus:outline-none focus:border-admin-accent"
+                      >
+                        <option value="normal">Normal: 5 Hari (+5 days)</option>
+                        <option value="1m">Test Cepat: 1 Menit (+1 minute)</option>
+                        <option value="5m">Test Cepat: 5 Menit (+5 minutes)</option>
+                        <option value="1h">Test Cepat: 1 Jam (+1 hour)</option>
+                      </select>
+                      <span className="text-[10px] text-admin-muted mt-0.5 block">Override masa kedaluwarsa khusus simulasi test</span>
+                    </div>
+
+                    {/* Checkboxes */}
+                    <div className="md:col-span-2 space-y-2 flex flex-col justify-end pb-1">
+                      {/* Real MikroTik Checkbox */}
+                      <label className="flex items-start gap-2 cursor-pointer text-xs text-admin-text">
+                        <input
+                          type="checkbox"
+                          checked={testUseRealMikrotik}
+                          onChange={(e) => setTestUseRealMikrotik(e.target.checked)}
+                          className="mt-0.5 rounded border-admin-border text-admin-accent focus:ring-0"
+                        />
+                        <div>
+                          <span className="font-semibold text-rose-600 dark:text-rose-400">
+                            [ ] Use real MikroTik integration
+                          </span>
+                          <p className="text-[11px] text-admin-muted">
+                            Jika dicentang, sistem akan <u>benar-benar</u> membuat user hotspot di router MikroTik. Jika tidak dicentang (default), voucher menggunakan Mock Provider yang aman tanpa menyentuh MikroTik.
+                          </p>
+                        </div>
+                      </label>
+
+                      {/* WhatsApp Notification Checkbox */}
+                      <label className="flex items-start gap-2 cursor-pointer text-xs text-admin-text">
+                        <input
+                          type="checkbox"
+                          checked={testSendWhatsapp}
+                          onChange={(e) => setTestSendWhatsapp(e.target.checked)}
+                          className="mt-0.5 rounded border-admin-border text-admin-accent focus:ring-0"
+                        />
+                        <div>
+                          <span className="font-semibold text-admin-text">
+                            Kirim Notifikasi WhatsApp (Jika LOYALTY_TEST_WHATSAPP=true)
+                          </span>
+                          <span className="text-[11px] text-admin-muted block">
+                            Default: dinonaktifkan untuk melindungi privasi nomor customer.
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="mt-5 flex items-center gap-3 flex-wrap pt-3 border-t border-admin-border/50">
+                    <button
+                      onClick={handleRunLoyaltyTest}
+                      disabled={runningTest || resettingTest}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-admin-accent text-white rounded-lg text-xs font-bold hover:opacity-90 transition-all shadow-sm disabled:opacity-50"
+                    >
+                      <Icon name="bolt" className={`w-4 h-4 ${runningTest ? 'animate-spin' : ''}`} />
+                      {runningTest ? 'Menjalankan Simulasi...' : 'Run Loyalty Test'}
+                    </button>
+
+                    <button
+                      onClick={() => handleResetLoyaltyTest(false)}
+                      disabled={runningTest || resettingTest}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-admin-base border border-admin-border text-admin-text rounded-lg text-xs font-semibold hover:border-admin-accent transition-all disabled:opacity-50"
+                      title="Reset test data untuk nomor ini"
+                    >
+                      <Icon name="trash" className="w-3.5 h-3.5 text-rose-500" />
+                      Reset Test Nomor Ini
+                    </button>
+
+                    <button
+                      onClick={() => handleResetLoyaltyTest(true)}
+                      disabled={runningTest || resettingTest}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-semibold hover:bg-rose-500/20 transition-all disabled:opacity-50"
+                      title="Bersihkan seluruh data test mode"
+                    >
+                      <Icon name="sync" className={`w-3.5 h-3.5 ${resettingTest ? 'animate-spin' : ''}`} />
+                      Reset Semua Test Data
+                    </button>
+                  </div>
+
+                  {/* Error Message */}
+                  {testError && (
+                    <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg text-xs font-semibold text-rose-700 dark:text-rose-400 flex items-center justify-between">
+                      <span>❌ {testError}</span>
+                      <button onClick={() => setTestError(null)} className="text-rose-500">
+                        <Icon name="close" className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Test Result Display */}
+                  {testResult && (
+                    <div className="mt-4 p-4 bg-admin-base border border-admin-border rounded-xl">
+                      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase ${
+                            testResult.target_reached
+                              ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                              : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                          }`}>
+                            {testResult.target_reached ? '✓ Target Tercapai' : '○ Target Belum Tercapai'}
+                          </span>
+                          <span className="text-xs text-admin-muted font-mono">
+                            {testResult.phone} ({formatPeriod(testResult.period_key)})
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                            testResult.mode === 'real_mikrotik_test'
+                              ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400'
+                              : 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                          }`}>
+                            {testResult.mode === 'real_mikrotik_test' ? '⚡ REAL MIKROTIK' : '🛡️ MOCK SIMULASI'}
+                          </span>
+                          {testResult.reward_idempotent && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400">
+                              IDEMPOTENT (Voucher Existing)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-xs font-medium text-admin-text mb-3">
+                        {testResult.message}
+                      </p>
+
+                      {/* Progress bar */}
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-admin-muted">
+                            Simulasi Akumulasi: <strong className="text-admin-text font-bold">{formatRupiah(testResult.simulated_total_amount)}</strong>
+                          </span>
+                          <span className="text-admin-text font-bold">
+                            {testResult.progress_percent}% ({formatRupiah(testResult.target_amount)})
+                          </span>
+                        </div>
+                        <div className="w-full bg-admin-card rounded-full h-3 overflow-hidden border border-admin-border">
+                          <div
+                            className={`h-full transition-all duration-500 ${
+                              testResult.target_reached ? 'bg-emerald-500' : 'bg-admin-accent'
+                            }`}
+                            style={{ width: `${Math.min(testResult.progress_percent, 100)}%` }}
+                          />
+                        </div>
+                        {!testResult.target_reached && (
+                          <span className="text-[11px] text-admin-muted mt-1 block">
+                            Sisa nominal untuk mencapai target: <strong className="text-admin-text">{formatRupiah(testResult.remaining_amount)}</strong>
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Voucher Generated Card */}
+                      {testResult.voucher_code && (
+                        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div>
+                            <div className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                              <Icon name="gift" className="w-4 h-4" />
+                              Reward Voucher Otomatis Diterbitkan!
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl font-black font-mono tracking-widest text-admin-text">
+                                {testResult.voucher_code}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(testResult.voucher_code)
+                                  setCopiedRewardCode(testResult.voucher_code)
+                                  setTimeout(() => setCopiedRewardCode(null), 2500)
+                                }}
+                                className="p-1 text-admin-muted hover:text-admin-text"
+                                title="Copy kode voucher"
+                              >
+                                <Icon name="copy" className="w-4 h-4" />
+                              </button>
+                              {copiedRewardCode === testResult.voucher_code && (
+                                <span className="text-[10px] text-emerald-600 font-bold animate-pulse">Tersalin!</span>
+                              )}
+                            </div>
+                            <div className="mt-1 flex items-center gap-3 text-xs text-admin-muted flex-wrap">
+                              <span>Masa Berlaku: <strong className="text-admin-text">{formatDateTime(testResult.expires_at)}</strong> ({testResult.expiry_override})</span>
+                              {testResult.mikrotik_id && (
+                                <span>ID Router: <strong className="text-admin-text font-mono">{testResult.mikrotik_id}</strong></span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            <a
+                              href={`/loyalty`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+                            >
+                              Cek di /loyalty ↗
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
