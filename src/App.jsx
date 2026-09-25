@@ -174,6 +174,7 @@ function Home() {
   const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
+  const [activeEvent, setActiveEvent] = useState(null)
   const navigate = useNavigate()
 
   const toggleMenu = () => setShowMenu(!showMenu);
@@ -198,8 +199,20 @@ function Home() {
       }
     }
 
+    const fetchActiveEvent = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/loyalty/active-event`)
+        if (res.data?.has_active_event) {
+          setActiveEvent(res.data.event)
+        }
+      } catch (err) {
+        // Silently fail
+      }
+    }
+
     fetchPlans()
     logVisit()
+    fetchActiveEvent()
   }, [])
 
   const handleWhatsAppClick = () => {
@@ -213,19 +226,103 @@ function Home() {
       <section className="lg:hidden" style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.25rem', overflow: 'hidden', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
 
-          {/* Quick Action Pill Buttons */}
-          <div className="grid grid-cols-2 gap-3" style={{ maxWidth: '380px', margin: '0 auto' }}>
-            <Link to="/payment" className="btn-nd-pill" style={{ fontSize: '0.78rem', padding: '0.8rem 1rem' }}>
+          {/* Quick Action Pill Buttons (3-Column Layout with Loyalty Button) */}
+          <div className="grid grid-cols-3 gap-2" style={{ maxWidth: '420px', margin: '0 auto' }}>
+            <Link to="/payment" className="btn-nd-pill" style={{ fontSize: '0.74rem', padding: '0.75rem 0.5rem', whiteSpace: 'nowrap' }}>
               <i className="fas fa-credit-card" /> Bayar Tagihan
             </Link>
             <Link to="/check-voucher" className="btn-nd-pill" style={{
-              fontSize: '0.78rem', padding: '0.8rem 1rem',
+              fontSize: '0.74rem', padding: '0.75rem 0.5rem',
               background: '#ffffff', color: '#00a884',
               border: '1px solid #00a884',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.06)'
+              boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
+              whiteSpace: 'nowrap'
             }}>
               <i className="fas fa-search" /> Cek Voucher
             </Link>
+            <Link to="/loyalty" className="btn-nd-pill" style={{
+              fontSize: '0.74rem', padding: '0.75rem 0.5rem',
+              background: 'linear-gradient(135deg, #00a884, #008f6f)',
+              color: '#ffffff',
+              boxShadow: '0 4px 14px rgba(0,168,132,0.25)',
+              whiteSpace: 'nowrap'
+            }}>
+              <i className="fas fa-gift" /> Loyalty
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Stunning Promotional Loyalty Event Banner */}
+      <section style={{ padding: '1.25rem 1rem 0', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
+        <div 
+          className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-xl transition-all"
+          style={{
+            background: 'linear-gradient(135deg, #064e3b 0%, #065f46 45%, #0f172a 100%)',
+            border: '1px solid rgba(52, 211, 153, 0.3)',
+          }}
+        >
+          {/* Decorative glowing gradient blur */}
+          <div 
+            className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
+            style={{ background: '#34d399' }}
+          />
+          <div 
+            className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
+            style={{ background: '#10b981' }}
+          />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              {/* Event Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>PROGRAM LOYALTY PELANGGAN AKTIF</span>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
+                Beli Voucher & Dapatkan <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis</span> Otomatis!
+              </h2>
+
+              {/* Description */}
+              <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
+                {activeEvent ? (
+                  <>Setiap akumulasi pembelian voucher Anda mencapai <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> per bulan kalender, voucher gratis akan <strong>otomatis terbit</strong> seketika ke nomor WhatsApp Anda tanpa undian & tanpa klaim manual!</>
+                ) : (
+                  <>Akumulasi transaksi pembelian voucher hotspot Anda setiap bulannya. Begitu mencapai target nominal event, voucher reward gratis langsung diterbitkan otomatis tanpa undian & tanpa ribet klaim!</>
+                )}
+              </p>
+
+              {/* Feature Chips */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-emerald-200 font-semibold">
+                <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                  <i className="fas fa-bolt text-emerald-400" /> Otomatis Terbit
+                </span>
+                <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                  <i className="fas fa-clock text-emerald-400" /> Masa Aktif 5 Hari
+                </span>
+                <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                  <i className="fas fa-shield-alt text-emerald-400" /> 100% Gratis
+                </span>
+              </div>
+            </div>
+
+            {/* Action Card Button */}
+            <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
+              <Link
+                to="/loyalty"
+                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
+                style={{ textDecoration: 'none' }}
+              >
+                <i className="fas fa-gift text-base" />
+                <span>Cek Progres & Reward</span>
+                <i className="fas fa-arrow-right text-xs ml-1" />
+              </Link>
+              <span className="text-[11px] text-slate-300 font-medium opacity-85">
+                Masukkan no HP untuk pantau akumulasi belanja
+              </span>
+            </div>
           </div>
         </div>
       </section>

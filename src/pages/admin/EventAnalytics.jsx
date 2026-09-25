@@ -30,6 +30,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     gift: <path d="M20 12v10H4V12M2 7h20v5H2zm10 5v10m0-15c-1.5-3-5.5-3-5.5 0 0 3 5.5 3 5.5 3zm0 0c1.5-3 5.5-3 5.5 0 0 3-5.5 3-5.5 3z" />,
     copy: <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />,
     refresh: <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />,
+    chevronDown: <path d="M19 9l-7 7-7-7" />,
+    chevronUp: <path d="M5 15l7-7 7 7" />,
   }
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -125,6 +127,7 @@ export default function EventAnalytics() {
   const [resettingTest, setResettingTest] = useState(false)
   const [testResult, setTestResult] = useState(null)
   const [testError, setTestError] = useState(null)
+  const [testModeCollapsed, setTestModeCollapsed] = useState(true)
 
   // Filters
   const [selectedPeriod, setSelectedPeriod] = useState('')
@@ -924,19 +927,6 @@ export default function EventAnalytics() {
           </div>
         </div>
 
-        {/* Notice Info Sisi Customer */}
-        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-6 text-xs text-blue-700 dark:text-blue-300 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon name="info" className="w-4 h-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
-            <span>
-              <strong>Admin Internal Only:</strong> Sistem ini mencatat data riil pembeli voucher hotspot. Customer <u>belum</u> menerima reward/notifikasi apa pun.
-            </span>
-          </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 uppercase tracking-wider">
-            Fase 1: Real Data Tracking
-          </span>
-        </div>
-
         {/* Loading */}
         {analyticsLoading && !analytics && (
           <div className="flex items-center justify-center py-20">
@@ -1216,10 +1206,13 @@ export default function EventAnalytics() {
               )}
             </div>
 
-            {/* Phase 2: Loyalty Test Mode Card */}
+            {/* Phase 2: Loyalty Test Mode Card (Collapsible, Default Closed) */}
             <div className="bg-admin-card border border-admin-border rounded-xl p-5 mb-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2">
+              <div 
+                onClick={() => setTestModeCollapsed(!testModeCollapsed)}
+                className="flex items-center justify-between gap-3 cursor-pointer select-none"
+              >
+                <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
                     <Icon name="bolt" className="w-5 h-5" />
                   </div>
@@ -1236,12 +1229,24 @@ export default function EventAnalytics() {
                         {testModeInfo?.enabled ? 'Test Mode Active (Isolated)' : 'Test Mode Disabled'}
                       </span>
                     </div>
-                    <p className="text-xs text-admin-muted">
-                      Simulasi akumulasi belanja dan otomatisasi penerbitan reward voucher secara terisolasi tanpa transaksi palsu.
+                    <p className="text-xs text-admin-muted mt-0.5">
+                      {testModeCollapsed 
+                        ? 'Simulasi pengujian akumulasi belanja dan otomatisasi reward (Klik untuk membuka)' 
+                        : 'Simulasi akumulasi belanja dan otomatisasi penerbitan reward voucher secara terisolasi tanpa transaksi palsu.'}
                     </p>
                   </div>
                 </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-admin-base border border-admin-border text-admin-text hover:border-admin-accent transition-colors flex items-center gap-1.5">
+                    <span>{testModeCollapsed ? 'Buka Test Mode' : 'Tutup'}</span>
+                    <Icon name={testModeCollapsed ? 'chevronDown' : 'chevronUp'} className="w-4 h-4 text-admin-muted" />
+                  </span>
+                </div>
               </div>
+
+              {!testModeCollapsed && (
+                <div className="mt-5 pt-4 border-t border-admin-border/60">
 
               {!testModeInfo?.enabled ? (
                 <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-300">
@@ -1544,6 +1549,8 @@ export default function EventAnalytics() {
                 </div>
               )}
             </div>
+          )}
+        </div>
 
             {/* Participants Table (FULL RAW PHONE NUMBER - NO MASKING) */}
             <div className="bg-admin-card border border-admin-border rounded-xl overflow-hidden shadow-sm">

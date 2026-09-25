@@ -62,6 +62,7 @@ const Navbar = ({ toggleMenu }) => {
                             { to: '/', label: 'Home', icon: 'home' },
                             { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card' },
                             { to: '/check-voucher', label: 'Cek Voucher', icon: 'search' },
+                            { to: '/loyalty', label: 'Event Loyalty', icon: 'gift', isHighlight: true },
                         ].map((item) => (
                             <Link 
                                 key={item.to} 
@@ -69,13 +70,13 @@ const Navbar = ({ toggleMenu }) => {
                                 style={{
                                     padding: '0.6rem 1.25rem',
                                     borderRadius: '9999px',
-                                    background: '#f8fafc',
-                                    color: '#475569',
+                                    background: item.isHighlight ? '#ecfdf5' : '#f8fafc',
+                                    color: item.isHighlight ? '#00a884' : '#475569',
                                     fontWeight: 700,
                                     fontSize: '0.82rem',
                                     textDecoration: 'none',
-                                    boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                                    border: '1px solid #e2e8f0',
+                                    boxShadow: item.isHighlight ? '0 2px 8px rgba(0, 168, 132, 0.15)' : '0 2px 6px rgba(0,0,0,0.03)',
+                                    border: item.isHighlight ? '1px solid #a7f3d0' : '1px solid #e2e8f0',
                                     transition: 'all 0.2s ease',
                                     display: 'inline-flex',
                                     alignItems: 'center',
@@ -88,14 +89,21 @@ const Navbar = ({ toggleMenu }) => {
                                     e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 168, 132, 0.3)'
                                 }}
                                 onMouseOut={(e) => {
-                                    e.currentTarget.style.background = '#f8fafc'
-                                    e.currentTarget.style.color = '#475569'
-                                    e.currentTarget.style.borderColor = '#e2e8f0'
-                                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.03)'
+                                    e.currentTarget.style.background = item.isHighlight ? '#ecfdf5' : '#f8fafc'
+                                    e.currentTarget.style.color = item.isHighlight ? '#00a884' : '#475569'
+                                    e.currentTarget.style.borderColor = item.isHighlight ? '#a7f3d0' : '#e2e8f0'
+                                    e.currentTarget.style.boxShadow = item.isHighlight ? '0 2px 8px rgba(0, 168, 132, 0.15)' : '0 2px 6px rgba(0,0,0,0.03)'
                                 }}
                             >
-                                <i className={`fas fa-${item.icon}`} style={{ fontSize: '0.75rem' }} />
+                                <i className={`fas fa-${item.icon}`} style={{ fontSize: '0.75rem', color: item.isHighlight ? '#00a884' : 'inherit' }} />
                                 {item.label}
+                                {item.isHighlight && (
+                                    <span style={{
+                                        width: '6px', height: '6px', borderRadius: '50%',
+                                        background: '#00a884',
+                                        display: 'inline-block'
+                                    }} />
+                                )}
                             </Link>
                         ))}
                     </nav>
