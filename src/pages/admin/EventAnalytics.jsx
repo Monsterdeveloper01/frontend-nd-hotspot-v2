@@ -27,6 +27,9 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     calendar: <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
     infinity: <path d="M18.178 8c5.096 0 5.096 8 0 8-2.678 0-4.678-2.667-6.178-5.333C10.5 8 8.5 8 5.822 8 0.726 8 .726 16 5.822 16c2.678 0 4.678-2.667 6.178-5.333 1.5 2.666 3.5 5.333 6.178 5.333" />,
     bolt: <path d="M13 10V3L4 14h7v7l9-11h-7z" />,
+    gift: <path d="M20 12v10H4V12M2 7h20v5H2zm10 5v10m0-15c-1.5-3-5.5-3-5.5 0 0 3 5.5 3 5.5 3zm0 0c1.5-3 5.5-3 5.5 0 0 3-5.5 3-5.5 3z" />,
+    copy: <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />,
+    refresh: <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />,
   }
   return (
     <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -99,6 +102,18 @@ export default function EventAnalytics() {
   // Sync state
   const [syncing, setSyncing] = useState(null)
   const [syncResult, setSyncResult] = useState(null)
+
+  // Phase 2: Reward Rules state
+  const [voucherPlans, setVoucherPlans] = useState([])
+  const [showRuleModal, setShowRuleModal] = useState(false)
+  const [editRule, setEditRule] = useState(null)
+  const [ruleFormData, setRuleFormData] = useState({ voucher_plan_id: '', name: '', description: '', is_active: true })
+  const [savingRule, setSavingRule] = useState(false)
+  const [ruleErrors, setRuleErrors] = useState({})
+  const [reconcilingRuleId, setReconcilingRuleId] = useState(null)
+  const [retryingRewardId, setRetryingRewardId] = useState(null)
+  const [ruleNotice, setRuleNotice] = useState(null)
+  const [copiedRewardCode, setCopiedRewardCode] = useState(null)
 
   // Filters
   const [selectedPeriod, setSelectedPeriod] = useState('')
@@ -330,6 +345,128 @@ export default function EventAnalytics() {
       })
     } finally {
       setSyncing(null)
+    }
+  }
+
+  // ==========================================
+  // PHASE 2: REWARD RULES HANDLERS
+  // ==========================================
+  const fetchVoucherPlans = async () => {
+    try {
+      const res = await axios.get(`${API}/voucher-plans`, { headers })
+      setVoucherPlans(res.data || [])
+    } catch (err) {
+      console.warn('Failed to load voucher plans', err)
+    }
+  }
+
+  const openCreateRuleModal = () => {
+    setEditRule(null)
+    setRuleFormData({ voucher_plan_id: '', name: '', description: '', is_active: true })
+    setRuleErrors({})
+    fetchVoucherPlans()
+    setShowRuleModal(true)
+  }
+
+  const openEditRuleModal = (rule) => {
+    setEditRule(rule)
+    setRuleFormData({
+      voucher_plan_id: rule.voucher_plan_id,
+      name: rule.name,
+      description: rule.description || '',
+      is_active: Boolean(rule.is_active),
+    })
+    setRuleErrors({})
+    fetchVoucherPlans()
+    setShowRuleModal(true)
+  }
+
+  const handleSaveRule = async () => {
+    const errs = {}
+    if (!ruleFormData.name.trim()) errs.name = 'Nama reward wajib diisi.'
+    if (!ruleFormData.voucher_plan_id) errs.voucher_plan_id = 'Pilih paket voucher dari master data.'
+    if (Object.keys(errs).length > 0) {
+      setRuleErrors(errs)
+      return
+    }
+
+    setSavingRule(true)
+    try {
+      let res
+      if (editRule) {
+        res = await axios.put(`${API}/admin/events/${selectedEventId}/reward-rules/${editRule.id}`, ruleFormData, { headers })
+      } else {
+        res = await axios.post(`${API}/admin/events/${selectedEventId}/reward-rules`, ruleFormData, { headers })
+      }
+
+      setShowRuleModal(false)
+      const retro = res.data?.retroactive_stats
+      if (retro && retro.eligible > 0) {
+        setRuleNotice(`✨ Otomatisasi: ${retro.issued} voucher reward berhasil diterbitkan untuk customer yang sudah mencapai target! (${retro.skipped} sudah ada)`)
+      } else {
+        setRuleNotice(res.data?.message || 'Reward rule berhasil disimpan.')
+      }
+      setTimeout(() => setRuleNotice(null), 8000)
+
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal menyimpan reward rule.')
+    } finally {
+      setSavingRule(false)
+    }
+  }
+
+  const handleDeleteRule = async (ruleId) => {
+    if (!confirm('Yakin ingin menghapus Reward Rule ini?')) return
+    try {
+      await axios.delete(`${API}/admin/events/${selectedEventId}/reward-rules/${ruleId}`, { headers })
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      alert('Gagal menghapus reward rule.')
+    }
+  }
+
+  const handleToggleRuleStatus = async (rule) => {
+    try {
+      const res = await axios.put(`${API}/admin/events/${selectedEventId}/reward-rules/${rule.id}`, {
+        is_active: !rule.is_active,
+      }, { headers })
+      const retro = res.data?.retroactive_stats
+      if (retro && retro.eligible > 0) {
+        setRuleNotice(`✨ Rule diaktifkan: ${retro.issued} voucher reward langsung diterbitkan ke customer eligible!`)
+        setTimeout(() => setRuleNotice(null), 8000)
+      }
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      alert('Gagal mengubah status reward rule.')
+    }
+  }
+
+  const handleReconcileEligible = async (ruleId) => {
+    setReconcilingRuleId(ruleId)
+    try {
+      const res = await axios.post(`${API}/admin/events/${selectedEventId}/reward-rules/${ruleId}/process-eligible`, {}, { headers })
+      const stats = res.data?.stats
+      setRuleNotice(`⚡ Rekonsiliasi selesai: ${stats?.issued || 0} diterbitkan, ${stats?.skipped || 0} sudah ada, ${stats?.failed || 0} gagal.`)
+      setTimeout(() => setRuleNotice(null), 8000)
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      alert('Gagal memproses ulang customer eligible.')
+    } finally {
+      setReconcilingRuleId(null)
+    }
+  }
+
+  const handleRetryReward = async (rewardId) => {
+    setRetryingRewardId(rewardId)
+    try {
+      const res = await axios.post(`${API}/admin/events/${selectedEventId}/rewards/${rewardId}/retry`, {}, { headers })
+      alert(res.data?.message || 'Proses retry reward selesai.')
+      fetchAnalytics(selectedEventId, selectedPeriod, searchPhone, participantPage, true)
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal retry penerbitan reward.')
+    } finally {
+      setRetryingRewardId(null)
     }
   }
 
@@ -844,6 +981,155 @@ export default function EventAnalytics() {
               </div>
             </div>
 
+            {/* Phase 2: Automatic Reward System Card */}
+            <div className="bg-admin-card border border-admin-border rounded-xl p-5 mb-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                      <Icon name="gift" className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-admin-text">
+                        Otomatisasi Reward Voucher (Phase 2)
+                      </h3>
+                      <p className="text-xs text-admin-muted">
+                        Reward diterbitkan otomatis ke MikroTik ketika akumulasi belanja mencapai target nominal event ({formatRupiah(ev?.target_amount || 0)}).
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={openCreateRuleModal}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-admin-accent text-white rounded-lg text-xs font-semibold hover:opacity-90 transition-all shadow-sm"
+                  >
+                    <Icon name="plus" className="w-3.5 h-3.5" />
+                    Tambah Reward Rule
+                  </button>
+                </div>
+              </div>
+
+              {/* Feedback notice if any */}
+              {ruleNotice && (
+                <div className="mb-4 p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-lg text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
+                  <span>{ruleNotice}</span>
+                  <button onClick={() => setRuleNotice(null)} className="text-emerald-600 hover:text-emerald-800">
+                    <Icon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Reward Rules List */}
+              {analytics?.reward_rules && analytics.reward_rules.length > 0 ? (
+                <div className="space-y-3">
+                  {analytics.reward_rules.map((rule) => {
+                    const plan = rule.voucher_plan
+                    return (
+                      <div
+                        key={rule.id}
+                        className="bg-admin-base border border-admin-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="p-2.5 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 mt-0.5">
+                            <Icon name="gift" className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-bold text-sm text-admin-text">{rule.name}</h4>
+                              <button
+                                onClick={() => handleToggleRuleStatus(rule)}
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase transition-opacity ${
+                                  rule.is_active
+                                    ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                                }`}
+                              >
+                                {rule.is_active ? '● Aktif' : '○ Nonaktif'}
+                              </button>
+                            </div>
+                            <div className="mt-1 flex items-center gap-3 text-xs text-admin-muted flex-wrap">
+                              <span>Paket: <strong className="text-admin-text">{plan?.name || 'Voucher Plan'}</strong></span>
+                              {plan?.duration && <span>Durasi: <strong className="text-admin-text">{plan.duration}</strong></span>}
+                              {plan?.mikrotik_profile && <span>Profil MikroTik: <strong className="text-admin-text">{plan.mikrotik_profile}</strong></span>}
+                              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Masa Berlaku: 5 Hari</span>
+                            </div>
+                            {rule.description && (
+                              <p className="text-xs text-admin-muted mt-1 italic">{rule.description}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-end md:self-center">
+                          {/* Reconcile button for requirement #6 */}
+                          <button
+                            onClick={() => handleReconcileEligible(rule.id)}
+                            disabled={reconcilingRuleId === rule.id || !rule.is_active}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 rounded-lg text-xs font-semibold hover:bg-blue-500/20 transition-all disabled:opacity-50"
+                            title="Cek dan terbitkan reward untuk customer yang sudah mencapai target"
+                          >
+                            <Icon name="refresh" className={`w-3.5 h-3.5 ${reconcilingRuleId === rule.id ? 'animate-spin' : ''}`} />
+                            {reconcilingRuleId === rule.id ? 'Memproses...' : 'Proses Ulang Eligible'}
+                          </button>
+                          <button
+                            onClick={() => openEditRuleModal(rule)}
+                            className="p-1.5 text-admin-muted hover:text-amber-500 transition-colors"
+                            title="Edit Rule"
+                          >
+                            <Icon name="edit" className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteRule(rule.id)}
+                            className="p-1.5 text-admin-muted hover:text-rose-500 transition-colors"
+                            title="Hapus Rule"
+                          >
+                            <Icon name="trash" className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="bg-admin-base border border-dashed border-admin-border rounded-xl p-6 text-center">
+                  <Icon name="gift" className="w-8 h-8 text-admin-muted mx-auto mb-2 opacity-50" />
+                  <p className="text-sm font-semibold text-admin-text">Belum Ada Reward Rule</p>
+                  <p className="text-xs text-admin-muted mt-1 max-w-md mx-auto">
+                    Buat aturan reward untuk menentukan paket voucher gratis yang otomatis diterbitkan ke MikroTik ketika pelanggan mencapai target {formatRupiah(ev?.target_amount || 0)}.
+                  </p>
+                  <button
+                    onClick={openCreateRuleModal}
+                    className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-admin-accent text-white rounded-lg text-xs font-semibold hover:opacity-90 transition-all"
+                  >
+                    <Icon name="plus" className="w-3.5 h-3.5" />
+                    Buat Reward Rule Sekarang
+                  </button>
+                </div>
+              )}
+
+              {/* Stats badges */}
+              {analytics?.reward_stats && (
+                <div className="mt-4 pt-3 border-t border-admin-border/60 flex items-center justify-between text-xs text-admin-muted flex-wrap gap-2">
+                  <div className="flex items-center gap-4">
+                    <span>
+                      Diterbitkan: <strong className="text-emerald-600 dark:text-emerald-400 font-bold">{analytics.reward_stats.issued || 0}</strong>
+                    </span>
+                    <span>
+                      Sedang Diproses: <strong className="text-amber-600 font-bold">{analytics.reward_stats.processing || 0}</strong>
+                    </span>
+                    {analytics.reward_stats.failed > 0 && (
+                      <span>
+                        Gagal: <strong className="text-rose-600 font-bold">{analytics.reward_stats.failed}</strong>
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] opacity-75">
+                    * Masa berlaku reward voucher adalah 5 hari sejak diterbitkan.
+                  </span>
+                </div>
+              )}
+            </div>
+
             {/* Participants Table (FULL RAW PHONE NUMBER - NO MASKING) */}
             <div className="bg-admin-card border border-admin-border rounded-xl overflow-hidden shadow-sm">
               <div className="px-4 py-3 border-b border-admin-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -889,6 +1175,7 @@ export default function EventAnalytics() {
                           <th className="text-right px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden md:table-cell">Rata-rata/Tx</th>
                           <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Target</th>
                           <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden lg:table-cell">Status Pencapaian</th>
+                          <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider">Reward Voucher</th>
                           <th className="text-center px-4 py-2.5 text-[10px] font-semibold text-admin-muted uppercase tracking-wider hidden xl:table-cell">Last Purchase</th>
                         </tr>
                       </thead>
@@ -930,6 +1217,63 @@ export default function EventAnalytics() {
                                   )
                                 ) : (
                                   <span className="text-admin-muted opacity-50 text-xs">-</span>
+                                )}
+                              </td>
+                              {/* Reward Voucher Column (Phase 2: Automatic Reward System) */}
+                              <td className="px-4 py-2.5 text-center">
+                                {p.reward ? (
+                                  p.reward.status === 'issued' ? (
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                                      <span>{p.reward.voucher_code}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(p.reward.voucher_code)
+                                          setCopiedRewardCode(p.reward.voucher_code)
+                                          setTimeout(() => setCopiedRewardCode(null), 2000)
+                                        }}
+                                        className="text-emerald-600 hover:text-emerald-800 transition-colors"
+                                        title={`Salin kode (Exp: ${p.reward.expires_at || '5 hari'})`}
+                                      >
+                                        <Icon name={copiedRewardCode === p.reward.voucher_code ? "check" : "copy"} className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  ) : p.reward.status === 'used' ? (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                      Terpakai ({p.reward.voucher_code})
+                                    </span>
+                                  ) : p.reward.status === 'expired' ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-admin-muted">
+                                      Expired ({p.reward.voucher_code})
+                                    </span>
+                                  ) : p.reward.status === 'failed' ? (
+                                    <div className="inline-flex items-center gap-1.5 justify-center">
+                                      <span
+                                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20 cursor-help"
+                                        title={p.reward.error_message || 'Gagal membuat user di MikroTik'}
+                                      >
+                                        Gagal
+                                      </span>
+                                      <button
+                                        onClick={() => handleRetryReward(p.reward.id)}
+                                        disabled={retryingRewardId === p.reward.id}
+                                        className="text-[10px] font-bold text-rose-600 underline hover:text-rose-700 disabled:opacity-50"
+                                        title="Retry penerbitan reward"
+                                      >
+                                        {retryingRewardId === p.reward.id ? 'Retrying...' : 'Retry'}
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-600 border border-amber-500/20">
+                                      Processing...
+                                    </span>
+                                  )
+                                ) : qualifies ? (
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                                    Eligible (No Rule)
+                                  </span>
+                                ) : (
+                                  <span className="text-admin-muted opacity-40 text-xs">-</span>
                                 )}
                               </td>
                               <td className="px-4 py-2.5 text-center text-[11px] text-admin-muted hidden xl:table-cell">
@@ -1084,12 +1428,146 @@ export default function EventAnalytics() {
   }
 
   // ==========================================
+  // RENDER: REWARD RULE MODAL (PHASE 2)
+  // ==========================================
+  const renderRuleModal = () => {
+    if (!showRuleModal) return null
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowRuleModal(false)} />
+        <div className="relative bg-admin-card border border-admin-border rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="px-5 py-4 border-b border-admin-border flex items-center justify-between">
+            <h3 className="font-bold text-admin-text">
+              {editRule ? 'Edit Reward Rule' : 'Tambah Reward Rule Otomatis'}
+            </h3>
+            <button onClick={() => setShowRuleModal(false)} className="text-admin-muted hover:text-admin-text">
+              <Icon name="close" className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="p-5 space-y-4">
+            {/* Informational Banner */}
+            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs text-emerald-800 dark:text-emerald-300 flex items-start gap-2">
+              <Icon name="gift" className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
+              <div>
+                <strong>Reward Otomatis & Terintegrasi MikroTik:</strong>
+                <p className="mt-0.5 opacity-90">
+                  Target nominal belanja sepenuhnya mengikuti <strong>events.target_amount</strong> ({formatRupiah(analytics?.event?.target_amount || 0)}). Ketika rule disimpan atau diaktifkan, seluruh customer yang sudah mencapai target akan otomatis diterbitkan vouchernya ke MikroTik.
+                </p>
+              </div>
+            </div>
+
+            {/* Reward Name */}
+            <div>
+              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">
+                Nama Reward *
+              </label>
+              <input
+                type="text"
+                value={ruleFormData.name}
+                onChange={(e) => setRuleFormData({ ...ruleFormData, name: e.target.value })}
+                placeholder="Contoh: Free Internet 7 Hari Unlimited"
+                className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text placeholder-admin-muted focus:outline-none focus:border-admin-accent"
+              />
+              {ruleErrors.name && <p className="text-rose-500 text-xs mt-1">{ruleErrors.name}</p>}
+            </div>
+
+            {/* Voucher Plan Picker */}
+            <div>
+              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">
+                Pilih Paket Voucher (Master Data) *
+              </label>
+              <select
+                value={ruleFormData.voucher_plan_id}
+                onChange={(e) => setRuleFormData({ ...ruleFormData, voucher_plan_id: e.target.value })}
+                className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text focus:outline-none focus:border-admin-accent"
+              >
+                <option value="">-- Pilih Paket Voucher --</option>
+                {voucherPlans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>
+                    {plan.name} {plan.duration ? `(${plan.duration})` : ''} - Profil MikroTik: {plan.mikrotik_profile || plan.name} {plan.price ? `[Harga Normal: ${formatRupiah(plan.price)}]` : ''}
+                  </option>
+                ))}
+              </select>
+              {ruleErrors.voucher_plan_id && <p className="text-rose-500 text-xs mt-1">{ruleErrors.voucher_plan_id}</p>}
+              <p className="text-[10px] text-admin-muted mt-1">
+                Voucher reward akan diterbitkan ke router MikroTik dengan profil dan uptime limit dari paket yang dipilih.
+              </p>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">
+                Deskripsi / Syarat Tambahan (Opsional)
+              </label>
+              <textarea
+                value={ruleFormData.description}
+                onChange={(e) => setRuleFormData({ ...ruleFormData, description: e.target.value })}
+                placeholder="Catatan internal atau deskripsi reward..."
+                rows={2}
+                className="w-full px-3 py-2.5 bg-admin-base border border-admin-border rounded-lg text-sm text-admin-text placeholder-admin-muted focus:outline-none focus:border-admin-accent resize-none"
+              />
+            </div>
+
+            {/* Active Toggle & Expiry Info */}
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-admin-border/50">
+              <div>
+                <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">
+                  Masa Berlaku Voucher
+                </label>
+                <div className="px-3 py-2 bg-admin-base border border-admin-border rounded-lg text-xs font-bold text-admin-text">
+                  5 Hari sejak diterbitkan
+                </div>
+                <p className="text-[10px] text-admin-muted mt-0.5">Otomatis kadaluwarsa di DB & MikroTik</p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-admin-muted uppercase tracking-wider mb-1.5">
+                  Status Rule
+                </label>
+                <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={ruleFormData.is_active}
+                    onChange={(e) => setRuleFormData({ ...ruleFormData, is_active: e.target.checked })}
+                    className="w-4 h-4 text-admin-accent rounded border-admin-border focus:ring-admin-accent"
+                  />
+                  <span className="text-xs font-semibold text-admin-text">
+                    {ruleFormData.is_active ? 'Aktif (Auto-Issue)' : 'Nonaktif'}
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-5 py-4 border-t border-admin-border flex justify-end gap-2">
+            <button
+              onClick={() => setShowRuleModal(false)}
+              className="px-4 py-2 text-sm font-medium text-admin-muted hover:text-admin-text transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              onClick={handleSaveRule}
+              disabled={savingRule}
+              className="px-5 py-2 bg-admin-accent text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+            >
+              {savingRule ? 'Menyimpan & Memproses...' : (editRule ? 'Update Rule' : 'Simpan & Aktifkan')}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ==========================================
   // MAIN RENDER
   // ==========================================
   return (
     <div>
       {view === 'list' ? renderEventsList() : renderDetail()}
       {renderModal()}
+      {renderRuleModal()}
     </div>
   )
 }

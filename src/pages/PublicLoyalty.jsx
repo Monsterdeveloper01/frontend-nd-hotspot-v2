@@ -19,6 +19,7 @@ export default function PublicLoyalty() {
     const [cooldown, setCooldown] = useState(0)
     const [liveFlash, setLiveFlash] = useState(false)
     const [wsConnected, setWsConnected] = useState(false)
+    const [copied, setCopied] = useState(false)
 
     const activePhoneRef = useRef('')
     const inputRef = useRef(null)
@@ -384,6 +385,121 @@ export default function PublicLoyalty() {
                                             <span>Target: {formatRupiah(result.target_amount)}</span>
                                         </div>
                                     </div>
+
+                                    {/* Phase 2: Automatic Reward Banner (No Claim Button Needed) */}
+                                    {result.is_target_achieved && result.reward && result.reward.status === 'issued' && (
+                                        <div style={{
+                                            background: 'linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%)',
+                                            borderTop: '2px solid #a7f3d0',
+                                            borderBottom: '2px solid #a7f3d0',
+                                            padding: '1.75rem 1.5rem',
+                                            position: 'relative',
+                                        }}>
+                                            <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                                                <span style={{
+                                                    display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                                                    padding: '0.4rem 1.15rem', borderRadius: '9999px',
+                                                    background: '#00a884', color: '#ffffff',
+                                                    fontWeight: 900, fontSize: '0.85rem', letterSpacing: '0.04em',
+                                                    boxShadow: '0 4px 14px rgba(0, 168, 132, 0.25)',
+                                                }}>
+                                                    🎉 TARGET TERCAPAI!
+                                                </span>
+                                                <div style={{ marginTop: '0.85rem', fontSize: '0.78rem', color: '#065f46', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                    Reward:
+                                                </div>
+                                                <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#064e3b', marginTop: '0.15rem' }}>
+                                                    {result.reward.name}
+                                                </div>
+                                            </div>
+
+                                            {/* Voucher Code Box */}
+                                            <div style={{
+                                                background: '#ffffff',
+                                                borderRadius: '16px',
+                                                border: '2px dashed #34d399',
+                                                padding: '1.25rem',
+                                                textAlign: 'center',
+                                                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.04)',
+                                                marginBottom: '1rem',
+                                            }}>
+                                                <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+                                                    Voucher:
+                                                </div>
+                                                <div style={{
+                                                    fontSize: '2rem',
+                                                    fontFamily: 'monospace',
+                                                    fontWeight: 900,
+                                                    letterSpacing: '0.18em',
+                                                    color: '#00a884',
+                                                    padding: '0.25rem 0',
+                                                }}>
+                                                    {result.reward.voucher_code}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(result.reward.voucher_code)
+                                                        setCopied(true)
+                                                        setTimeout(() => setCopied(false), 2000)
+                                                    }}
+                                                    className="btn-nd-pill"
+                                                    style={{
+                                                        marginTop: '0.5rem',
+                                                        padding: '0.45rem 1.25rem',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 800,
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        gap: '0.4rem',
+                                                        background: copied ? '#059669' : '#00a884',
+                                                        color: '#ffffff',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                    }}
+                                                >
+                                                    <i className={copied ? "fas fa-check" : "far fa-copy"} />
+                                                    {copied ? 'Tersalin!' : 'Salin Kode Voucher'}
+                                                </button>
+                                            </div>
+
+                                            {/* Expiry Details */}
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(2, 1fr)',
+                                                gap: '0.75rem',
+                                                background: 'rgba(255, 255, 255, 0.9)',
+                                                borderRadius: '12px',
+                                                padding: '0.85rem 1rem',
+                                                fontSize: '0.78rem',
+                                                fontWeight: 700,
+                                                border: '1px solid #d1fae5',
+                                            }}>
+                                                <div>
+                                                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Berlaku sampai:</span>
+                                                    <span style={{ color: '#1e293b', fontWeight: 800 }}>
+                                                        {result.reward.expires_at_formatted || result.reward.expires_at || '-'}
+                                                    </span>
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <span style={{ color: '#64748b', display: 'block', fontSize: '0.7rem' }}>Sisa masa berlaku:</span>
+                                                    <span style={{ color: '#00a884', fontWeight: 900 }}>
+                                                        {result.reward.remaining_time_label || `${result.reward.remaining_days} hari`}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div style={{
+                                                marginTop: '0.85rem',
+                                                textAlign: 'center',
+                                                fontSize: '0.73rem',
+                                                color: '#065f46',
+                                                fontWeight: 600,
+                                            }}>
+                                                ✨ Voucher reward telah aktif otomatis di Sistem kami dan siap digunakan untuk login WiFi.
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Metrics Grid */}
                                     <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem' }}>
