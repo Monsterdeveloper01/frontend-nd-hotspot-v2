@@ -22,7 +22,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     fullscreen: <path d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />,
     chevronDown: <path d="M19 9l-7 7-7-7" />,
     clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
-    trend: <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+    trend: <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />,
+    points: <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
   };
 
   return (
@@ -182,6 +183,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { name: 'Network Monitoring', path: '/admin/network-center', icon: 'network' },
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp', section: 'MESSAGING' },
     { name: 'Event Analytics', path: '/admin/event-analytics', icon: 'trend', section: 'EVENT SYSTEM' },
+    { name: 'ND-Point Analytics', path: '/admin/points', icon: 'points', section: 'POINT SYSTEM' },
   ]
 
   const handleLogout = () => {
