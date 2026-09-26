@@ -343,6 +343,19 @@ function Home() {
               </div>
             </div>
           </div>
+
+          {/* Hype Teaser Footer */}
+          <div className="relative z-10 mt-5 pt-3.5 border-t border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
+            <div className="flex items-center gap-2 text-slate-100 font-medium">
+              <span className="text-amber-300 text-sm">✨</span>
+              <span>
+                <strong className="text-amber-300 font-bold">Beli terus voucher ND-Hotspot</strong> dan nantikan event-event cuan menarik lainnya yang akan datang! 🚀
+              </span>
+            </div>
+            <span className="text-[10px] text-emerald-300/80 font-bold tracking-wide uppercase sm:text-right">
+              🔥 Internetan Lancar • Makin Cuan
+            </span>
+          </div>
         </div>
 
         {/* Modal Syarat & Ketentuan */}

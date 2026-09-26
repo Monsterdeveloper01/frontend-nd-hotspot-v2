@@ -48,6 +48,7 @@ export default function PointAnalytics() {
   const [reconcileResult, setReconcileResult] = useState(null);
   const [reconcileScanning, setReconcileScanning] = useState(false);
   const [reconcileExecuting, setReconcileExecuting] = useState(false);
+  const [reconcilePeriod, setReconcilePeriod] = useState('current_month'); // current_month | last_30_days
 
   // Feedback Notification
   const [alert, setAlert] = useState(null);
@@ -274,7 +275,11 @@ export default function PointAnalytics() {
     setReconcileScanning(true);
     setReconcileResult(null);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/points/reconcile`, { dry_run: true }, getAuthHeaders());
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/admin/points/reconcile`,
+        { dry_run: true, period: reconcilePeriod },
+        getAuthHeaders()
+      );
       if (res.data?.status === 'success') {
         setReconcileResult(res.data.data);
       }
@@ -286,14 +291,18 @@ export default function PointAnalytics() {
   };
 
   const handleExecuteReconcile = async () => {
-    if (!window.confirm('Jalankan rekonsiliasi poin? Sistem akan memproses seluruh transaksi valid yang belum mendapatkan poin secara idempoten dan aman.')) {
+    if (!window.confirm('Jalankan rekonsiliasi poin untuk 1 bulan ini? Sistem hanya akan memproses transaksi valid periode ini yang belum mendapatkan poin.')) {
       return;
     }
     setReconcileExecuting(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/points/reconcile`, { dry_run: false }, getAuthHeaders());
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/admin/points/reconcile`,
+        { dry_run: false, period: reconcilePeriod },
+        getAuthHeaders()
+      );
       if (res.data?.status === 'success') {
-        showAlert(`Rekonsiliasi selesai! ${res.data.data.processed_count} transaksi berhasil dikreditkan poin.`);
+        showAlert(`Rekonsiliasi selesai! ${res.data.data.processed_count} transaksi periode ini berhasil dikreditkan poin.`);
         setReconcileResult(res.data.data);
         fetchAnalytics();
         fetchAccounts(searchPhone);
@@ -910,10 +919,10 @@ export default function PointAnalytics() {
           <div className="max-w-2xl">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 m-0">
               <i className="fas fa-shield-alt text-emerald-500 dark:text-emerald-400" />
-              Alat Audit & Rekonsiliasi Transaksi Riil
+              Alat Audit & Rekonsiliasi Transaksi 1 Bulan Ini
             </h3>
             <p className="text-slate-500 dark:text-admin-muted text-xs mt-1 leading-relaxed">
-              Jika terjadi keterlambatan atau gangguan webhook pada saat transaksi sukses berlangsung, fitur ini memungkinkan admin memindai seluruh transaksi riil yang valid dan mengkreditkan poin yang tertinggal.
+              Khusus memindai transaksi riil yang terjadi dalam <strong>1 bulan ini</strong> (bukan seluruh data lampau). Fitur ini aman dan idempoten untuk mengkreditkan poin transaksi valid yang tertinggal.
             </p>
           </div>
 
@@ -923,43 +932,70 @@ export default function PointAnalytics() {
               Prinsip Keamanan Rekonsiliasi:
             </div>
             <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-admin-muted text-[11px]">
+              <li><strong>Dibatasi 1 Bulan:</strong> Hanya mencakup transaksi bulan kalender berjalan (atau 30 hari terakhir).</li>
               <li><strong>100% Idempoten:</strong> Transaksi yang sudah pernah menerima poin tidak akan pernah digandakan (dilindungi database unique constraint).</li>
               <li><strong>Hanya Data Riil:</strong> Hanya memproses transaksi berstatus `success` dengan format `ND-%`. Tidak membuat transaksi palsu.</li>
-              <li><strong>Aman & Tidak Merusak:</strong> Tidak mengubah struktur atau data transaksi riil.</li>
             </ul>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handleScanReconcile}
-              disabled={reconcileScanning || reconcileExecuting}
-              className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer border border-slate-300 dark:border-slate-700 shadow-sm"
-            >
-              <i className={`fas fa-search ${reconcileScanning ? 'animate-spin' : ''}`} />
-              <span>{reconcileScanning ? 'Memindai Database...' : 'Pindai Transaksi Tertinggal (Dry Run)'}</span>
-            </button>
+          {/* Period Selector Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-admin-base/60 border border-slate-200 dark:border-admin-border">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                Pilih Periode:
+              </label>
+              <select
+                value={reconcilePeriod}
+                onChange={(e) => {
+                  setReconcilePeriod(e.target.value);
+                  setReconcileResult(null);
+                }}
+                className="px-3 py-2 rounded-xl bg-white dark:bg-admin-base border border-slate-300 dark:border-admin-border text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 cursor-pointer shadow-sm"
+              >
+                <option value="current_month">1 Bulan Ini (Bulan Kalender Berjalan)</option>
+                <option value="last_30_days">30 Hari Terakhir</option>
+              </select>
+            </div>
 
-            {reconcileResult && reconcileResult.missing_count > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={handleExecuteReconcile}
-                disabled={reconcileExecuting}
-                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition-colors flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
+                onClick={handleScanReconcile}
+                disabled={reconcileScanning || reconcileExecuting}
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs transition-colors flex items-center gap-2 cursor-pointer border border-slate-300 dark:border-slate-700 shadow-sm"
               >
-                <i className={`fas fa-play ${reconcileExecuting ? 'animate-spin' : ''}`} />
-                <span>{reconcileExecuting ? 'Memproses Poin...' : `Kreditkan ${reconcileResult.missing_count} Transaksi Sekarang`}</span>
+                <i className={`fas fa-search ${reconcileScanning ? 'animate-spin' : ''}`} />
+                <span>{reconcileScanning ? 'Memindai...' : 'Pindai Transaksi 1 Bulan Ini'}</span>
               </button>
-            )}
+
+              {reconcileResult && reconcileResult.missing_count > 0 && (
+                <button
+                  type="button"
+                  onClick={handleExecuteReconcile}
+                  disabled={reconcileExecuting}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition-colors flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
+                >
+                  <i className={`fas fa-play ${reconcileExecuting ? 'animate-spin' : ''}`} />
+                  <span>{reconcileExecuting ? 'Memproses Poin...' : `Kreditkan ${reconcileResult.missing_count} Transaksi Sekarang`}</span>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Scan Results Card */}
           {reconcileResult && (
             <div className="p-5 rounded-xl bg-slate-50 dark:bg-admin-base/80 border border-slate-200 dark:border-admin-border space-y-3">
-              <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2 m-0">
-                <i className="fas fa-clipboard-list text-cyan-500 dark:text-cyan-400" />
-                Hasil Pemindaian Transaksi
-              </h4>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-admin-border pb-2.5">
+                <h4 className="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider flex items-center gap-2 m-0">
+                  <i className="fas fa-clipboard-list text-cyan-500 dark:text-cyan-400" />
+                  Hasil Pemindaian Transaksi
+                </h4>
+                {reconcileResult.period_label && (
+                  <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/30">
+                    Periode: {reconcileResult.period_label}
+                  </span>
+                )}
+              </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
