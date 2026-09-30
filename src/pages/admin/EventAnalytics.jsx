@@ -559,12 +559,14 @@ export default function EventAnalytics() {
   // NAVIGATE TO DETAIL
   // ==========================================
   const openDetail = (eventId) => {
+    // Auto-select current month so admin always sees fresh data for this month
+    const currentPeriod = new Date().toISOString().slice(0, 7) // "2026-10"
     setSelectedEventId(eventId)
     setView('detail')
-    setSelectedPeriod('')
+    setSelectedPeriod(currentPeriod)
     setSearchPhone('')
     setParticipantPage(1)
-    fetchAnalytics(eventId)
+    fetchAnalytics(eventId, currentPeriod)
   }
 
   const goBackToList = () => {
@@ -777,7 +779,10 @@ export default function EventAnalytics() {
     const sum = analytics?.summary
     const targetAch = analytics?.target_achievement
     const dist = analytics?.distribution
-    const periods = analytics?.periods || []
+    // Always include current month in period buttons even if no data yet
+    const currentMonth = new Date().toISOString().slice(0, 7)
+    const rawPeriods = analytics?.periods || []
+    const periods = rawPeriods.includes(currentMonth) ? rawPeriods : [currentMonth, ...rawPeriods]
     const participants = analytics?.participants
     const testModeInfo = analytics?.test_mode
     const sc = ev ? (statusConfig[ev.status] || statusConfig.active) : statusConfig.active
