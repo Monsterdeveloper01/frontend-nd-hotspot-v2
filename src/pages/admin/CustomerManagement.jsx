@@ -409,10 +409,17 @@ const CustomerManagement = () => {
                                     <div className="w-full md:w-[15%] mb-4 md:mb-0">
                                         <button onClick={() => handleToggleStatus(c.id)} className="focus:outline-none">
                                             {isIsolated ? (
-                                                <span className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-rose-500 text-white rounded-full text-[8px] font-black uppercase tracking-widest shadow-[0_0_12px_rgba(244,63,94,0.6)] hover:bg-rose-600 transition-colors">
-                                                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                                                    TERISOLIR
-                                                </span>
+                                                c.is_synced && c.mikrotik_enabled ? (
+                                                    <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white rounded-full text-[8px] font-black uppercase tracking-widest shadow-[0_0_12px_rgba(245,158,11,0.6)] hover:bg-amber-600 transition-colors" title="Status DB Terisolir tapi di Router MikroTik masih Aktif! Klik untuk mendisable langsung ke router.">
+                                                        <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></span>
+                                                        SYNC ISOLIR ⚠️
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-rose-500 text-white rounded-full text-[8px] font-black uppercase tracking-widest shadow-[0_0_12px_rgba(244,63,94,0.6)] hover:bg-rose-600 transition-colors">
+                                                        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                                        TERISOLIR
+                                                    </span>
+                                                )
                                             ) : c.is_synced ? (
                                                 c.mikrotik_enabled ? (
                                                     <span className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-white text-emerald-600 rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm hover:bg-emerald-50 transition-colors">
