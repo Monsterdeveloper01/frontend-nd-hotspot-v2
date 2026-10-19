@@ -33,6 +33,7 @@ const CustomerManagement = () => {
     const [filterLink, setFilterLink] = useState('all') // all, active, isolated
     const [filterPay, setFilterPay] = useState('all') // all, paid, unpaid
     const [filterOverdue, setFilterOverdue] = useState(false)
+    const [filterSort, setFilterSort] = useState('date_alphabet') // date_alphabet, alphabet_asc, alphabet_desc, date_asc, latest
     const [formData, setFormData] = useState({
         name: '',
         whatsapp: '',
@@ -58,12 +59,12 @@ const CustomerManagement = () => {
         setModalConfig({ ...modalConfig, isOpen: false })
     }
 
-    const fetchCustomers = async (page = 1, q = searchTerm, link = filterLink, pay = filterPay, overdue = filterOverdue) => {
+    const fetchCustomers = async (page = 1, q = searchTerm, link = filterLink, pay = filterPay, overdue = filterOverdue, sort = filterSort) => {
         try {
             setLoading(true)
             const token = localStorage.getItem('token')
             
-            let url = `${import.meta.env.VITE_API_URL}/customers?page=${page}&q=${q}`
+            let url = `${import.meta.env.VITE_API_URL}/customers?page=${page}&q=${encodeURIComponent(q)}&sort=${sort}`
             if (link !== 'all') url += `&is_isolated=${link === 'isolated' ? 1 : 0}`
             if (pay !== 'all') url += `&status_bayar=${pay}`
             if (overdue) url += `&overdue=1`
@@ -87,10 +88,10 @@ const CustomerManagement = () => {
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            fetchCustomers(1, searchTerm, filterLink, filterPay, filterOverdue)
+            fetchCustomers(1, searchTerm, filterLink, filterPay, filterOverdue, filterSort)
         }, 500)
         return () => clearTimeout(delayDebounceFn)
-    }, [searchTerm, filterLink, filterPay, filterOverdue])
+    }, [searchTerm, filterLink, filterPay, filterOverdue, filterSort])
 
     const handleEdit = (customer) => {
         setEditingId(customer.id)
@@ -336,10 +337,24 @@ const CustomerManagement = () => {
 
                         {/* Filters */}
                         <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+                            {/* Sort / Urutan Customer */}
+                            <select 
+                                value={filterSort}
+                                onChange={(e) => setFilterSort(e.target.value)}
+                                className="px-4 py-3 bg-admin-card text-admin-text border border-admin-border rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm min-w-[170px]"
+                                title="Pilihan Urutan Data Pelanggan"
+                            >
+                                <option value="date_alphabet">📅 DARI TGL 1 & ALFABET</option>
+                                <option value="alphabet_asc">🔤 SESUAI ALFABET (A - Z)</option>
+                                <option value="alphabet_desc">🔤 SESUAI ALFABET (Z - A)</option>
+                                <option value="date_asc">⏱️ JATUH TEMPO (TERDEKAT)</option>
+                                <option value="latest">⚡ TERBARU DITAMBAHKAN</option>
+                            </select>
+
                             <select 
                                 value={filterLink}
                                 onChange={(e) => setFilterLink(e.target.value)}
-                                className="px-4 py-3 bg-admin-card text-admin-text border border-admin-border rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm min-w-[140px]"
+                                className="px-4 py-3 bg-admin-card text-admin-text border border-admin-border rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm min-w-[130px]"
                             >
                                 <option value="all">SEMUA LINK</option>
                                 <option value="active">LINK AKTIF</option>
@@ -349,7 +364,7 @@ const CustomerManagement = () => {
                             <select 
                                 value={filterPay}
                                 onChange={(e) => setFilterPay(e.target.value)}
-                                className="px-4 py-3 bg-admin-card text-admin-text border border-admin-border rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm min-w-[140px]"
+                                className="px-4 py-3 bg-admin-card text-admin-text border border-admin-border rounded-xl font-black uppercase text-[10px] tracking-widest outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm min-w-[130px]"
                             >
                                 <option value="all">SEMUA BAYAR</option>
                                 <option value="paid">LUNAS</option>
@@ -399,9 +414,14 @@ const CustomerManagement = () => {
                                         <div className={`font-black text-sm tracking-tight ${isIsolated ? 'text-slate-900' : 'text-admin-text'}`}>
                                             Rp {Number(c.billing_amount).toLocaleString('id-ID')}
                                         </div>
-                                        <div className={`flex items-center gap-1.5 mt-1 font-bold text-[9px] uppercase tracking-widest ${isOverdue ? 'text-rose-600' : (isIsolated ? 'text-blue-700' : 'text-blue-500')}`}>
-                                            <Icon name="clock" className="w-3 h-3" />
-                                            DUE: {new Date(c.due_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${isOverdue ? 'bg-rose-500/10 text-rose-600 border border-rose-500/20' : (isIsolated ? 'bg-slate-700/10 text-slate-800 border border-slate-700/20' : 'bg-blue-500/10 text-blue-600 border border-blue-500/20')}`}>
+                                                TGL {c.due_date ? new Date(c.due_date).getDate() : '-'}
+                                            </span>
+                                            <div className={`flex items-center gap-1 font-bold text-[9px] uppercase tracking-widest ${isOverdue ? 'text-rose-600' : (isIsolated ? 'text-blue-700' : 'text-blue-500')}`}>
+                                                <Icon name="clock" className="w-3 h-3" />
+                                                DUE: {new Date(c.due_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            </div>
                                         </div>
                                     </div>
 
