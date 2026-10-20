@@ -288,6 +288,14 @@ const VoucherStock = () => {
     const [statusFilter, setStatusFilter] = useState('all')
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [genSubmitting, setGenSubmitting] = useState(false)
+    const [showSyncModal, setShowSyncModal] = useState(false)
+    const [syncLoading, setSyncLoading] = useState(false)
+    const [syncOptions, setSyncOptions] = useState({
+        only_rewards: false,
+        include_stock: true,
+        force_update: false
+    })
+    const [syncResult, setSyncResult] = useState(null)
     const [plans, setPlans] = useState([])
     const [genData, setGenData] = useState({
         voucher_plan_id: '',
@@ -391,21 +399,62 @@ const VoucherStock = () => {
         }
     }
 
+    const handleSyncMikrotik = async (dryRun = false) => {
+        setSyncLoading(true)
+        setSyncResult(null)
+        try {
+            const token = localStorage.getItem('token')
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/vouchers/sync-mikrotik`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    ...syncOptions,
+                    dry_run: dryRun
+                })
+            })
+            const data = await response.json()
+            setSyncResult(data)
+            if (data.success && !dryRun) {
+                fetchVouchers(meta ? meta.current_page : 1)
+            }
+        } catch (err) {
+            setSyncResult({
+                success: false,
+                message: 'Gagal menghubungi server backend: ' + err.message
+            })
+        } finally {
+            setSyncLoading(false)
+        }
+    }
+
     return (
         <div className="space-y-10">
             {/* Header Section */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-black text-admin-text tracking-tight uppercase leading-none">Stok Voucher</h1>
                     <p className="text-admin-muted font-bold text-[10px] uppercase tracking-widest mt-2">Monitoring inventaris voucher hotspot dan riwayat penggunaan</p>
                 </div>
-                <button 
-                    onClick={() => setShowGenerateModal(true)}
-                    className="px-6 py-4 bg-admin-accent text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3"
-                >
-                    <Icon name="plus" className="w-4 h-4" />
-                    Buat Voucher Massal
-                </button>
+                <div className="flex items-center gap-3 flex-wrap">
+                    <button 
+                        onClick={() => { setShowSyncModal(true); setSyncResult(null); }}
+                        className="px-5 py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all active:scale-95 flex items-center gap-2"
+                        title="Tembak voucher aktif & reward ke router MikroTik dengan sisa waktu otomatis"
+                    >
+                        <Icon name="device" className="w-4 h-4" />
+                        Sinkron ke MikroTik
+                    </button>
+                    <button 
+                        onClick={() => setShowGenerateModal(true)}
+                        className="px-6 py-4 bg-admin-accent text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center gap-3"
+                    >
+                        <Icon name="plus" className="w-4 h-4" />
+                        Buat Voucher Massal
+                    </button>
+                </div>
             </div>
 
             {/* Stats Cards */}
@@ -640,6 +689,135 @@ const VoucherStock = () => {
                                 {genSubmitting ? <i className="fas fa-circle-notch animate-spin"></i> : <><Icon name="plus" className="w-4 h-4" /> Generate Voucher</>}
                             </button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Sync to MikroTik Modal */}
+            {showSyncModal && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-admin-card rounded-2xl border border-admin-border p-6 sm:p-8 max-w-xl w-full shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto">
+                        <div className="flex items-center justify-between pb-4 border-b border-admin-border">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
+                                    <Icon name="device" className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-black text-admin-text uppercase tracking-tight">Sinkron Voucher ke MikroTik</h2>
+                                    <p className="text-[10px] font-bold text-admin-muted uppercase tracking-wider">Tembak voucher aktif dengan sisa waktu otomatis</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setShowSyncModal(false)}
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-admin-muted hover:text-admin-text hover:bg-admin-base transition-colors"
+                            >
+                                <Icon name="x" className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {/* Info Note */}
+                        <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs space-y-2 text-emerald-800 dark:text-emerald-300">
+                            <div className="font-bold flex items-center gap-2">
+                                <i className="fas fa-shield-alt text-emerald-500"></i> Proteksi Kuota & Durasi Merchant (Anti Rugi)
+                            </div>
+                            <p className="text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                                • <strong>Voucher Belum Dipakai:</strong> Disuntikkan dengan durasi penuh paket saat pertama login.<br/>
+                                • <strong>Voucher Sedang Berjalan:</strong> Dihitung persis sisa waktunya (misal voucher 30 hari sudah kepakai 10 hari, maka di MikroTik di-set sisa 20 hari).<br/>
+                                • <strong>Voucher Kedaluwarsa:</strong> Otomatis dilewati dan tidak akan dimasukkan ke router.
+                            </p>
+                        </div>
+
+                        {/* Options */}
+                        <div className="space-y-3 p-4 bg-admin-base rounded-xl border border-admin-border text-xs">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input 
+                                    type="checkbox"
+                                    checked={syncOptions.only_rewards}
+                                    onChange={(e) => setSyncOptions({ ...syncOptions, only_rewards: e.target.checked })}
+                                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-admin-border"
+                                />
+                                <span className="font-bold text-admin-text">Hanya Voucher Reward / Loyalty Program</span>
+                            </label>
+
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input 
+                                    type="checkbox"
+                                    checked={syncOptions.include_stock}
+                                    onChange={(e) => setSyncOptions({ ...syncOptions, include_stock: e.target.checked })}
+                                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-admin-border"
+                                />
+                                <span className="font-bold text-admin-text">Sertakan Voucher Stok Tersedia (Available)</span>
+                            </label>
+
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input 
+                                    type="checkbox"
+                                    checked={syncOptions.force_update}
+                                    onChange={(e) => setSyncOptions({ ...syncOptions, force_update: e.target.checked })}
+                                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-admin-border"
+                                />
+                                <span className="font-bold text-admin-text">Perbarui Limit Uptime jika User Sudah Ada di Router</span>
+                            </label>
+                        </div>
+
+                        {/* Result Display */}
+                        {syncResult && (
+                            <div className={`p-4 rounded-xl border text-xs space-y-3 ${syncResult.success ? 'bg-slate-50 dark:bg-admin-base/80 border-admin-border' : 'bg-rose-50 dark:bg-rose-950/20 border-rose-500/30 text-rose-600'}`}>
+                                <div className="flex items-center justify-between font-bold">
+                                    <span>{syncResult.message}</span>
+                                    {syncResult.dry_run && <span className="text-[9px] bg-amber-500/20 text-amber-600 px-2 py-0.5 rounded font-black uppercase">Simulasi</span>}
+                                </div>
+                                {syncResult.stats && (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 text-[11px]">
+                                        <div className="p-2 bg-admin-card rounded-lg border border-admin-border">
+                                            <span className="text-admin-muted text-[10px] block">Total Dipindai</span>
+                                            <strong className="text-admin-text text-sm">{syncResult.stats.total_scanned}</strong>
+                                        </div>
+                                        <div className="p-2 bg-admin-card rounded-lg border border-admin-border">
+                                            <span className="text-admin-muted text-[10px] block">Belum Dipakai (Full)</span>
+                                            <strong className="text-emerald-600 text-sm">+{syncResult.stats.synced_never_used}</strong>
+                                        </div>
+                                        <div className="p-2 bg-admin-card rounded-lg border border-admin-border">
+                                            <span className="text-admin-muted text-[10px] block">Aktif (Sisa Waktu)</span>
+                                            <strong className="text-blue-600 text-sm">+{syncResult.stats.synced_active_remaining}</strong>
+                                        </div>
+                                        <div className="p-2 bg-admin-card rounded-lg border border-admin-border">
+                                            <span className="text-admin-muted text-[10px] block">Sudah Ada di Router</span>
+                                            <strong className="text-amber-600 text-sm">{syncResult.stats.already_in_mikrotik}</strong>
+                                        </div>
+                                        <div className="p-2 bg-admin-card rounded-lg border border-admin-border">
+                                            <span className="text-admin-muted text-[10px] block">Dilewati (Expired)</span>
+                                            <strong className="text-slate-500 text-sm">{syncResult.stats.skipped_expired}</strong>
+                                        </div>
+                                        <div className="p-2 bg-admin-card rounded-lg border border-admin-border">
+                                            <span className="text-admin-muted text-[10px] block">Gagal Inject</span>
+                                            <strong className="text-rose-600 text-sm">{syncResult.stats.failed}</strong>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+                            <button
+                                type="button"
+                                disabled={syncLoading}
+                                onClick={() => handleSyncMikrotik(true)}
+                                className="w-full sm:w-auto px-5 py-3 bg-admin-card text-admin-text border border-admin-border rounded-xl font-bold uppercase tracking-wider text-[10px] hover:bg-admin-base transition-colors disabled:opacity-50"
+                            >
+                                {syncLoading ? 'Memproses...' : '🔍 Cek Simulasi (Dry Run)'}
+                            </button>
+                            <button
+                                type="button"
+                                disabled={syncLoading}
+                                onClick={() => handleSyncMikrotik(false)}
+                                className="w-full sm:w-auto px-6 py-3 bg-emerald-600 text-white rounded-xl font-black uppercase tracking-wider text-[10px] shadow-lg shadow-emerald-500/20 hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                <Icon name="device" className="w-4 h-4" />
+                                {syncLoading ? 'Menyinkronkan...' : '⚡ Eksekusi Tembak ke MikroTik'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
