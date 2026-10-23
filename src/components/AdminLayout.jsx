@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 const Icon = ({ name, className = "w-5 h-5" }) => {
   const icons = {
     dashboard: <path d="M3 3h7v9H3V3zm11 0h7v5h-7V3zm0 9h7v9h-7v-9zM3 16h7v5H3v-5z" />,
+    shield: <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
     master: <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />,
     stock: <path d="M15 5v2m-6-2v2M3 10V6a2 2 0 012-2h14a2 2 0 012 2v4M3 10h18M3 10v10a2 2 0 002 2h14a2 2 0 002-2V10M7 14h10" />,
     whatsapp: <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />,
@@ -55,6 +56,8 @@ const AdminLayout = ({ children, title, subtitle }) => {
   const [unreadCount, setUnreadCount] = useState(0)
   const [showComplaints, setShowComplaints] = useState(false)
   const complaintRef = useRef(null)
+  const [unresolvedIncidents, setUnresolvedIncidents] = useState(0)
+  const [criticalIncidents, setCriticalIncidents] = useState(0)
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -133,6 +136,27 @@ const AdminLayout = ({ children, title, subtitle }) => {
     }
   }
 
+  const fetchIncidentsSummary = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/incidents/summary`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setUnresolvedIncidents(data.unresolved_count || 0)
+        setCriticalIncidents(data.critical_count || 0)
+      }
+    } catch (err) {
+      // Silently fail
+    }
+  }
+
+  useEffect(() => {
+    fetchIncidentsSummary()
+    const interval = setInterval(fetchIncidentsSummary, 30000)
+    return () => clearInterval(interval)
+  }, [])
   useEffect(() => {
     fetchComplaints()
     const interval = setInterval(fetchComplaints, 30000)
@@ -184,6 +208,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp', section: 'MESSAGING' },
     { name: 'Event Analytics', path: '/admin/event-analytics', icon: 'trend', section: 'EVENT SYSTEM' },
     { name: 'ND-Point Analytics', path: '/admin/points', icon: 'points', section: 'POINT SYSTEM' },
+    { name: 'Fraud & Incidents', path: '/admin/incidents', icon: 'shield', section: 'SECURITY & FRAUD' },
   ]
 
   const handleLogout = () => {
@@ -279,6 +304,17 @@ const AdminLayout = ({ children, title, subtitle }) => {
           </div>
           
           <div className="flex items-center gap-3">
+            {unresolvedIncidents > 0 && (
+              <Link
+                to="/admin/incidents"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-rose-500/15 text-rose-500 border border-rose-500/30 hover:bg-rose-500/25 transition shadow-[0_0_10px_rgba(244,63,94,0.2)] animate-pulse"
+                title="Pusat Kendali: Ada error/fraud yang membutuhkan perhatian!"
+              >
+                <Icon name="shield" className="w-3.5 h-3.5" />
+                <span>{unresolvedIncidents} Alert</span>
+                {criticalIncidents > 0 && <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>}
+              </Link>
+            )}
             <div className="relative" ref={complaintRef}>
               <button 
                 onClick={() => setShowComplaints(!showComplaints)}

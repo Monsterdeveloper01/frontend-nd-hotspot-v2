@@ -49,6 +49,7 @@ axios.interceptors.response.use(
 );
 
 import OltManagement from './pages/admin/OltManagement'
+import IncidentHub from './pages/admin/IncidentHub'
 
 // Private Route Component
 const PrivateRoute = ({ children }) => {
@@ -148,6 +149,7 @@ function App() {
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/event-analytics" element={<EventAnalytics />} />
           <Route path="/admin/points" element={<PointAnalytics />} />
+          <Route path="/admin/incidents" element={<IncidentHub />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
