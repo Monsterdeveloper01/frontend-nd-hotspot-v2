@@ -32,6 +32,7 @@ export default function PublicPoints() {
     const [confirmPin, setConfirmPin] = useState('')
     const [otpSent, setOtpSent] = useState(false)
     const [otpCooldown, setOtpCooldown] = useState(0)
+    const [agreeTerms, setAgreeTerms] = useState(false)
 
     // Voucher Plans & Top-up Packages
     const [voucherPlans, setVoucherPlans] = useState([])
@@ -42,6 +43,7 @@ export default function PublicPoints() {
     // QRIS Modal for Top-Up
     const [qrisData, setQrisData] = useState(null)
     const [pollingInterval, setPollingInterval] = useState(null)
+    const [showInfoModal, setShowInfoModal] = useState(false)
 
     // Countdown for OTP
     useEffect(() => {
@@ -184,6 +186,11 @@ export default function PublicPoints() {
         }
         if (newPin !== confirmPin) {
             setError('Konfirmasi PIN tidak cocok.')
+            return
+        }
+
+        if (!agreeTerms) {
+            setError('Harap beri tanda centang untuk menyetujui Syarat & Ketentuan ND-Points.')
             return
         }
 
@@ -335,9 +342,6 @@ export default function PublicPoints() {
                         <h1 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em', margin: 0 }}>
                             ND-<span style={{ color: '#f59e0b' }}>Points</span> Portal
                         </h1>
-                        <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.82rem', marginTop: '0.35rem' }}>
-                            Sistem Loyalty & Closed-Loop Credit Khusus ND-Hotspot
-                        </p>
                     </div>
 
                     {/* Notification Alerts */}
@@ -612,18 +616,49 @@ export default function PublicPoints() {
                                         />
                                     </div>
 
+                                    {/* Mandatory Terms & Conditions Checkbox */}
+                                    <div style={{
+                                        marginBottom: '1.25rem', textAlign: 'left',
+                                        background: '#f8fafc', padding: '0.85rem 1rem',
+                                        borderRadius: '16px', border: '1px solid #e2e8f0',
+                                    }}>
+                                        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', cursor: 'pointer', fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={agreeTerms}
+                                                onChange={(e) => setAgreeTerms(e.target.checked)}
+                                                required
+                                                style={{ width: '18px', height: '18px', accentColor: '#00a884', marginTop: '2px', cursor: 'pointer', flexShrink: 0 }}
+                                            />
+                                            <span>
+                                                Saya telah membaca dan menyetujui{' '}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowInfoModal(true)}
+                                                    style={{ background: 'none', border: 'none', color: '#00a884', fontWeight: 800, textDecoration: 'underline', cursor: 'pointer', padding: 0, fontSize: '0.78rem' }}
+                                                >
+                                                    Syarat & Ketentuan ND-Points
+                                                </button>
+                                                {' '}(Termasuk ketentuan saldo tertutup & <em>non-refundable</em> / tidak dapat diuangkan kembali).
+                                            </span>
+                                        </label>
+                                    </div>
+
                                     <button
                                         type="submit"
-                                        disabled={loading}
+                                        disabled={loading || !agreeTerms}
                                         style={{
                                             width: '100%', padding: '0.9rem',
-                                            background: 'linear-gradient(135deg, #00a884, #00c298)',
-                                            color: '#fff', fontWeight: 800, fontSize: '0.9rem',
-                                            borderRadius: '9999px', border: 'none', cursor: 'pointer',
-                                            boxShadow: '0 4px 15px rgba(0, 168, 132, 0.3)',
+                                            background: agreeTerms ? 'linear-gradient(135deg, #00a884, #00c298)' : '#e2e8f0',
+                                            color: agreeTerms ? '#fff' : '#94a3b8',
+                                            fontWeight: 800, fontSize: '0.9rem',
+                                            borderRadius: '9999px', border: 'none',
+                                            cursor: agreeTerms ? 'pointer' : 'not-allowed',
+                                            boxShadow: agreeTerms ? '0 4px 15px rgba(0, 168, 132, 0.3)' : 'none',
+                                            transition: 'all 0.2s',
                                         }}
                                     >
-                                        {loading ? <i className="fas fa-spinner fa-spin" /> : 'Simpan PIN & Lanjut'}
+                                        {loading ? <i className="fas fa-spinner fa-spin" /> : 'Aktivasi PIN & Buka Akun'}
                                     </button>
                                 </form>
                             )}
@@ -957,10 +992,100 @@ export default function PublicPoints() {
                         marginTop: '2.5rem', textAlign: 'center',
                         borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem',
                     }}>
-                        <p style={{ fontSize: '0.7rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
-                            🔒 <strong>Ketentuan ND-Points:</strong> ND-Points adalah sistem token loyalitas tertutup (<em>closed-loop credit</em>) khusus untuk ekosistem ND-Hotspot. Poin tidak memiliki nilai tunai di luar sistem, tidak dapat di-refund/diuangkan kembali, dan tidak dapat ditransfer ke rekening bank.
+                        <p style={{ fontSize: '0.73rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
+                            🔒 <strong>Ketentuan ND-Points:</strong> ND-Points adalah sistem token loyalitas tertutup (<em>closed-loop credit</em>) khusus untuk ekosistem ND-Hotspot. Poin tidak memiliki nilai tunai di luar sistem, tidak dapat di-refund/diuangkan kembali, dan tidak dapat ditransfer ke rekening bank.{' '}
+                            <button
+                                onClick={() => setShowInfoModal(true)}
+                                style={{
+                                    background: 'none', border: 'none', color: '#00a884',
+                                    fontWeight: 800, textDecoration: 'underline', cursor: 'pointer',
+                                    padding: 0, fontSize: '0.73rem', display: 'inline',
+                                }}
+                            >
+                                Baca Selengkapnya
+                            </button>
                         </p>
                     </div>
+
+                    {/* MODAL PANDUAN & RINCIAN ND-POINTS */}
+                    {showInfoModal && (
+                        <div style={{
+                            position: 'fixed', inset: 0, zIndex: 110,
+                            background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(5px)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
+                        }}>
+                            <div className="card-nd-elevated" style={{
+                                width: '100%', maxWidth: '28rem', background: '#fff',
+                                borderRadius: '24px', padding: '1.75rem', maxHeight: '90vh',
+                                overflowY: 'auto', textAlign: 'left',
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                        <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                                            <i className="fas fa-coins" />
+                                        </div>
+                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#1e293b', margin: 0 }}>
+                                            Panduan & Ketentuan Poin
+                                        </h3>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowInfoModal(false)}
+                                        style={{ background: '#f1f5f9', border: 'none', color: '#64748b', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        <i className="fas fa-times" />
+                                    </button>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.8rem', color: '#475569', lineHeight: 1.6 }}>
+                                    <div style={{ background: '#f8fafc', padding: '0.9rem 1rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                                        <h4 style={{ margin: '0 0 0.3rem', fontSize: '0.85rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <i className="fas fa-info-circle" style={{ color: '#00a884' }} /> Apa Itu ND-Points?
+                                        </h4>
+                                        <p style={{ margin: 0 }}>
+                                            ND-Points adalah sistem saldo loyalty tertutup (<em>closed-loop credit</em>) khusus untuk pelanggan setia ND-Hotspot. Koin ini berfungsi sebagai saldo praktis untuk menukar paket internet kapan saja tanpa perlu bolak-balik scan QRIS di m-banking.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.85rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <i className="fas fa-star" style={{ color: '#f59e0b' }} /> Keuntungan Utama:
+                                        </h4>
+                                        <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                                            <li><strong>⚡ 1-Detik Beli Voucher:</strong> Pilih paket, klik tukar, langsung keluar kode voucher dan otomatis terhubung ke internet.</li>
+                                            <li><strong>🎁 Bonus Ekstra Saat Isi Ulang:</strong> Tersedia paket isi ulang dengan bonus koin gratis (contoh: isi Rp 50.000 dapat 55.000 Poin).</li>
+                                            <li><strong>🔒 Aman Terlindungi PIN:</strong> Saldo koin Anda terkunci dengan 6-digit PIN rahasia dan verifikasi WhatsApp OTP.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div style={{ background: '#fffbeb', padding: '0.9rem 1rem', borderRadius: '16px', border: '1px solid #fef3c7', color: '#92400e' }}>
+                                        <h4 style={{ margin: '0 0 0.3rem', fontSize: '0.85rem', fontWeight: 800, color: '#b45309', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <i className="fas fa-shield-alt" /> Ketentuan Penting (Harap Dibaca):
+                                        </h4>
+                                        <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.78rem' }}>
+                                            <li><strong>Non-Refundable:</strong> ND-Points bukan mata uang rupiah dan <u>tidak dapat diuangkan kembali (non-refundable)</u> atau ditarik ke rekening bank manapun.</li>
+                                            <li><strong>Khusus Layanan ND-Hotspot:</strong> Poin hanya dapat digunakan untuk ditukarkan dengan paket voucher internet di portal ND-Hotspot.</li>
+                                            <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah membagikan 6-digit PIN atau kode OTP Anda kepada siapapun.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div style={{ marginTop: '1.5rem' }}>
+                                    <button
+                                        onClick={() => setShowInfoModal(false)}
+                                        style={{
+                                            width: '100%', padding: '0.85rem',
+                                            background: 'linear-gradient(135deg, #00a884, #00c298)',
+                                            color: '#fff', fontWeight: 800, fontSize: '0.88rem',
+                                            borderRadius: '9999px', border: 'none', cursor: 'pointer',
+                                            boxShadow: '0 4px 15px rgba(0, 168, 132, 0.3)',
+                                        }}
+                                    >
+                                        Saya Mengerti
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                 </div>
             </div>
