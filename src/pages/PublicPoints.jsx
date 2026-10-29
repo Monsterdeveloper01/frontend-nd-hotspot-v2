@@ -319,7 +319,7 @@ export default function PublicPoints() {
     return (
         <PublicLayout>
             <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '3rem 1rem 5rem' }}>
-                <div style={{ maxWidth: '30rem', margin: '0 auto' }}>
+                <div style={{ maxWidth: '38rem', margin: '0 auto' }}>
 
                     {/* Header Banner */}
                     <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -762,11 +762,11 @@ export default function PublicPoints() {
                                 </button>
                             </div>
 
-                            {/* TAB 1: TUKAR VOUCHER */}
+                            {/* TAB 1: TUKAR VOUCHER (KESAMPING / GRID) */}
                             {activeTab === 'redeem' && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
                                     {voucherPlans.length === 0 ? (
-                                        <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.82rem', padding: '2rem 0' }}>
+                                        <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.82rem', padding: '2rem 0', gridColumn: '1 / -1' }}>
                                             Memuat daftar paket voucher...
                                         </p>
                                     ) : (
@@ -777,38 +777,48 @@ export default function PublicPoints() {
                                                 <div
                                                     key={p.id}
                                                     style={{
-                                                        background: '#fff', borderRadius: '20px', padding: '1.2rem',
+                                                        background: '#fff', borderRadius: '20px', padding: '1.25rem 1rem',
                                                         border: '1px solid #f1f5f9', boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
-                                                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                                                        textAlign: 'center', position: 'relative',
                                                     }}
                                                 >
                                                     <div>
+                                                        <div style={{
+                                                            width: '36px', height: '36px', borderRadius: '12px',
+                                                            background: canRedeem ? '#ecfdf5' : '#f1f5f9',
+                                                            color: canRedeem ? '#00a884' : '#94a3b8',
+                                                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                                            fontSize: '1rem', marginBottom: '0.5rem',
+                                                        }}>
+                                                            <i className="fas fa-wifi" />
+                                                        </div>
                                                         <h4 style={{ margin: '0 0 0.25rem', fontSize: '0.95rem', fontWeight: 800, color: '#1e293b' }}>
                                                             {p.name}
                                                         </h4>
-                                                        <p style={{ margin: 0, fontSize: '0.75rem', color: '#64748b', display: 'flex', gap: '0.6rem' }}>
+                                                        <p style={{ margin: '0 0 0.75rem', fontSize: '0.72rem', color: '#64748b', display: 'flex', justifyContent: 'center', gap: '0.6rem' }}>
                                                             <span><i className="far fa-clock" /> {p.duration}</span>
                                                             <span><i className="fas fa-tachometer-alt" /> {p.speed_limit || 'Up to 5M'}</span>
                                                         </p>
                                                     </div>
 
-                                                    <div style={{ textAlign: 'right' }}>
-                                                        <p style={{ margin: '0 0 0.35rem', fontWeight: 900, fontSize: '0.95rem', color: '#f59e0b' }}>
-                                                            {formatRupiah(price)} Pts
+                                                    <div style={{ borderTop: '1px solid #f8fafc', paddingTop: '0.75rem' }}>
+                                                        <p style={{ margin: '0 0 0.5rem', fontWeight: 900, fontSize: '1.15rem', color: '#f59e0b' }}>
+                                                            {formatRupiah(price)} <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8' }}>Pts</span>
                                                         </p>
                                                         <button
                                                             onClick={() => handleRedeemVoucher(p)}
                                                             disabled={!canRedeem || loading}
                                                             style={{
-                                                                padding: '0.5rem 1rem', borderRadius: '9999px', border: 'none',
+                                                                width: '100%', padding: '0.6rem 0.5rem', borderRadius: '9999px', border: 'none',
                                                                 background: canRedeem ? 'linear-gradient(135deg, #00a884, #00c298)' : '#e2e8f0',
                                                                 color: canRedeem ? '#fff' : '#94a3b8',
-                                                                fontSize: '0.75rem', fontWeight: 800,
+                                                                fontSize: '0.78rem', fontWeight: 800,
                                                                 cursor: canRedeem ? 'pointer' : 'not-allowed',
                                                                 boxShadow: canRedeem ? '0 2px 10px rgba(0, 168, 132, 0.25)' : 'none',
                                                             }}
                                                         >
-                                                            {canRedeem ? 'Tukar 1-Klik' : 'Koin Kurang'}
+                                                            {canRedeem ? '⚡ Tukar 1-Klik' : 'Koin Kurang'}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -818,51 +828,60 @@ export default function PublicPoints() {
                                 </div>
                             )}
 
-                            {/* TAB 2: TOP-UP KOIN (QRIS) */}
+                            {/* TAB 2: TOP-UP KOIN (KESAMPING / GRID) */}
                             {activeTab === 'topup' && (
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
                                     {topupPackages.map((pkg) => (
                                         <div
                                             key={pkg.id}
                                             style={{
-                                                background: '#fff', borderRadius: '20px', padding: '1.25rem',
+                                                background: '#fff', borderRadius: '20px', padding: '1.4rem 1rem 1.1rem',
                                                 border: pkg.is_popular ? '2px solid #f59e0b' : '1px solid #f1f5f9',
-                                                boxShadow: '0 4px 15px rgba(0,0,0,0.03)', position: 'relative',
-                                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                                boxShadow: pkg.is_popular ? '0 8px 25px rgba(245, 158, 11, 0.12)' : '0 4px 15px rgba(0,0,0,0.03)',
+                                                position: 'relative', display: 'flex', flexDirection: 'column',
+                                                justifyContent: 'space-between', textAlign: 'center',
                                             }}
                                         >
                                             {pkg.badge && (
                                                 <div style={{
-                                                    position: 'absolute', top: '-10px', right: '15px',
+                                                    position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)',
                                                     background: 'linear-gradient(135deg, #f59e0b, #d97706)',
                                                     color: '#fff', fontSize: '0.65rem', fontWeight: 800,
-                                                    padding: '0.2rem 0.6rem', borderRadius: '9999px',
-                                                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)',
+                                                    padding: '0.2rem 0.75rem', borderRadius: '9999px',
+                                                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.35)', whiteSpace: 'nowrap',
                                                 }}>
                                                     {pkg.badge}
                                                 </div>
                                             )}
 
                                             <div>
+                                                <div style={{
+                                                    width: '36px', height: '36px', borderRadius: '12px',
+                                                    background: '#fef3c7', color: '#d97706',
+                                                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontSize: '1rem', marginBottom: '0.5rem',
+                                                }}>
+                                                    <i className="fas fa-coins" />
+                                                </div>
                                                 <h4 style={{ margin: '0 0 0.25rem', fontSize: '0.95rem', fontWeight: 800, color: '#1e293b' }}>
                                                     {pkg.name}
                                                 </h4>
-                                                <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748b' }}>
-                                                    Dapatkan: <strong style={{ color: '#f59e0b' }}>{formatRupiah(pkg.total_points)} Poin</strong>
+                                                <p style={{ margin: '0 0 0.75rem', fontSize: '0.8rem', color: '#64748b' }}>
+                                                    Dapat <strong style={{ color: '#f59e0b' }}>{formatRupiah(pkg.total_points)}</strong> Pts
                                                 </p>
                                             </div>
 
-                                            <div style={{ textAlign: 'right' }}>
-                                                <p style={{ margin: '0 0 0.35rem', fontWeight: 900, fontSize: '0.95rem', color: '#1e293b' }}>
+                                            <div style={{ borderTop: '1px solid #f8fafc', paddingTop: '0.75rem' }}>
+                                                <p style={{ margin: '0 0 0.5rem', fontWeight: 900, fontSize: '1.15rem', color: '#1e293b' }}>
                                                     Rp {formatRupiah(pkg.price)}
                                                 </p>
                                                 <button
                                                     onClick={() => handleTopupCharge(pkg)}
                                                     disabled={loading}
                                                     style={{
-                                                        padding: '0.5rem 1.1rem', borderRadius: '9999px', border: 'none',
+                                                        width: '100%', padding: '0.6rem 0.5rem', borderRadius: '9999px', border: 'none',
                                                         background: 'linear-gradient(135deg, #00a884, #00c298)',
-                                                        color: '#fff', fontSize: '0.75rem', fontWeight: 800, cursor: 'pointer',
+                                                        color: '#fff', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer',
                                                         boxShadow: '0 2px 10px rgba(0, 168, 132, 0.25)',
                                                     }}
                                                 >
