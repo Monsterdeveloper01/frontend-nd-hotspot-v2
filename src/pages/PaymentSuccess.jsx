@@ -136,31 +136,50 @@ const PaymentSuccess = () => {
                                 </div>
 
                                 {/* Pill Action Buttons */}
-                                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                    <Link 
-                                        to="/" 
-                                        style={{
-                                            flex: 1, padding: '0.95rem',
-                                            background: '#ffffff', color: '#475569',
-                                            fontWeight: 700, fontSize: '0.88rem', textAlign: 'center',
-                                            borderRadius: '9999px', border: '1px solid #e2e8f0',
-                                            boxShadow: '0 2px 6px rgba(0,0,0,0.03)', textDecoration: 'none',
-                                            transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                                        }}
-                                    >
-                                        Selesai
-                                    </Link>
-                                    <a 
-                                        href="http://ndnet.login" 
-                                        className="btn-nd-pill"
-                                        style={{
-                                            flex: 1, padding: '0.95rem',
-                                            fontSize: '0.88rem', textAlign: 'center',
-                                            textDecoration: 'none',
-                                        }}
-                                    >
-                                        <i className="fas fa-sign-in-alt" /> Login
-                                    </a>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                        <Link 
+                                            to="/" 
+                                            style={{
+                                                padding: '0.95rem 1.25rem',
+                                                background: '#ffffff', color: '#475569',
+                                                fontWeight: 700, fontSize: '0.88rem', textAlign: 'center',
+                                                borderRadius: '9999px', border: '1px solid #e2e8f0',
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.03)', textDecoration: 'none',
+                                                transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                            }}
+                                        >
+                                            Beranda
+                                        </Link>
+                                        <a 
+                                            href={`http://ndnet.login/login?username=${encodeURIComponent(voucher.voucher_code)}&password=&dst=${encodeURIComponent(window.location.origin + '/?login=success')}`}
+                                            className="btn-nd-pill"
+                                            style={{
+                                                flex: 1, padding: '0.95rem',
+                                                fontSize: '0.92rem', textAlign: 'center',
+                                                textDecoration: 'none',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                                                boxShadow: '0 4px 14px rgba(0, 168, 132, 0.35)',
+                                            }}
+                                        >
+                                            <i className="fas fa-bolt" /> Konek Otomatis
+                                        </a>
+                                    </div>
+
+                                    {/* Small notice below buttons */}
+                                    <div style={{ textAlign: 'center', marginTop: '0.35rem', padding: '0 0.5rem' }}>
+                                        <p style={{ fontSize: '0.72rem', color: '#94a3b8', lineHeight: 1.5, margin: 0 }}>
+                                            💡 <i>Jika auto-login gagal, silakan gunakan cara manual (salin kode voucher di atas) atau{' '}
+                                            <a 
+                                                href="https://wa.me/6285129391531?text=Halo%20Admin%20ND-Hotspot,%20saya%20butuh%20bantuan%20login%20voucher..." 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{ color: '#00a884', fontWeight: 800, textDecoration: 'underline' }}
+                                            >
+                                                Kontak Admin
+                                            </a></i>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
