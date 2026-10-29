@@ -16,6 +16,7 @@ import EventAnalytics from './pages/admin/EventAnalytics'
 import PointAnalytics from './pages/admin/PointAnalytics'
 import CheckVoucher from './pages/CheckVoucher'
 import PublicLoyalty from './pages/PublicLoyalty'
+import PublicPoints from './pages/PublicPoints'
 import Maintenance from './pages/Maintenance'
 import PaymentSuccess from './pages/PaymentSuccess'
 import GamingArea from './pages/GamingArea'
@@ -125,6 +126,7 @@ function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/check-voucher" element={<CheckVoucher />} />
           <Route path="/loyalty" element={<PublicLoyalty />} />
+          <Route path="/points" element={<PublicPoints />} />
           <Route path="/payment" element={<BillLookup />} />
           <Route path="/bill-lookup" element={<BillLookup />} />
         </Route>
