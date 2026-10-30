@@ -12,6 +12,7 @@ export default function PointAnalytics() {
   const [accounts, setAccounts] = useState([]);
   const [accountsLoading, setAccountsLoading] = useState(false);
   const [revealedPhones, setRevealedPhones] = useState({});
+  const [accountFilter, setAccountFilter] = useState('all');
 
   // Ledger Modal
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -79,10 +80,11 @@ export default function PointAnalytics() {
     }
   };
 
-  const fetchAccounts = async (search = '') => {
+  const fetchAccounts = async (search = searchPhone, filter = accountFilter) => {
     setAccountsLoading(true);
     try {
-      const url = `${import.meta.env.VITE_API_URL}/admin/points/accounts?search=${encodeURIComponent(search)}`;
+      const filterParam = filter && filter !== 'all' ? `&filter=${encodeURIComponent(filter)}` : '';
+      const url = `${import.meta.env.VITE_API_URL}/admin/points/accounts?search=${encodeURIComponent(search)}${filterParam}`;
       const res = await axios.get(url, getAuthHeaders());
       if (res.data?.status === 'success') {
         setAccounts(res.data.data.data || []);
@@ -434,11 +436,11 @@ export default function PointAnalytics() {
       </div>
 
       {/* Metric Summary Cards - Dual Light/Dark Theme Friendly */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        {/* Card 1 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-3 sm:gap-4">
+        {/* Card 1: Total Akun */}
         <div className="bg-white dark:bg-admin-card p-4 rounded-xl border border-slate-200 dark:border-admin-border shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-admin-muted text-xs font-semibold mb-1.5">
-            <span>Akun Pelanggan</span>
+            <span>Total Akun</span>
             <i className="fas fa-users text-blue-500 dark:text-blue-400" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
@@ -447,7 +449,76 @@ export default function PointAnalytics() {
           <span className="text-[10px] text-slate-400 dark:text-admin-muted font-medium">Unique nomor HP</span>
         </div>
 
-        {/* Card 2 */}
+        {/* Card 2: Akun Teraktivasi */}
+        <div
+          onClick={() => {
+            setActiveTab('customers');
+            setAccountFilter('activated');
+            fetchAccounts(searchPhone, 'activated');
+          }}
+          className="bg-white dark:bg-admin-card p-4 rounded-xl border border-emerald-200 dark:border-emerald-500/30 shadow-sm cursor-pointer hover:shadow-md hover:border-emerald-400 transition-all group"
+          title="Klik untuk melihat customer yang sudah aktivasi PIN"
+        >
+          <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-1.5">
+            <span>Teraktivasi (PIN)</span>
+            <i className="fas fa-shield-alt text-emerald-500 group-hover:scale-110 transition-transform" />
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
+            {summary.activated_accounts?.toLocaleString() || 0}
+          </div>
+          <span className="text-[10px] text-emerald-600/70 dark:text-emerald-400/70 font-medium flex items-center justify-between">
+            <span>PIN Keamanan Aktif</span>
+            <span className="text-[9px] font-bold text-emerald-600">Filter →</span>
+          </span>
+        </div>
+
+        {/* Card 3: Member Top-Up */}
+        <div
+          onClick={() => {
+            setActiveTab('customers');
+            setAccountFilter('topup');
+            fetchAccounts(searchPhone, 'topup');
+          }}
+          className="bg-white dark:bg-admin-card p-4 rounded-xl border border-amber-200 dark:border-amber-500/30 shadow-sm cursor-pointer hover:shadow-md hover:border-amber-400 transition-all group"
+          title="Klik untuk melihat customer yang pernah isi ulang koin"
+        >
+          <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 text-xs font-semibold mb-1.5">
+            <span>Member Top-Up</span>
+            <i className="fas fa-coins text-amber-500 group-hover:scale-110 transition-transform" />
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400">
+            {summary.topup_users_count?.toLocaleString() || 0}
+          </div>
+          <span className="text-[10px] text-amber-600/70 dark:text-amber-400/70 font-medium flex items-center justify-between">
+            <span>Pernah Beli Koin</span>
+            <span className="text-[9px] font-bold text-amber-600">Filter →</span>
+          </span>
+        </div>
+
+        {/* Card 4: Auto-Debit Aktif */}
+        <div
+          onClick={() => {
+            setActiveTab('customers');
+            setAccountFilter('autodebit');
+            fetchAccounts(searchPhone, 'autodebit');
+          }}
+          className="bg-white dark:bg-admin-card p-4 rounded-xl border border-cyan-200 dark:border-cyan-500/30 shadow-sm cursor-pointer hover:shadow-md hover:border-cyan-400 transition-all group"
+          title="Klik untuk melihat customer yang mengaktifkan perpanjangan otomatis"
+        >
+          <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400 text-xs font-semibold mb-1.5">
+            <span>Auto-Debit Aktif</span>
+            <i className="fas fa-bolt text-cyan-500 group-hover:scale-110 transition-transform" />
+          </div>
+          <div className="text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400">
+            {summary.auto_debit_active_count?.toLocaleString() || 0}
+          </div>
+          <span className="text-[10px] text-cyan-600/70 dark:text-cyan-400/70 font-medium flex items-center justify-between">
+            <span>Perpanjang Otomatis</span>
+            <span className="text-[9px] font-bold text-cyan-600">Filter →</span>
+          </span>
+        </div>
+
+        {/* Card 5: Total Poin Masuk */}
         <div className="bg-white dark:bg-admin-card p-4 rounded-xl border border-slate-200 dark:border-admin-border shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-admin-muted text-xs font-semibold mb-1.5">
             <span>Total Poin Masuk</span>
@@ -459,19 +530,19 @@ export default function PointAnalytics() {
           <span className="text-[10px] text-slate-400 dark:text-admin-muted font-medium">Lifetime earned</span>
         </div>
 
-        {/* Card 3 */}
+        {/* Card 6: Total Poin Dipakai */}
         <div className="bg-white dark:bg-admin-card p-4 rounded-xl border border-slate-200 dark:border-admin-border shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-admin-muted text-xs font-semibold mb-1.5">
             <span>Total Poin Dipakai</span>
-            <i className="fas fa-arrow-up-long text-amber-500 dark:text-amber-400" />
+            <i className="fas fa-arrow-up-long text-rose-500 dark:text-rose-400" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-slate-700 dark:text-slate-300">
             {summary.total_points_spent?.toLocaleString() || 0}
           </div>
-          <span className="text-[10px] text-slate-400 dark:text-admin-muted font-medium">Fase silent (0)</span>
+          <span className="text-[10px] text-slate-400 dark:text-admin-muted font-medium">Voucher ditukar</span>
         </div>
 
-        {/* Card 4 */}
+        {/* Card 7: Saldo Beredar */}
         <div className="bg-white dark:bg-admin-card p-4 rounded-xl border border-slate-200 dark:border-admin-border shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-admin-muted text-xs font-semibold mb-1.5">
             <span>Saldo Beredar</span>
@@ -483,19 +554,7 @@ export default function PointAnalytics() {
           <span className="text-[10px] text-slate-400 dark:text-admin-muted font-medium">Total poin aktif</span>
         </div>
 
-        {/* Card 5 */}
-        <div className="bg-white dark:bg-admin-card p-4 rounded-xl border border-slate-200 dark:border-admin-border shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 dark:text-admin-muted text-xs font-semibold mb-1.5">
-            <span>Rata-Rata / Median</span>
-            <i className="fas fa-chart-pie text-purple-500 dark:text-purple-400" />
-          </div>
-          <div className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-            {summary.avg_points_per_customer || 0} <span className="text-xs text-slate-400 dark:text-admin-muted font-normal">/ {summary.median_points_per_customer || 0}</span>
-          </div>
-          <span className="text-[10px] text-slate-400 dark:text-admin-muted font-medium">Poin per user</span>
-        </div>
-
-        {/* Card 6 */}
+        {/* Card 8: Saldo Tertinggi */}
         <div className="bg-white dark:bg-admin-card p-4 rounded-xl border border-slate-200 dark:border-admin-border shadow-sm">
           <div className="flex items-center justify-between text-slate-500 dark:text-admin-muted text-xs font-semibold mb-1.5">
             <span>Saldo Tertinggi</span>
@@ -653,6 +712,32 @@ export default function PointAnalytics() {
             </span>
           </div>
 
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {[
+              { id: 'all', label: 'Semua Akun' },
+              { id: 'activated', label: 'Teraktivasi (PIN)' },
+              { id: 'topup', label: 'Member Top-Up' },
+              { id: 'autodebit', label: '⚡ Auto-Debit' },
+              { id: 'unactivated', label: 'Belum Aktivasi' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => {
+                  setAccountFilter(f.id);
+                  fetchAccounts(searchPhone, f.id);
+                }}
+                className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  accountFilter === f.id
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-slate-100 dark:bg-admin-base text-slate-600 dark:text-admin-muted hover:bg-slate-200 dark:hover:bg-slate-800'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -700,6 +785,11 @@ export default function PointAnalytics() {
                               </button>
                             </div>
                             <span className="text-[10px] text-slate-400 dark:text-admin-muted">ID #{acc.id}</span>
+                            {acc.auto_debit_enabled && (
+                              <span className="block text-[10px] font-bold text-cyan-600 dark:text-cyan-400 mt-0.5">
+                                ⚡ Auto-Debit: {acc.auto_debit_plan?.name || 'Paket Hotspot'}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -713,9 +803,39 @@ export default function PointAnalytics() {
                         {acc.lifetime_spent?.toLocaleString()}
                       </td>
                       <td className="p-3 text-center">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
-                          {acc.status}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="flex items-center gap-1 flex-wrap justify-center">
+                            {acc.is_activated ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
+                                <i className="fas fa-shield-alt text-[9px]" /> Teraktivasi
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-300 dark:border-slate-700">
+                                <i className="fas fa-shield-slash text-[9px]" /> Belum Aktivasi
+                              </span>
+                            )}
+                            {acc.status === 'frozen' && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-300 dark:border-rose-500/30">
+                                <i className="fas fa-snowflake text-[9px]" /> Dibekukan
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 flex-wrap justify-center">
+                            {acc.has_topup && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30">
+                                <i className="fas fa-coins text-[9px]" /> Top-Up ({acc.topup_count || 1}x)
+                              </span>
+                            )}
+                            {acc.auto_debit_enabled && (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-500/30"
+                                title={acc.auto_debit_plan ? `Paket: ${acc.auto_debit_plan.name} (Rp ${Number(acc.auto_debit_plan.price || 0).toLocaleString('id-ID')})` : 'Auto-debit aktif'}
+                              >
+                                <i className="fas fa-bolt text-[9px]" /> Auto-Debit: {acc.auto_debit_plan?.name || 'Aktif'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td className="p-3 text-right">
                         <div className="inline-flex items-center gap-1.5">

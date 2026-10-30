@@ -151,6 +151,8 @@ export default function IncidentHub() {
     switch (cat) {
       case 'whatsapp':
         return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"><Icon name="whatsapp" className="w-3 h-3" /> WhatsApp</span>;
+      case 'point_fraud':
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20"><Icon name="shield" className="w-3 h-3" /> ND-Points / PIN</span>;
       case 'payment_fraud':
         return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20"><Icon name="shield" className="w-3 h-3" /> Fraud / Payment</span>;
       case 'mikrotik':
@@ -308,6 +310,7 @@ export default function IncidentHub() {
             className="w-full sm:w-auto text-xs font-semibold rounded-xl border-admin-border bg-admin-base text-admin-text py-2"
           >
             <option value="all">Semua Kategori</option>
+            <option value="point_fraud">Khusus ND-Points & Auto-Debit</option>
             <option value="whatsapp">Khusus WhatsApp Gagal</option>
             <option value="payment_fraud">Khusus Fraud & Pembayaran</option>
             <option value="mikrotik">Khusus MikroTik / Jaringan</option>

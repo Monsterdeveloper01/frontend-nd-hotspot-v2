@@ -34,6 +34,19 @@ export default function PublicPoints() {
     const [otpCooldown, setOtpCooldown] = useState(0)
     const [agreeTerms, setAgreeTerms] = useState(false)
 
+    // Auto-Debit states
+    const [autoDebit, setAutoDebit] = useState({
+        enabled: false,
+        plan_id: null,
+        plan: null,
+        last_run_at: null,
+        fail_count: 0
+    })
+    const [showAutoDebitModal, setShowAutoDebitModal] = useState(false)
+    const [autoDebitPlanId, setAutoDebitPlanId] = useState('')
+    const [autoDebitPin, setAutoDebitPin] = useState('')
+    const [autoDebitLoading, setAutoDebitLoading] = useState(false)
+
     // Voucher Plans & Top-up Packages
     const [voucherPlans, setVoucherPlans] = useState([])
     const [topupPackages, setTopupPackages] = useState([])
@@ -63,6 +76,7 @@ export default function PublicPoints() {
     useEffect(() => {
         if (!isLoggedIn) return
         fetchPlansAndPackages()
+        fetchAutoDebitStatus()
     }, [isLoggedIn])
 
     const fetchPlansAndPackages = async () => {
@@ -75,6 +89,69 @@ export default function PublicPoints() {
             setTopupPackages(pkgRes.data?.packages || [])
         } catch (err) {
             console.error('Error fetching data:', err)
+        }
+    }
+
+    const fetchAutoDebitStatus = async () => {
+        try {
+            const res = await axios.post(`${API}/points/autodebit/status`, { phone: normalizedPhone })
+            if (res.data?.success) {
+                setAutoDebit({
+                    enabled: !!res.data.auto_debit_enabled,
+                    plan_id: res.data.auto_debit_plan_id,
+                    plan: res.data.auto_debit_plan,
+                    last_run_at: res.data.last_run_at,
+                    fail_count: res.data.fail_count || 0
+                })
+                if (res.data.auto_debit_plan_id) {
+                    setAutoDebitPlanId(res.data.auto_debit_plan_id)
+                }
+            }
+        } catch (err) {
+            console.error('Failed to fetch auto debit status:', err)
+        }
+    }
+
+    const handleToggleAutoDebit = async (enable) => {
+        if (enable && !autoDebitPlanId) {
+            setError('Harap pilih paket voucher untuk perpanjangan otomatis.')
+            return
+        }
+        const verifyPin = autoDebitPin || pin
+        if (!verifyPin || verifyPin.length !== 6) {
+            setError('Harap masukkan 6-digit PIN keamanan Anda.')
+            return
+        }
+
+        setAutoDebitLoading(true)
+        setError('')
+        setSuccessMsg('')
+        try {
+            const res = await axios.post(`${API}/points/autodebit/toggle`, {
+                phone: normalizedPhone,
+                pin: verifyPin,
+                enabled: enable,
+                voucher_plan_id: enable ? autoDebitPlanId : null
+            })
+
+            if (res.data?.success) {
+                setSuccessMsg(res.data.message)
+                setAutoDebit({
+                    enabled: !!res.data.auto_debit_enabled,
+                    plan_id: res.data.auto_debit_plan?.id || null,
+                    plan: res.data.auto_debit_plan,
+                    last_run_at: autoDebit.last_run_at,
+                    fail_count: 0
+                })
+                setShowAutoDebitModal(false)
+                setAutoDebitPin('')
+            } else {
+                setError(res.data?.message || 'Gagal mengubah pengaturan Auto-Debit.')
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Gagal mengubah Auto-Debit. Pastikan PIN benar.')
+        } finally {
+            setAutoDebitLoading(false)
         }
     }
 
@@ -767,6 +844,66 @@ export default function PublicPoints() {
                                 </div>
                             )}
 
+                            {/* AUTO-DEBIT CARD BANNER */}
+                            <div style={{
+                                background: autoDebit.enabled ? 'linear-gradient(135deg, #064e3b, #047857)' : '#ffffff',
+                                color: autoDebit.enabled ? '#fff' : '#1e293b',
+                                border: autoDebit.enabled ? '1px solid #059669' : '1px solid #e2e8f0',
+                                borderRadius: '20px', padding: '1.1rem 1.25rem', marginBottom: '1.25rem',
+                                boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                                    <div style={{
+                                        width: '40px', height: '40px', borderRadius: '12px',
+                                        background: autoDebit.enabled ? 'rgba(255,255,255,0.2)' : '#ecfdf5',
+                                        color: autoDebit.enabled ? '#fff' : '#00a884',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.15rem'
+                                    }}>
+                                        <i className="fas fa-bolt" />
+                                    </div>
+                                    <div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800 }}>
+                                                Auto-Debit Voucher
+                                            </h4>
+                                            <span style={{
+                                                fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '9999px',
+                                                background: autoDebit.enabled ? '#10b981' : '#f1f5f9',
+                                                color: autoDebit.enabled ? '#fff' : '#64748b'
+                                            }}>
+                                                {autoDebit.enabled ? 'AKTIF' : 'NONAKTIF'}
+                                            </span>
+                                        </div>
+                                        <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: autoDebit.enabled ? '#a7f3d0' : '#64748b' }}>
+                                            {autoDebit.enabled
+                                                ? `Perpanjangan otomatis paket ${autoDebit.plan?.name || ''} saat voucher habis.`
+                                                : 'Beli voucher otomatis pakai ND-Points saat masa aktif hotspot habis.'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setError('')
+                                        setAutoDebitPin('')
+                                        if (!autoDebitPlanId && voucherPlans.length > 0) {
+                                            setAutoDebitPlanId(voucherPlans[0].id)
+                                        }
+                                        setShowAutoDebitModal(true)
+                                    }}
+                                    style={{
+                                        padding: '0.55rem 1rem', borderRadius: '9999px',
+                                        background: autoDebit.enabled ? '#fff' : 'linear-gradient(135deg, #00a884, #00c298)',
+                                        color: autoDebit.enabled ? '#065f46' : '#fff',
+                                        fontWeight: 800, fontSize: '0.78rem', border: 'none', cursor: 'pointer',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                    }}
+                                >
+                                    <i className="fas fa-cog" /> {autoDebit.enabled ? 'Atur / Nonaktifkan' : 'Aktifkan Auto-Debit'}
+                                </button>
+                            </div>
+
                             {/* TABS: TUKAR VOCHER / TOP-UP */}
                             <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: '9999px', padding: '4px', marginBottom: '1.25rem' }}>
                                 <button
@@ -1007,7 +1144,113 @@ export default function PublicPoints() {
                         </p>
                     </div>
 
-                    {/* MODAL PANDUAN & RINCIAN ND-POINTS */}
+                    {/* MODAL AUTO-DEBIT SETTINGS */}
+                    {showAutoDebitModal && (
+                        <div style={{
+                            position: 'fixed', inset: 0, zIndex: 115,
+                            background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(5px)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
+                        }}>
+                            <div className="card-nd-elevated" style={{
+                                width: '100%', maxWidth: '26rem', background: '#fff',
+                                borderRadius: '24px', padding: '1.75rem', textAlign: 'left',
+                            }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#ecfdf5', color: '#00a884', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <i className="fas fa-bolt" />
+                                        </div>
+                                        <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#1e293b', margin: 0 }}>
+                                            Pengaturan Auto-Debit
+                                        </h3>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowAutoDebitModal(false)}
+                                        style={{ background: '#f1f5f9', border: 'none', color: '#64748b', width: '32px', height: '32px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        <i className="fas fa-times" />
+                                    </button>
+                                </div>
+
+                                <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0 0 1rem', lineHeight: 1.5 }}>
+                                    Sistem akan otomatis mendebit koin ND-Points Anda untuk membeli voucher baru begitu voucher Anda sebelumnya kedaluwarsa.
+                                </p>
+
+                                <div style={{ marginBottom: '1rem' }}>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                                        Pilih Paket Voucher
+                                    </label>
+                                    <select
+                                        value={autoDebitPlanId}
+                                        onChange={(e) => setAutoDebitPlanId(e.target.value)}
+                                        style={{
+                                            width: '100%', padding: '0.75rem', borderRadius: '12px', border: '1px solid #cbd5e1',
+                                            fontSize: '0.85rem', fontWeight: 600, color: '#1e293b', background: '#f8fafc', outline: 'none'
+                                        }}
+                                    >
+                                        {voucherPlans.map(p => (
+                                            <option key={p.id} value={p.id}>
+                                                {p.name} - Rp {formatRupiah(p.price)} ({p.duration})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+                                        PIN Keamanan (6 Digit)
+                                    </label>
+                                    <input
+                                        type="password"
+                                        maxLength={6}
+                                        value={autoDebitPin}
+                                        onChange={(e) => setAutoDebitPin(e.target.value.replace(/\D/g, ''))}
+                                        placeholder="• • • • • •"
+                                        style={{
+                                            letterSpacing: '0.4em', textAlign: 'center', fontSize: '1.2rem',
+                                            fontWeight: 800, width: '100%', padding: '0.7rem',
+                                            border: '1px solid #cbd5e1', borderRadius: '12px', outline: 'none',
+                                            background: '#f8fafc', color: '#1e293b'
+                                        }}
+                                    />
+                                    <span style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem', display: 'block' }}>
+                                        Konfirmasi PIN diperlukan untuk keamanan otorisasi auto-debit.
+                                    </span>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '0.6rem' }}>
+                                    {autoDebit.enabled && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleToggleAutoDebit(false)}
+                                            disabled={autoDebitLoading}
+                                            style={{
+                                                flex: 1, padding: '0.8rem', borderRadius: '9999px',
+                                                background: '#fee2e2', color: '#b91c1c', fontWeight: 800, fontSize: '0.8rem',
+                                                border: 'none', cursor: 'pointer'
+                                            }}
+                                        >
+                                            {autoDebitLoading ? 'Memproses...' : 'Nonaktifkan'}
+                                        </button>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={() => handleToggleAutoDebit(true)}
+                                        disabled={autoDebitLoading}
+                                        style={{
+                                            flex: 1, padding: '0.8rem', borderRadius: '9999px',
+                                            background: 'linear-gradient(135deg, #00a884, #00c298)',
+                                            color: '#fff', fontWeight: 800, fontSize: '0.8rem',
+                                            border: 'none', cursor: 'pointer',
+                                            boxShadow: '0 4px 15px rgba(0, 168, 132, 0.3)'
+                                        }}
+                                    >
+                                        {autoDebitLoading ? 'Menyimpan...' : (autoDebit.enabled ? 'Simpan Perubahan' : 'Aktifkan Auto-Debit')}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {showInfoModal && (
                         <div style={{
                             position: 'fixed', inset: 0, zIndex: 110,

@@ -62,6 +62,43 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
 const getTransactionMeta = (tx) => {
   const isQrisStatis = tx.payment_method === 'qris_statis' || tx.external_id?.startsWith('QRIS-');
   const isBill = tx.external_id?.startsWith('BILL-') || tx.external_id?.startsWith('MANUAL-');
+  const isPointRedeem = tx.external_id?.startsWith('PTS-REDEEM-') || tx.external_id?.startsWith('PTS-VOUCHER-') || tx.external_id?.startsWith('PTS-AUTODEBIT-') || tx.payment_type === 'nd_points' || tx.payment_type === 'nd_points_autodebit';
+  const isPointTopup = !isPointRedeem && (tx.external_id?.startsWith('PTS-TOPUP-') || tx.external_id?.startsWith('PTS-') || tx.payment_type === 'point_topup');
+
+  if (isPointTopup) {
+    const phone = tx.customer_phone || tx.customer?.whatsapp || null;
+    return {
+      type: 'point_topup',
+      title: phone || 'Top-Up Member',
+      subtitle: `Top-Up ND-Points (+Rp ${Number(tx.amount || 0).toLocaleString('id-ID')})`,
+      logText: `TOP-UP ND-POINTS ${phone || ''} SUKSES`,
+      badgeText: 'Top-Up Poin',
+      badgeBg: 'bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
+      icon: 'qris',
+      iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
+      colorClass: 'text-amber-500',
+      phone: phone
+    };
+  }
+
+  if (isPointRedeem) {
+    const phone = tx.customer_phone || tx.customer?.whatsapp || null;
+    const isAuto = tx.external_id?.startsWith('PTS-AUTODEBIT-') || tx.payment_type === 'nd_points_autodebit';
+    return {
+      type: 'point_redeem',
+      title: phone || 'Member ND-Points',
+      subtitle: isAuto
+        ? `⚡ Auto-Debit: ${tx.voucher?.code || tx.plan?.name || 'Voucher'}`
+        : `Tukar Poin: ${tx.voucher?.code || tx.plan?.name || 'Voucher'}`,
+      logText: isAuto ? `AUTO-DEBIT VOUCHER ${tx.voucher?.code || ''} SUKSES` : `TUKAR ND-POINTS ${tx.voucher?.code || ''} SUKSES`,
+      badgeText: isAuto ? '⚡ Auto-Debit' : 'Tukar Poin',
+      badgeBg: isAuto ? 'bg-cyan-50 text-cyan-600 border-cyan-200 dark:bg-cyan-500/10 dark:text-cyan-400 dark:border-cyan-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20',
+      icon: 'voucher',
+      iconBg: isAuto ? 'bg-cyan-50 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
+      colorClass: isAuto ? 'text-cyan-500' : 'text-emerald-500',
+      phone: phone
+    };
+  }
 
   if (isQrisStatis) {
     return {
@@ -130,6 +167,10 @@ const AdminDashboard = () => {
 
   // Chart Modal State
   const [chartModalOpen, setChartModalOpen] = useState(false)
+
+  // Auto-Debit Modal State
+  const [autoDebitModalOpen, setAutoDebitModalOpen] = useState(false)
+  const [autoDebitSearch, setAutoDebitSearch] = useState('')
 
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
@@ -474,10 +515,21 @@ const AdminDashboard = () => {
                 <div>
                     <div className="flex items-center justify-between mb-1">
                         <p className="text-sm font-medium text-admin-muted">Pelanggan Aktif</p>
-                        <span className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium rounded-full border border-emerald-500/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            {data.stats.online_count} Online
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium rounded-full border border-emerald-500/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                {data.stats.online_count} Online
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setAutoDebitModalOpen(true)}
+                                className="flex items-center gap-1 px-2 py-0.5 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold rounded-full border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors cursor-pointer"
+                                title="Klik untuk melihat daftar pelanggan Auto-Debit"
+                            >
+                                <span className="text-cyan-500 font-black">⚡</span>
+                                {data.stats.auto_debit_count || 0} Auto-Debit
+                            </button>
+                        </div>
                     </div>
                     <p className="text-4xl font-bold tabular-nums text-admin-text tracking-tight">{data.stats.total_customers?.toLocaleString('id-ID') || 0}</p>
                 </div>
@@ -525,6 +577,91 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             </div>
+        </div>
+
+        {/* KARTU MEMBER AUTO-DEBIT AKTIF */}
+        <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-5 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-admin-border">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 flex items-center justify-center font-bold">
+                        <span className="text-base font-black">⚡</span>
+                    </div>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-admin-text uppercase tracking-wider">
+                                Pelanggan Aktif Auto-Debit ND-Points
+                            </h3>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                                {data?.stats?.auto_debit_count || 0} Member
+                            </span>
+                        </div>
+                        <p className="text-[11px] text-admin-muted mt-0.5">
+                            Customer yang otomatis memperpanjang voucher hotspot saat masa aktif habis menggunakan saldo koin
+                        </p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    {data?.stats?.auto_debit_count > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => setAutoDebitModalOpen(true)}
+                            className="px-3 py-1.5 bg-admin-base border border-admin-border text-xs font-bold text-admin-text rounded-lg hover:bg-admin-card transition-colors flex items-center gap-1.5 cursor-pointer"
+                        >
+                            <span>Daftar Lengkap</span>
+                            <span className="text-[10px] bg-cyan-500/20 text-cyan-500 px-1.5 py-0.2 rounded font-black">{data.stats.auto_debit_count}</span>
+                        </button>
+                    )}
+                    <Link
+                        to="/admin/points"
+                        className="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold text-cyan-600 dark:text-cyan-400 rounded-lg hover:bg-cyan-500/20 transition-colors flex items-center gap-1"
+                    >
+                        <span>Kelola di ND-Points</span>
+                        <span className="text-xs">→</span>
+                    </Link>
+                </div>
+            </div>
+
+            {(!data?.stats?.auto_debit_users || data.stats.auto_debit_users.length === 0) ? (
+                <div className="py-6 text-center text-xs text-admin-muted">
+                    <span className="opacity-70">Belum ada pelanggan yang mengaktifkan perpanjangan voucher otomatis (Auto-Debit). Member dapat mengaktifkannya secara mandiri di portal ND-Points.</span>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-3.5">
+                    {data.stats.auto_debit_users.slice(0, 6).map((u) => (
+                        <div
+                            key={u.id}
+                            className="p-3.5 rounded-xl bg-admin-base/50 border border-admin-border flex items-start justify-between gap-3 hover:border-cyan-500/40 transition-colors"
+                        >
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs">📱</span>
+                                    <span className="text-xs font-black text-admin-text truncate">
+                                        {u.phone}
+                                    </span>
+                                </div>
+                                <div className="text-[11px] text-cyan-600 dark:text-cyan-400 font-bold mt-1 truncate flex items-center gap-1">
+                                    <span className="text-cyan-500 text-[10px]">⚡</span>
+                                    <span>{u.plan_name}</span>
+                                    <span className="text-admin-muted font-normal text-[10px]">
+                                        (Rp {formatPrice(u.plan_price)})
+                                    </span>
+                                </div>
+                                <div className="text-[10px] text-admin-muted mt-1.5 flex items-center gap-2">
+                                    <span>Saldo: <strong className="text-emerald-500 font-bold">{u.balance.toLocaleString('id-ID')} Pts</strong></span>
+                                    {u.fail_count > 0 && (
+                                        <span className="text-rose-500 font-bold bg-rose-500/10 px-1 rounded">
+                                            {u.fail_count}x Gagal Saldo
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 shrink-0">
+                                AKTIF
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
 
         <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
@@ -653,6 +790,8 @@ const AdminDashboard = () => {
                                 {[
                                     { id: 'all', label: 'Semua' },
                                     { id: 'voucher', label: 'Voucher' },
+                                    { id: 'point_topup', label: 'Top-Up Poin' },
+                                    { id: 'point_redeem', label: 'Tukar Poin' },
                                     { id: 'bill', label: 'Tagihan' },
                                     { id: 'qris', label: 'QRIS Statis' }
                                 ].map((btn) => (
@@ -738,6 +877,8 @@ const AdminDashboard = () => {
                                 {[
                                     { id: 'all', label: 'Semua' },
                                     { id: 'voucher', label: 'Voucher' },
+                                    { id: 'point_topup', label: 'Top-Up Poin' },
+                                    { id: 'point_redeem', label: 'Tukar Poin' },
                                     { id: 'bill', label: 'Tagihan' },
                                     { id: 'qris', label: 'QRIS Statis' }
                                 ].map(f => (
@@ -897,6 +1038,137 @@ const AdminDashboard = () => {
                                 }} 
                             />
                         </div>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {/* AUTO-DEBIT USERS MODAL */}
+        {autoDebitModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden border border-admin-border animate-in zoom-in-95 duration-200">
+                    <div className="bg-admin-card border-b border-admin-border px-6 py-4 flex items-center justify-between shrink-0">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 flex items-center justify-center font-bold">
+                                <span className="text-sm font-black">⚡</span>
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-admin-text">
+                                    Daftar Pelanggan Auto-Debit ND-Points
+                                </h3>
+                                <p className="text-admin-muted text-xs mt-0.5">
+                                    Total {data?.stats?.auto_debit_count || 0} customer aktif memperpanjang voucher secara otomatis
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setAutoDebitModalOpen(false)}
+                            className="p-1.5 text-admin-muted hover:text-admin-text hover:bg-admin-base rounded-lg transition-colors cursor-pointer"
+                        >
+                            <Icon name="close" className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <div className="px-6 py-3 bg-admin-base/40 border-b border-admin-border">
+                        <div className="relative">
+                            <Icon name="search" className="w-4 h-4 text-admin-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                            <input
+                                type="text"
+                                placeholder="Cari nomor WhatsApp atau paket..."
+                                value={autoDebitSearch}
+                                onChange={(e) => setAutoDebitSearch(e.target.value)}
+                                className="w-full pl-9 pr-8 py-2 text-xs bg-admin-card border border-admin-border rounded-xl text-admin-text placeholder-admin-muted focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                            />
+                            {autoDebitSearch && (
+                                <button
+                                    onClick={() => setAutoDebitSearch('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-admin-muted hover:text-admin-text text-xs"
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-6">
+                        {(() => {
+                            const filtered = (data?.stats?.auto_debit_users || []).filter((u) => {
+                                if (!autoDebitSearch.trim()) return true;
+                                const q = autoDebitSearch.toLowerCase();
+                                return (u.phone || '').toLowerCase().includes(q) || (u.plan_name || '').toLowerCase().includes(q);
+                            });
+
+                            if (filtered.length === 0) {
+                                return (
+                                    <div className="text-center py-12 text-admin-muted text-xs">
+                                        Tidak ada pelanggan auto-debit yang cocok dengan pencarian.
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-xs border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-admin-border text-admin-muted text-[10px] font-bold uppercase tracking-wider bg-admin-base/50">
+                                                <th className="p-3">Nomor WhatsApp</th>
+                                                <th className="p-3">Paket Auto-Debit</th>
+                                                <th className="p-3 text-right">Saldo Poin</th>
+                                                <th className="p-3 text-center">Status & Eksekusi</th>
+                                                <th className="p-3 text-right">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-admin-border/50">
+                                            {filtered.map((u) => (
+                                                <tr key={u.id} className="hover:bg-admin-base/40 transition-colors">
+                                                    <td className="p-3">
+                                                        <div className="font-bold text-admin-text flex items-center gap-1.5">
+                                                            <span>{u.phone}</span>
+                                                        </div>
+                                                        <span className="text-[10px] text-admin-muted">ID #{u.id}</span>
+                                                    </td>
+                                                    <td className="p-3">
+                                                        <div className="font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+                                                            <span>⚡ {u.plan_name}</span>
+                                                        </div>
+                                                        <span className="text-[10px] text-admin-muted">
+                                                            Rp {formatPrice(u.plan_price)} ({u.plan_duration})
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-3 text-right font-black text-emerald-500 text-sm">
+                                                        {u.balance?.toLocaleString('id-ID')} Pts
+                                                    </td>
+                                                    <td className="p-3 text-center">
+                                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 inline-flex items-center gap-1">
+                                                            <span>⚡</span> Auto-Debit Aktif
+                                                        </span>
+                                                        {u.last_run_at && (
+                                                            <div className="text-[10px] text-admin-muted mt-0.5">
+                                                                Run: {u.last_run_at}
+                                                            </div>
+                                                        )}
+                                                        {u.fail_count > 0 && (
+                                                            <div className="text-[10px] text-rose-500 font-bold mt-0.5">
+                                                                Gagal Saldo: {u.fail_count}x
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3 text-right">
+                                                        <Link
+                                                            to="/admin/points"
+                                                            className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 font-bold text-[11px] transition-colors inline-flex items-center gap-1"
+                                                        >
+                                                            <span>Buku Poin</span>
+                                                            <span className="text-[9px]">→</span>
+                                                        </Link>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
             </div>
