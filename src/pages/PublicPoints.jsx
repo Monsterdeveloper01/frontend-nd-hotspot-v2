@@ -39,11 +39,15 @@ export default function PublicPoints() {
         enabled: false,
         plan_id: null,
         plan: null,
+        trigger_type: 'on_expiry',
+        day: 1,
         last_run_at: null,
         fail_count: 0
     })
     const [showAutoDebitModal, setShowAutoDebitModal] = useState(false)
     const [autoDebitPlanId, setAutoDebitPlanId] = useState('')
+    const [autoDebitTriggerType, setAutoDebitTriggerType] = useState('on_expiry') // 'on_expiry' | 'monthly_date'
+    const [autoDebitDay, setAutoDebitDay] = useState(1)
     const [autoDebitPin, setAutoDebitPin] = useState('')
     const [autoDebitLoading, setAutoDebitLoading] = useState(false)
 
@@ -100,11 +104,19 @@ export default function PublicPoints() {
                     enabled: !!res.data.auto_debit_enabled,
                     plan_id: res.data.auto_debit_plan_id,
                     plan: res.data.auto_debit_plan,
+                    trigger_type: res.data.auto_debit_trigger_type || 'on_expiry',
+                    day: res.data.auto_debit_day || 1,
                     last_run_at: res.data.last_run_at,
                     fail_count: res.data.fail_count || 0
                 })
                 if (res.data.auto_debit_plan_id) {
                     setAutoDebitPlanId(res.data.auto_debit_plan_id)
+                }
+                if (res.data.auto_debit_trigger_type) {
+                    setAutoDebitTriggerType(res.data.auto_debit_trigger_type)
+                }
+                if (res.data.auto_debit_day) {
+                    setAutoDebitDay(res.data.auto_debit_day)
                 }
             }
         } catch (err) {
@@ -115,6 +127,10 @@ export default function PublicPoints() {
     const handleToggleAutoDebit = async (enable) => {
         if (enable && !autoDebitPlanId) {
             setError('Harap pilih paket voucher untuk perpanjangan otomatis.')
+            return
+        }
+        if (enable && autoDebitTriggerType === 'monthly_date' && (!autoDebitDay || autoDebitDay < 1 || autoDebitDay > 31)) {
+            setError('Harap tentukan tanggal pembelian bulanan yang valid (1 - 31).')
             return
         }
         const verifyPin = autoDebitPin || pin
@@ -131,7 +147,9 @@ export default function PublicPoints() {
                 phone: normalizedPhone,
                 pin: verifyPin,
                 enabled: enable,
-                voucher_plan_id: enable ? autoDebitPlanId : null
+                voucher_plan_id: enable ? autoDebitPlanId : null,
+                trigger_type: enable ? autoDebitTriggerType : 'on_expiry',
+                day: (enable && autoDebitTriggerType === 'monthly_date') ? Number(autoDebitDay) : null,
             })
 
             if (res.data?.success) {
@@ -140,6 +158,8 @@ export default function PublicPoints() {
                     enabled: !!res.data.auto_debit_enabled,
                     plan_id: res.data.auto_debit_plan?.id || null,
                     plan: res.data.auto_debit_plan,
+                    trigger_type: res.data.auto_debit_trigger_type || 'on_expiry',
+                    day: res.data.auto_debit_day || 1,
                     last_run_at: autoDebit.last_run_at,
                     fail_count: 0
                 })
@@ -877,8 +897,8 @@ export default function PublicPoints() {
                                         </div>
                                         <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: autoDebit.enabled ? '#a7f3d0' : '#64748b' }}>
                                             {autoDebit.enabled
-                                                ? `Perpanjangan otomatis paket ${autoDebit.plan?.name || ''} saat voucher habis.`
-                                                : 'Beli voucher otomatis pakai ND-Points saat masa aktif hotspot habis.'}
+                                                ? `Perpanjangan otomatis paket ${autoDebit.plan?.name || ''} (${autoDebit.trigger_type === 'monthly_date' ? `Setiap tanggal ${autoDebit.day}` : 'Setelah voucher sebelumnya habis'}).`
+                                                : 'Beli voucher otomatis pakai ND-Points saat voucher habis atau di tanggal pilihan Anda.'}
                                         </p>
                                     </div>
                                 </div>
@@ -1173,7 +1193,7 @@ export default function PublicPoints() {
                                 </div>
 
                                 <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0 0 1rem', lineHeight: 1.5 }}>
-                                    Sistem akan otomatis mendebit koin ND-Points Anda untuk membeli voucher baru begitu voucher Anda sebelumnya kedaluwarsa.
+                                    Pilih paket voucher dan atur waktu pembelian otomatis sesuai preferensi Anda. Saldo ND-Points Anda akan terpotong secara aman menggunakan proteksi PIN.
                                 </p>
 
                                 <div style={{ marginBottom: '1rem' }}>
@@ -1195,6 +1215,93 @@ export default function PublicPoints() {
                                         ))}
                                     </select>
                                 </div>
+
+                                {/* OPSI JADWAL PEMBELIAN AUTO-DEBIT */}
+                                <div style={{ marginBottom: '1.1rem' }}>
+                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
+                                        Waktu & Jadwal Pembelian
+                                    </label>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        {/* Pilihan 1: Setelah Voucher Habis */}
+                                        <div
+                                            onClick={() => setAutoDebitTriggerType('on_expiry')}
+                                            style={{
+                                                padding: '0.75rem 0.85rem', borderRadius: '14px', cursor: 'pointer',
+                                                border: autoDebitTriggerType === 'on_expiry' ? '2px solid #00a884' : '1px solid #e2e8f0',
+                                                background: autoDebitTriggerType === 'on_expiry' ? '#ecfdf5' : '#f8fafc',
+                                                display: 'flex', alignItems: 'center', gap: '0.75rem'
+                                            }}
+                                        >
+                                            <div style={{
+                                                width: '18px', height: '18px', borderRadius: '50%',
+                                                border: autoDebitTriggerType === 'on_expiry' ? '5px solid #00a884' : '2px solid #cbd5e1',
+                                                background: '#fff', flexShrink: 0
+                                            }} />
+                                            <div>
+                                                <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#1e293b' }}>
+                                                    ⚡ Setelah Voucher Sebelumnya Habis
+                                                </div>
+                                                <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.15rem', lineHeight: 1.4 }}>
+                                                    Sistem otomatis membeli voucher baru begitu voucher aktif Anda kedaluwarsa.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Pilihan 2: Setiap Tanggal Tertentu */}
+                                        <div
+                                            onClick={() => setAutoDebitTriggerType('monthly_date')}
+                                            style={{
+                                                padding: '0.75rem 0.85rem', borderRadius: '14px', cursor: 'pointer',
+                                                border: autoDebitTriggerType === 'monthly_date' ? '2px solid #00a884' : '1px solid #e2e8f0',
+                                                background: autoDebitTriggerType === 'monthly_date' ? '#ecfdf5' : '#f8fafc',
+                                                display: 'flex', alignItems: 'center', gap: '0.75rem'
+                                            }}
+                                        >
+                                            <div style={{
+                                                width: '18px', height: '18px', borderRadius: '50%',
+                                                border: autoDebitTriggerType === 'monthly_date' ? '5px solid #00a884' : '2px solid #cbd5e1',
+                                                background: '#fff', flexShrink: 0
+                                            }} />
+                                            <div>
+                                                <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#1e293b' }}>
+                                                    📅 Tanggal Tertentu Setiap Bulan
+                                                </div>
+                                                <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.15rem', lineHeight: 1.4 }}>
+                                                    Pembelian dijalankan sekali sebulan pada tanggal yang Anda tentukan.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* INPUT PILIH TANGGAL JIKA MONTHLY_DATE */}
+                                {autoDebitTriggerType === 'monthly_date' && (
+                                    <div style={{ marginBottom: '1.1rem', background: '#f0fdf4', padding: '0.75rem 0.85rem', borderRadius: '12px', border: '1px solid #bbf7d0' }}>
+                                        <label style={{ display: 'block', fontSize: '0.73rem', fontWeight: 800, color: '#166534', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                                            Pilih Tanggal Pembelian Bulanan
+                                        </label>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                            <select
+                                                value={autoDebitDay}
+                                                onChange={(e) => setAutoDebitDay(Number(e.target.value))}
+                                                style={{
+                                                    flex: 1, padding: '0.65rem 0.75rem', borderRadius: '10px',
+                                                    border: '1px solid #86efac', fontSize: '0.82rem', fontWeight: 800,
+                                                    color: '#14532d', background: '#fff', outline: 'none'
+                                                }}
+                                            >
+                                                {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                                                    <option key={d} value={d}>
+                                                        Setiap Tanggal {d}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <span style={{ fontSize: '0.68rem', color: '#15803d', marginTop: '0.3rem', display: 'block' }}>
+                                            💡 Voucher akan otomatis dibeli setiap tanggal {autoDebitDay} setiap bulan.
+                                        </span>
+                                    </div>
+                                )}
 
                                 <div style={{ marginBottom: '1.25rem' }}>
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>

@@ -787,7 +787,7 @@ export default function PointAnalytics() {
                             <span className="text-[10px] text-slate-400 dark:text-admin-muted">ID #{acc.id}</span>
                             {acc.auto_debit_enabled && (
                               <span className="block text-[10px] font-bold text-cyan-600 dark:text-cyan-400 mt-0.5">
-                                ⚡ Auto-Debit: {acc.auto_debit_plan?.name || 'Paket Hotspot'}
+                                ⚡ Auto: {acc.auto_debit_plan?.name || 'Paket'} ({acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Tgl ${acc.auto_debit_day}` : 'Setelah Habis')})
                               </span>
                             )}
                           </div>
@@ -829,9 +829,9 @@ export default function PointAnalytics() {
                             {acc.auto_debit_enabled && (
                               <span
                                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-500/30"
-                                title={acc.auto_debit_plan ? `Paket: ${acc.auto_debit_plan.name} (Rp ${Number(acc.auto_debit_plan.price || 0).toLocaleString('id-ID')})` : 'Auto-debit aktif'}
+                                title={acc.auto_debit_plan ? `Paket: ${acc.auto_debit_plan.name} (Rp ${Number(acc.auto_debit_plan.price || 0).toLocaleString('id-ID')}) - ${acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Setiap tgl ${acc.auto_debit_day}` : 'Setelah voucher habis')}` : 'Auto-debit aktif'}
                               >
-                                <i className="fas fa-bolt text-[9px]" /> Auto-Debit: {acc.auto_debit_plan?.name || 'Aktif'}
+                                <i className="fas fa-bolt text-[9px]" /> Auto: {acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Tgl ${acc.auto_debit_day}` : 'Setelah Habis')}
                               </span>
                             )}
                           </div>

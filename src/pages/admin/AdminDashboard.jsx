@@ -646,6 +646,10 @@ const AdminDashboard = () => {
                                         (Rp {formatPrice(u.plan_price)})
                                     </span>
                                 </div>
+                                <div className="text-[10px] text-cyan-700 dark:text-cyan-300 font-semibold mt-0.5 flex items-center gap-1">
+                                    <span>🗓️</span>
+                                    <span>{u.schedule_desc || (u.trigger_type === 'monthly_date' ? `Setiap tgl ${u.day}` : 'Setelah voucher habis')}</span>
+                                </div>
                                 <div className="text-[10px] text-admin-muted mt-1.5 flex items-center gap-2">
                                     <span>Saldo: <strong className="text-emerald-500 font-bold">{u.balance.toLocaleString('id-ID')} Pts</strong></span>
                                     {u.fail_count > 0 && (
@@ -1134,6 +1138,9 @@ const AdminDashboard = () => {
                                                         <span className="text-[10px] text-admin-muted">
                                                             Rp {formatPrice(u.plan_price)} ({u.plan_duration})
                                                         </span>
+                                                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
+                                                            🗓️ {u.schedule_desc || (u.trigger_type === 'monthly_date' ? `Setiap tgl ${u.day}` : 'Setelah voucher habis')}
+                                                        </div>
                                                     </td>
                                                     <td className="p-3 text-right font-black text-emerald-500 text-sm">
                                                         {u.balance?.toLocaleString('id-ID')} Pts
