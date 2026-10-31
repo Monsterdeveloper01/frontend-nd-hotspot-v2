@@ -131,7 +131,9 @@ export default function PublicPoints() {
                     trigger_type: res.data.auto_debit_trigger_type || 'on_expiry',
                     day: res.data.auto_debit_day || 1,
                     last_run_at: res.data.last_run_at,
-                    fail_count: res.data.fail_count || 0
+                    fail_count: res.data.fail_count || 0,
+                    is_paused_unused: !!res.data.is_paused_unused,
+                    status_note: res.data.status_note || ''
                 })
                 if (res.data.auto_debit_plan_id) {
                     setAutoDebitPlanId(res.data.auto_debit_plan_id)
@@ -940,9 +942,11 @@ export default function PublicPoints() {
 
                             {/* ND AUTO-VOUCHER CARD BANNER */}
                             <div style={{
-                                background: autoDebit.enabled ? 'linear-gradient(135deg, #064e3b, #047857)' : '#ffffff',
-                                color: autoDebit.enabled ? '#fff' : '#1e293b',
-                                border: autoDebit.enabled ? '1px solid #059669' : '1px solid #e2e8f0',
+                                background: autoDebit.is_paused_unused
+                                    ? 'linear-gradient(135deg, #78350f, #92400e)'
+                                    : (autoDebit.enabled ? 'linear-gradient(135deg, #064e3b, #047857)' : '#ffffff'),
+                                color: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : '#1e293b',
+                                border: autoDebit.is_paused_unused ? '1px solid #d97706' : (autoDebit.enabled ? '1px solid #059669' : '1px solid #e2e8f0'),
                                 borderRadius: '20px', padding: '1.1rem 1.25rem', marginBottom: '1.25rem',
                                 boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem'
@@ -950,11 +954,11 @@ export default function PublicPoints() {
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                                     <div style={{
                                         width: '40px', height: '40px', borderRadius: '12px',
-                                        background: autoDebit.enabled ? 'rgba(255,255,255,0.2)' : '#ecfdf5',
-                                        color: autoDebit.enabled ? '#fff' : '#00a884',
+                                        background: (autoDebit.enabled || autoDebit.is_paused_unused) ? 'rgba(255,255,255,0.2)' : '#ecfdf5',
+                                        color: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : '#00a884',
                                         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.15rem'
                                     }}>
-                                        <i className="fas fa-bolt" />
+                                        <i className={autoDebit.is_paused_unused ? "fas fa-pause-circle" : "fas fa-bolt"} />
                                     </div>
                                     <div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -963,16 +967,18 @@ export default function PublicPoints() {
                                             </h4>
                                             <span style={{
                                                 fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '9999px',
-                                                background: autoDebit.enabled ? '#10b981' : '#f1f5f9',
-                                                color: autoDebit.enabled ? '#fff' : '#64748b'
+                                                background: autoDebit.is_paused_unused ? '#f59e0b' : (autoDebit.enabled ? '#10b981' : '#f1f5f9'),
+                                                color: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : '#64748b'
                                             }}>
-                                                {autoDebit.enabled ? 'AKTIF' : 'NONAKTIF'}
+                                                {autoDebit.is_paused_unused ? 'DIJEDA (HEMAT POIN)' : (autoDebit.enabled ? 'AKTIF' : 'NONAKTIF')}
                                             </span>
                                         </div>
-                                        <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: autoDebit.enabled ? '#a7f3d0' : '#64748b' }}>
-                                            {autoDebit.enabled
-                                                ? `Voucher ${autoDebit.plan?.name || ''} otomatis terbit (${autoDebit.trigger_type === 'monthly_date' ? `Setiap tanggal ${autoDebit.day}` : 'Setelah voucher sebelumnya habis'}).`
-                                                : 'Internet tanpa putus, voucher otomatis diterbitkan pakai koin ND-Points.'}
+                                        <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: autoDebit.is_paused_unused ? '#fde68a' : (autoDebit.enabled ? '#a7f3d0' : '#64748b') }}>
+                                            {autoDebit.is_paused_unused
+                                                ? 'Voucher sebelumnya kedaluwarsa tanpa dipakai. Auto-Voucher dijeda sementara agar poin Anda tidak terbuang sia-sia.'
+                                                : (autoDebit.enabled
+                                                    ? `Voucher ${autoDebit.plan?.name || ''} otomatis terbit (${autoDebit.trigger_type === 'monthly_date' ? `Setiap tanggal ${autoDebit.day}` : 'Setelah voucher sebelumnya habis'}).`
+                                                    : 'Internet tanpa putus, voucher otomatis diterbitkan pakai koin ND-Points.')}
                                         </p>
                                     </div>
                                 </div>
@@ -988,13 +994,13 @@ export default function PublicPoints() {
                                     }}
                                     style={{
                                         padding: '0.55rem 1rem', borderRadius: '9999px',
-                                        background: autoDebit.enabled ? '#fff' : 'linear-gradient(135deg, #00a884, #00c298)',
-                                        color: autoDebit.enabled ? '#065f46' : '#fff',
+                                        background: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : 'linear-gradient(135deg, #00a884, #00c298)',
+                                        color: autoDebit.is_paused_unused ? '#92400e' : (autoDebit.enabled ? '#065f46' : '#fff'),
                                         fontWeight: 800, fontSize: '0.78rem', border: 'none', cursor: 'pointer',
                                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                     }}
                                 >
-                                    <i className="fas fa-cog" /> {autoDebit.enabled ? 'Atur ND Auto-Voucher' : 'Aktifkan ND Auto-Voucher'}
+                                    <i className="fas fa-cog" /> {autoDebit.is_paused_unused ? 'Atur / Lanjutkan Auto-Voucher' : (autoDebit.enabled ? 'Atur ND Auto-Voucher' : 'Aktifkan ND Auto-Voucher')}
                                 </button>
                             </div>
 
