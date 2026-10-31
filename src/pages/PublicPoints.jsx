@@ -160,8 +160,8 @@ export default function PublicPoints() {
             return
         }
         const verifyPin = autoDebitPin || pin
-        if (!verifyPin || verifyPin.length !== 6) {
-            setError('Harap masukkan 6-digit PIN keamanan Anda.')
+        if (!verifyPin || verifyPin.length < 4 || verifyPin.length > 6) {
+            setError('Harap masukkan PIN keamanan Anda (4-6 angka).')
             return
         }
 
@@ -258,8 +258,8 @@ export default function PublicPoints() {
     const handleVerifyPin = async (e) => {
         e.preventDefault()
         setError('')
-        if (!/^[0-9]{6}$/.test(pin)) {
-            setError('PIN harus terdiri dari tepat 6 angka.')
+        if (!/^[0-9]{4,6}$/.test(pin)) {
+            setError('PIN harus terdiri dari 4 sampai 6 angka.')
             return
         }
 
@@ -317,8 +317,8 @@ export default function PublicPoints() {
             setError('Masukkan 4-digit kode OTP dari WhatsApp.')
             return
         }
-        if (!/^[0-9]{6}$/.test(newPin)) {
-            setError('PIN baru harus tepat 6 angka numerik.')
+        if (!/^[0-9]{4,6}$/.test(newPin)) {
+            setError('PIN baru harus terdiri dari 4 sampai 6 angka numerik.')
             return
         }
         if (newPin !== confirmPin) {
@@ -573,7 +573,7 @@ export default function PublicPoints() {
                                     <i className="fas fa-shield-alt" />
                                 </div>
                                 <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1e293b', margin: '0 0 0.3rem' }}>
-                                    Masukkan 6-Digit PIN
+                                    Masukkan PIN Keamanan
                                 </h2>
                                 <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
                                     Nomor: <strong style={{ color: '#1e293b' }}>+{normalizedPhone}</strong>
@@ -617,14 +617,14 @@ export default function PublicPoints() {
 
                                 <button
                                     type="submit"
-                                    disabled={loading || pin.length !== 6}
+                                    disabled={loading || pin.length < 4}
                                     style={{
                                         width: '100%', padding: '0.9rem',
-                                        background: pin.length === 6 ? 'linear-gradient(135deg, #00a884, #00c298)' : '#e2e8f0',
-                                        color: pin.length === 6 ? '#fff' : '#94a3b8',
+                                        background: pin.length >= 4 ? 'linear-gradient(135deg, #00a884, #00c298)' : '#e2e8f0',
+                                        color: pin.length >= 4 ? '#fff' : '#94a3b8',
                                         fontWeight: 800, fontSize: '0.9rem',
-                                        borderRadius: '9999px', border: 'none', cursor: pin.length === 6 ? 'pointer' : 'not-allowed',
-                                        boxShadow: pin.length === 6 ? '0 4px 15px rgba(0, 168, 132, 0.3)' : 'none',
+                                        borderRadius: '9999px', border: 'none', cursor: pin.length >= 4 ? 'pointer' : 'not-allowed',
+                                        boxShadow: pin.length >= 4 ? '0 4px 15px rgba(0, 168, 132, 0.3)' : 'none',
                                     }}
                                 >
                                     {loading ? <i className="fas fa-spinner fa-spin" /> : 'Buka Akun ND-Points'}
@@ -660,7 +660,7 @@ export default function PublicPoints() {
                                         </p>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.74rem', color: '#065f46', background: '#ecfdf5', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1px solid #a7f3d0' }}>
                                             <i className="fas fa-shield-alt" style={{ color: '#00a884', fontSize: '0.85rem' }} />
-                                            <span>PIN 6-digit ini melindungi saldo <strong>ND-Points</strong> & menjadi kunci otorisasi perpanjangan otomatis <strong>ND Auto-Voucher</strong> Anda.</span>
+                                            <span>PIN keamanan (4-6 angka) ini melindungi saldo <strong>ND-Points</strong> & menjadi kunci otorisasi perpanjangan otomatis <strong>ND Auto-Voucher</strong> Anda.</span>
                                         </div>
                                     </div>
 
@@ -724,17 +724,17 @@ export default function PublicPoints() {
                                         </div>
                                     </div>
 
-                                    {/* 6-Digit PIN */}
+                                    {/* PIN Setup (4 to 6 Digits) */}
                                     <div style={{ marginBottom: '1rem' }}>
                                         <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                                            Buat 6-Digit PIN Baru
+                                            Buat PIN Baru (4-6 Angka)
                                         </label>
                                         <input
                                             type="password"
                                             maxLength={6}
                                             value={newPin}
                                             onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
-                                            placeholder="• • • • • •"
+                                            placeholder="4 - 6 Angka"
                                             required
                                             style={{
                                                 letterSpacing: '0.4em', textAlign: 'center', fontSize: '1.3rem',
@@ -748,14 +748,14 @@ export default function PublicPoints() {
                                     {/* Confirm PIN */}
                                     <div style={{ marginBottom: '1.5rem' }}>
                                         <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                                            Konfirmasi 6-Digit PIN
+                                            Konfirmasi PIN (4-6 Angka)
                                         </label>
                                         <input
                                             type="password"
                                             maxLength={6}
                                             value={confirmPin}
                                             onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
-                                            placeholder="• • • • • •"
+                                            placeholder="4 - 6 Angka"
                                             required
                                             style={{
                                                 letterSpacing: '0.4em', textAlign: 'center', fontSize: '1.3rem',
@@ -1747,7 +1747,7 @@ export default function PublicPoints() {
 
                                 <div style={{ marginBottom: '1.25rem' }}>
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                                        PIN Keamanan (6 Digit)
+                                        PIN Keamanan (4-6 Angka)
                                     </label>
                                     <input
                                         type="password"
@@ -1856,7 +1856,7 @@ export default function PublicPoints() {
                                             <li><strong>🔄 Otomatis Terbit:</strong> Saldo poin otomatis didebit untuk menerbitkan voucher baru ketika paket voucher lama habis, atau terjadwal di tanggal tertentu setiap bulan.</li>
                                             <li><strong>⏳ Masa Berlaku 3 Hari:</strong> Khusus voucher yang dibeli dari poin (baik tukar mandiri maupun via ND Auto-Voucher), voucher memiliki batas waktu <strong>3 hari</strong> untuk mulai digunakan sebelum kedaluwarsa.</li>
                                             <li><strong>🛡️ Proteksi Auto-Pause (Anti-Terkuras):</strong> Jika voucher sebelumnya kedaluwarsa tanpa pernah dipakai sama sekali (misal Anda sedang bepergian/keluar kota), sistem <strong>otomatis menjeda (pause)</strong> Auto-Voucher agar saldo poin Anda tidak hangus percuma!</li>
-                                            <li><strong>🔐 Kontrol Mandiri:</strong> Anda bebas mengaktifkan, mengubah paket, atau mematikan fitur ini kapan saja menggunakan 6-digit PIN rahasia.</li>
+                                            <li><strong>🔐 Kontrol Mandiri:</strong> Anda bebas mengaktifkan, mengubah paket, atau mematikan fitur ini kapan saja menggunakan PIN keamanan (4-6 angka).</li>
                                         </ul>
                                     </div>
 
@@ -1868,7 +1868,7 @@ export default function PublicPoints() {
                                         <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                                             <li><strong>⚡ 1-Detik Beli Voucher:</strong> Pilih paket, klik tukar, langsung terbit kode voucher dan tersedia tombol 1-klik login otomatis.</li>
                                             <li><strong>🎁 Bonus Koin Gratis:</strong> Dapatkan bonus ekstra koin pada paket top-up tertentu.</li>
-                                            <li><strong>🔒 Aman Terlindungi PIN:</strong> Saldo Anda terlindungi 6-digit PIN keamanan dan verifikasi WhatsApp OTP resmi.</li>
+                                            <li><strong>🔒 Aman Terlindungi PIN:</strong> Saldo Anda terlindungi PIN keamanan (4-6 angka) dan verifikasi WhatsApp OTP resmi.</li>
                                         </ul>
                                     </div>
 
@@ -1881,7 +1881,7 @@ export default function PublicPoints() {
                                             <li><strong>Non-Refundable:</strong> ND-Points bukan mata uang rupiah dan <u>tidak dapat diuangkan kembali (non-refundable)</u> atau ditarik ke rekening bank manapun.</li>
                                             <li><strong>Khusus Ekosistem ND-Hotspot:</strong> Poin hanya berlaku untuk ditukarkan dengan paket voucher internet di jaringan ND-Hotspot.</li>
                                             <li><strong>Perbedaan Voucher QRIS vs Voucher Poin:</strong> Voucher yang dibeli via QRIS reguler (rupiah) tidak memiliki batas kedaluwarsa 3 hari sebelum login pertama. Batas kedaluwarsa 3 hari hanya berlaku khusus untuk voucher yang dibeli menggunakan ND-Points.</li>
-                                            <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah memberikan 6-digit PIN atau kode OTP kepada orang lain. Tim ND-Hotspot tidak pernah meminta PIN Anda.</li>
+                                            <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah memberikan PIN atau kode OTP kepada orang lain. Tim ND-Hotspot tidak pernah meminta PIN Anda.</li>
                                         </ul>
                                     </div>
                                 </div>
