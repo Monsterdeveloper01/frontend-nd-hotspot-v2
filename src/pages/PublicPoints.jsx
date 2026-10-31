@@ -51,6 +51,13 @@ export default function PublicPoints() {
     const [autoDebitPin, setAutoDebitPin] = useState('')
     const [autoDebitLoading, setAutoDebitLoading] = useState(false)
 
+    // Customer Vouchers (Active, Recent, and ND-Points Redeemed)
+    const [myVouchers, setMyVouchers] = useState([])
+    const [activeVoucher, setActiveVoucher] = useState(null)
+    const [loadingVouchers, setLoadingVouchers] = useState(false)
+    const [voucherFilter, setVoucherFilter] = useState('all') // 'all' | 'active' | 'points' | 'qris'
+    const [copiedVoucherId, setCopiedVoucherId] = useState(null)
+
     // Voucher Plans & Top-up Packages
     const [voucherPlans, setVoucherPlans] = useState([])
     const [topupPackages, setTopupPackages] = useState([])
@@ -81,6 +88,7 @@ export default function PublicPoints() {
         if (!isLoggedIn) return
         fetchPlansAndPackages()
         fetchAutoDebitStatus()
+        fetchMyVouchers()
     }, [isLoggedIn])
 
     const fetchPlansAndPackages = async () => {
@@ -93,6 +101,22 @@ export default function PublicPoints() {
             setTopupPackages(pkgRes.data?.packages || [])
         } catch (err) {
             console.error('Error fetching data:', err)
+        }
+    }
+
+    const fetchMyVouchers = async () => {
+        if (!normalizedPhone) return
+        setLoadingVouchers(true)
+        try {
+            const res = await axios.post(`${API}/points/my-vouchers`, { phone: normalizedPhone })
+            if (res.data?.success) {
+                setMyVouchers(res.data.vouchers || [])
+                setActiveVoucher(res.data.active_voucher || null)
+            }
+        } catch (err) {
+            console.error('Failed to fetch customer vouchers:', err)
+        } finally {
+            setLoadingVouchers(false)
         }
     }
 
@@ -169,12 +193,15 @@ export default function PublicPoints() {
                 // OPSI A: Jika voucher pertama langsung diterbitkan saat aktivasi
                 if (res.data.initial_voucher) {
                     setRedeemSuccess(res.data.initial_voucher)
+                    fetchMyVouchers()
                     try {
                         const stat = await axios.post(`${API}/points/account/status`, { phone: normalizedPhone })
                         setAccountData(stat.data)
                     } catch (e) {
                         // Silently handle
                     }
+                } else {
+                    fetchMyVouchers()
                 }
             } else {
                 setError(res.data?.message || 'Gagal mengubah pengaturan ND Auto-Voucher.')
@@ -356,6 +383,7 @@ export default function PublicPoints() {
                     ...prev,
                     balance: res.data.data.balance_remaining,
                 }))
+                fetchMyVouchers()
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Gagal menukar voucher. Silakan periksa PIN Anda.')
@@ -402,6 +430,7 @@ export default function PublicPoints() {
                     // Refresh latest balance
                     const stat = await axios.post(`${API}/points/account/status`, { phone: normalizedPhone })
                     setAccountData(stat.data)
+                    fetchMyVouchers()
                 } else if (res.data?.status === 'expire' || res.data?.status === 'cancel') {
                     clearInterval(interval)
                     setPollingInterval(null)
@@ -416,10 +445,15 @@ export default function PublicPoints() {
         setPollingInterval(interval)
     }
 
-    const handleCopyVoucher = (code) => {
+    const handleCopyVoucher = (code, id = null) => {
         navigator.clipboard.writeText(code)
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
+        if (id) {
+            setCopiedVoucherId(id)
+            setTimeout(() => setCopiedVoucherId(null), 2000)
+        } else {
+            setCopied(true)
+            setTimeout(() => setCopied(false), 2000)
+        }
     }
 
     const handleLogout = () => {
@@ -428,6 +462,8 @@ export default function PublicPoints() {
         setPin('')
         setAccountData(null)
         setRedeemSuccess(null)
+        setMyVouchers([])
+        setActiveVoucher(null)
         if (pollingInterval) clearInterval(pollingInterval)
     }
 
@@ -821,17 +857,44 @@ export default function PublicPoints() {
                                 <div style={{
                                     background: '#ecfdf5', border: '2px solid #10b981', borderRadius: '24px',
                                     padding: '1.5rem', marginBottom: '1.5rem', textAlign: 'center',
-                                    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.15)',
+                                    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.15)', position: 'relative',
                                 }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRedeemSuccess(null)}
+                                        style={{
+                                            position: 'absolute', top: '14px', right: '14px',
+                                            background: '#d1fae5', border: 'none', borderRadius: '50%',
+                                            width: '28px', height: '28px', cursor: 'pointer',
+                                            color: '#065f46', fontWeight: 900, fontSize: '0.8rem',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center'
+                                        }}
+                                        title="Tutup pemberitahuan"
+                                    >
+                                        ✕
+                                    </button>
                                     <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#10b981', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: '0.5rem' }}>
                                         <i className="fas fa-check" />
                                     </div>
                                     <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#065f46', margin: '0 0 0.25rem' }}>
-                                        Voucher Berhasil Ditukar!
+                                        Voucher Berhasil Diterbitkan!
                                     </h3>
-                                    <p style={{ fontSize: '0.8rem', color: '#047857', margin: '0 0 1rem' }}>
-                                        {redeemSuccess.plan_name} • Terpotong {formatRupiah(redeemSuccess.points_spent)} Pts
+                                    <p style={{ fontSize: '0.8rem', color: '#047857', margin: '0 0 0.6rem' }}>
+                                        {redeemSuccess.plan_name} • {redeemSuccess.duration || ''} {redeemSuccess.points_spent ? `• Terpotong ${formatRupiah(redeemSuccess.points_spent)} Pts` : ''}
                                     </p>
+
+                                    {/* 3-DAY NOTICE BOX FOR POINT VOUCHERS */}
+                                    <div style={{
+                                        background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px',
+                                        padding: '0.55rem 0.85rem', marginBottom: '0.9rem', display: 'inline-flex',
+                                        alignItems: 'center', gap: '0.5rem', textAlign: 'left', maxWidth: '100%'
+                                    }}>
+                                        <span style={{ fontSize: '1.1rem' }}>⏳</span>
+                                        <div style={{ fontSize: '0.72rem', color: '#92400e', lineHeight: 1.4 }}>
+                                            <strong>Masa Berlaku: 3 Hari</strong> (Kedaluwarsa: {redeemSuccess.expires_at || '3 hari kedepan'})<br />
+                                            <span>Khusus voucher poin, sistem otomatis menghapus user dari MikroTik jika tidak dipakai dalam 3 hari.</span>
+                                        </div>
+                                    </div>
 
                                     {/* Voucher Code Box */}
                                     <div style={{
@@ -870,7 +933,7 @@ export default function PublicPoints() {
                                     </a>
 
                                     <p style={{ fontSize: '0.72rem', color: '#065f46', margin: 0, lineHeight: 1.5 }}>
-                                        💡 <em>Jika auto-login gagal, gunakan cara manual (salin kode di atas lalu login di ndnet.login) atau <a href="https://wa.me/6285129391531" target="_blank" rel="noreferrer" style={{ color: '#065f46', fontWeight: 700 }}>Kontak Admin</a></em>
+                                        💡 <em>Jika auto-login gagal, salin kode di atas lalu login di portal ndnet.login atau <a href="https://wa.me/6285129391531" target="_blank" rel="noreferrer" style={{ color: '#065f46', fontWeight: 700 }}>Kontak Admin</a></em>
                                     </p>
                                 </div>
                             )}
@@ -935,39 +998,185 @@ export default function PublicPoints() {
                                 </button>
                             </div>
 
-                            {/* TABS: TUKAR VOCHER / TOP-UP */}
-                            <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: '9999px', padding: '4px', marginBottom: '1.25rem' }}>
+                            {/* SPOTLIGHT: VOUCHER AKTIF ANDA */}
+                            {activeVoucher && !redeemSuccess && (
+                                <div style={{
+                                    background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+                                    color: '#fff', borderRadius: '24px', padding: '1.35rem 1.4rem',
+                                    marginBottom: '1.25rem', border: '1px solid #334155',
+                                    boxShadow: '0 8px 30px rgba(15, 23, 42, 0.25)',
+                                    position: 'relative', overflow: 'hidden'
+                                }}>
+                                    {/* Decorative glow */}
+                                    <div style={{
+                                        position: 'absolute', top: '-40px', right: '-40px',
+                                        width: '120px', height: '120px', borderRadius: '50%',
+                                        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%)',
+                                        pointerEvents: 'none'
+                                    }} />
+
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <span style={{
+                                                width: '8px', height: '8px', borderRadius: '50%',
+                                                background: '#10b981', display: 'inline-block',
+                                                boxShadow: '0 0 10px #10b981'
+                                            }} />
+                                            <span style={{ fontSize: '0.72rem', fontWeight: 900, letterSpacing: '0.08em', color: '#a7f3d0', textTransform: 'uppercase' }}>
+                                                Voucher Aktif Anda
+                                            </span>
+                                        </div>
+                                        <span style={{
+                                            fontSize: '0.68rem', fontWeight: 800, padding: '0.2rem 0.6rem',
+                                            borderRadius: '999px',
+                                            background: activeVoucher.is_point ? 'rgba(6, 182, 212, 0.15)' : 'rgba(168, 85, 247, 0.15)',
+                                            color: activeVoucher.is_point ? '#22d3ee' : '#c084fc',
+                                            border: activeVoucher.is_point ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid rgba(168, 85, 247, 0.3)'
+                                        }}>
+                                            {activeVoucher.source_label}
+                                        </span>
+                                    </div>
+
+                                    <div style={{
+                                        background: 'rgba(255,255,255,0.06)', borderRadius: '16px',
+                                        padding: '0.9rem 1rem', border: '1px solid rgba(255,255,255,0.1)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                        marginBottom: '0.85rem'
+                                    }}>
+                                        <div>
+                                            <div style={{ fontSize: '0.68rem', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>
+                                                {activeVoucher.plan_name} ({activeVoucher.duration})
+                                            </div>
+                                            <div style={{ fontSize: '1.45rem', fontWeight: 900, letterSpacing: '0.12em', color: '#f8fafc', marginTop: '0.15rem' }}>
+                                                {activeVoucher.code}
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleCopyVoucher(activeVoucher.code, activeVoucher.id)}
+                                            style={{
+                                                background: copiedVoucherId === activeVoucher.id ? '#10b981' : 'rgba(255,255,255,0.12)',
+                                                color: '#fff', border: 'none', padding: '0.5rem 0.9rem',
+                                                borderRadius: '10px', fontSize: '0.72rem', fontWeight: 800,
+                                                cursor: 'pointer', transition: 'all 0.2s'
+                                            }}
+                                        >
+                                            {copiedVoucherId === activeVoucher.id ? '✓ Tersalin' : 'Salin'}
+                                        </button>
+                                    </div>
+
+                                    {/* 3-day notice for point vouchers */}
+                                    {activeVoucher.is_three_day_point_rule && (
+                                        <div style={{
+                                            fontSize: '0.7rem', color: '#fbbf24', background: 'rgba(245, 158, 11, 0.1)',
+                                            border: '1px solid rgba(245, 158, 11, 0.25)', borderRadius: '10px',
+                                            padding: '0.5rem 0.75rem', marginBottom: '0.85rem', display: 'flex', alignItems: 'flex-start', gap: '0.45rem'
+                                        }}>
+                                            <span style={{ fontSize: '0.85rem' }}>⏳</span>
+                                            <div style={{ lineHeight: 1.4 }}>
+                                                <strong>Berlaku 3 Hari:</strong> Kedaluwarsa pada <strong>{activeVoucher.expires_at_formatted || '3 hari'}</strong>. Otomatis terhapus dari MikroTik jika batas waktu habis.
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <a
+                                            href={activeVoucher.login_url}
+                                            style={{
+                                                flex: 1, padding: '0.75rem', textAlign: 'center',
+                                                background: 'linear-gradient(135deg, #00a884, #00c298)',
+                                                color: '#fff', fontWeight: 800, fontSize: '0.82rem',
+                                                borderRadius: '999px', textDecoration: 'none',
+                                                boxShadow: '0 4px 15px rgba(0, 168, 132, 0.3)'
+                                            }}
+                                        >
+                                            <i className="fas fa-wifi" /> Login Otomatis Sekarang
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab('my_vouchers')}
+                                            style={{
+                                                padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.08)',
+                                                color: '#cbd5e1', fontWeight: 700, fontSize: '0.78rem',
+                                                borderRadius: '999px', border: '1px solid rgba(255,255,255,0.15)',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Riwayat →
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TABS: TUKAR VOCHER / TOP-UP / VOUCHER SAYA */}
+                            <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: '9999px', padding: '4px', marginBottom: '1.25rem', gap: '2px' }}>
                                 <button
                                     onClick={() => setActiveTab('redeem')}
                                     style={{
-                                        flex: 1, padding: '0.7rem', borderRadius: '9999px', border: 'none',
+                                        flex: 1, padding: '0.65rem 0.5rem', borderRadius: '9999px', border: 'none',
                                         background: activeTab === 'redeem' ? '#fff' : 'transparent',
                                         color: activeTab === 'redeem' ? '#1e293b' : '#64748b',
-                                        fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer',
+                                        fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer',
                                         boxShadow: activeTab === 'redeem' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
                                         transition: 'all 0.2s',
                                     }}
                                 >
-                                    ⚡ Tukar Voucher
+                                    ⚡ Tukar Poin
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('topup')}
                                     style={{
-                                        flex: 1, padding: '0.7rem', borderRadius: '9999px', border: 'none',
+                                        flex: 1, padding: '0.65rem 0.5rem', borderRadius: '9999px', border: 'none',
                                         background: activeTab === 'topup' ? '#fff' : 'transparent',
                                         color: activeTab === 'topup' ? '#1e293b' : '#64748b',
-                                        fontWeight: 800, fontSize: '0.82rem', cursor: 'pointer',
+                                        fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer',
                                         boxShadow: activeTab === 'topup' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
                                         transition: 'all 0.2s',
                                     }}
                                 >
-                                    💎 Top-Up Koin (QRIS)
+                                    💎 Top-Up Koin
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setActiveTab('my_vouchers')
+                                        fetchMyVouchers()
+                                    }}
+                                    style={{
+                                        flex: 1, padding: '0.65rem 0.5rem', borderRadius: '9999px', border: 'none',
+                                        background: activeTab === 'my_vouchers' ? '#fff' : 'transparent',
+                                        color: activeTab === 'my_vouchers' ? '#1e293b' : '#64748b',
+                                        fontWeight: 800, fontSize: '0.78rem', cursor: 'pointer',
+                                        boxShadow: activeTab === 'my_vouchers' ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                                        transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                                    }}
+                                >
+                                    <span>🎟️ Voucher Saya</span>
+                                    {myVouchers.filter(v => !v.is_expired).length > 0 && (
+                                        <span style={{
+                                            background: '#10b981', color: '#fff', fontSize: '0.62rem',
+                                            fontWeight: 900, padding: '1px 6px', borderRadius: '999px'
+                                        }}>
+                                            {myVouchers.filter(v => !v.is_expired).length}
+                                        </span>
+                                    )}
                                 </button>
                             </div>
 
-                            {/* TAB 1: TUKAR VOUCHER (KESAMPING / GRID) */}
+                            {/* TAB 1: TUKAR VOUCHER */}
                             {activeTab === 'redeem' && (
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
+                                <div>
+                                    {/* 3-Day Rule Notice Banner */}
+                                    <div style={{
+                                        background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '14px',
+                                        padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.65rem'
+                                    }}>
+                                        <span style={{ fontSize: '1.2rem' }}>⏱️</span>
+                                        <div style={{ fontSize: '0.73rem', color: '#065f46', lineHeight: 1.45 }}>
+                                            <strong>Ketentuan Voucher Poin (3 Hari):</strong> Voucher yang dibeli via tukar poin memiliki masa berlaku <strong>3 Hari</strong>. Jika tidak dipakai dalam 3 hari, voucher akan berstatus kedaluwarsa & otomatis dihapus dari MikroTik (record database tetap tersimpan).
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.85rem' }}>
                                     {voucherPlans.length === 0 ? (
                                         <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.82rem', padding: '2rem 0', gridColumn: '1 / -1' }}>
                                             Memuat daftar paket voucher...
@@ -1029,7 +1238,8 @@ export default function PublicPoints() {
                                         })
                                     )}
                                 </div>
-                            )}
+                            </div>
+                        )}
 
                             {/* TAB 2: TOP-UP KOIN (KESAMPING / GRID) */}
                             {activeTab === 'topup' && (
@@ -1093,6 +1303,211 @@ export default function PublicPoints() {
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                            )}
+
+                            {/* TAB 3: VOUCHER SAYA (RIWAYAT & VOUCHER POIN) */}
+                            {activeTab === 'my_vouchers' && (
+                                <div>
+                                    {/* Sub-filter chips */}
+                                    <div style={{ display: 'flex', gap: '0.45rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1rem', alignItems: 'center' }}>
+                                        {[
+                                            { id: 'all', label: `Semua (${myVouchers.length})` },
+                                            { id: 'active', label: `🟢 Aktif (${myVouchers.filter(v => !v.is_expired).length})` },
+                                            { id: 'points', label: `🪙 Dari Poin (${myVouchers.filter(v => v.is_point).length})` },
+                                            { id: 'qris', label: `💳 Dari QRIS (${myVouchers.filter(v => !v.is_point).length})` },
+                                        ].map((f) => (
+                                            <button
+                                                key={f.id}
+                                                type="button"
+                                                onClick={() => setVoucherFilter(f.id)}
+                                                style={{
+                                                    padding: '0.35rem 0.75rem', borderRadius: '999px',
+                                                    border: voucherFilter === f.id ? '1px solid #00a884' : '1px solid #e2e8f0',
+                                                    background: voucherFilter === f.id ? '#ecfdf5' : '#fff',
+                                                    color: voucherFilter === f.id ? '#065f46' : '#64748b',
+                                                    fontSize: '0.72rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap'
+                                                }}
+                                            >
+                                                {f.label}
+                                            </button>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={fetchMyVouchers}
+                                            disabled={loadingVouchers}
+                                            title="Segarkan daftar voucher"
+                                            style={{
+                                                padding: '0.35rem 0.65rem', borderRadius: '999px',
+                                                border: '1px solid #e2e8f0', background: '#f8fafc',
+                                                color: '#64748b', fontSize: '0.72rem', cursor: 'pointer', marginLeft: 'auto'
+                                            }}
+                                        >
+                                            <i className={`fas fa-sync-alt ${loadingVouchers ? 'fa-spin' : ''}`} />
+                                        </button>
+                                    </div>
+
+                                    {/* 3-Day Rule Notice Box for Point Vouchers */}
+                                    <div style={{
+                                        background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '14px',
+                                        padding: '0.65rem 0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                    }}>
+                                        <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+                                        <div style={{ fontSize: '0.71rem', color: '#92400e', lineHeight: 1.4 }}>
+                                            <strong>Ketentuan Masa Berlaku:</strong> Voucher yang dibeli menggunakan ND-Points (tukar poin atau ND Auto-Voucher) memiliki batas <strong>3 Hari</strong> dan otomatis terhapus dari MikroTik jika tidak dipakai. Voucher yang dibeli via QRIS biasa tidak memiliki batas kedaluwarsa 3 hari. Semua data riwayat voucher tetap tersimpan di database website.
+                                        </div>
+                                    </div>
+
+                                    {loadingVouchers ? (
+                                        <div style={{ textAlign: 'center', padding: '3rem 0', color: '#94a3b8', fontSize: '0.82rem' }}>
+                                            <i className="fas fa-spinner fa-spin" style={{ fontSize: '1.4rem', color: '#00a884', marginBottom: '0.5rem' }} /><br />
+                                            Memuat daftar voucher Anda...
+                                        </div>
+                                    ) : (() => {
+                                        const filtered = myVouchers.filter((v) => {
+                                            if (voucherFilter === 'active') return !v.is_expired
+                                            if (voucherFilter === 'points') return v.is_point
+                                            if (voucherFilter === 'qris') return !v.is_point
+                                            return true
+                                        })
+
+                                        if (filtered.length === 0) {
+                                            return (
+                                                <div style={{
+                                                    textAlign: 'center', padding: '3rem 1.5rem', background: '#f8fafc',
+                                                    borderRadius: '20px', border: '1px dashed #cbd5e1', color: '#64748b'
+                                                }}>
+                                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#e2e8f0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', marginBottom: '0.5rem' }}>
+                                                        🎟️
+                                                    </div>
+                                                    <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#1e293b', margin: '0 0 0.25rem' }}>
+                                                        Tidak Ada Voucher
+                                                    </h4>
+                                                    <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: 0 }}>
+                                                        {voucherFilter === 'active' ? 'Anda belum memiliki voucher aktif saat ini.' : 'Belum ada riwayat voucher untuk kategori ini.'}
+                                                    </p>
+                                                </div>
+                                            )
+                                        }
+
+                                        return (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                                {filtered.map((v) => (
+                                                    <div
+                                                        key={v.id}
+                                                        style={{
+                                                            background: '#fff', borderRadius: '18px', padding: '1rem',
+                                                            border: v.is_expired ? '1px solid #f1f5f9' : '1px solid #e2e8f0',
+                                                            boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                                                            opacity: v.is_expired ? 0.78 : 1,
+                                                            position: 'relative',
+                                                        }}
+                                                    >
+                                                        {/* Header card: source badge & status badge */}
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                                <span style={{
+                                                                    fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.55rem',
+                                                                    borderRadius: '999px',
+                                                                    background: v.is_point ? '#ecfeff' : '#faf5ff',
+                                                                    color: v.is_point ? '#0891b2' : '#9333ea',
+                                                                    border: v.is_point ? '1px solid #a5f3fc' : '1px solid #e9d5ff'
+                                                                }}>
+                                                                    {v.source_label}
+                                                                </span>
+                                                                {v.is_three_day_point_rule && (
+                                                                    <span style={{
+                                                                        fontSize: '0.62rem', fontWeight: 700, padding: '0.15rem 0.45rem',
+                                                                        borderRadius: '999px', background: '#fef3c7', color: '#b45309'
+                                                                    }}>
+                                                                        3 Hari
+                                                                    </span>
+                                                                )}
+                                                            </div>
+
+                                                            <span style={{
+                                                                fontSize: '0.68rem', fontWeight: 800, padding: '0.15rem 0.55rem',
+                                                                borderRadius: '999px',
+                                                                background: v.is_expired ? '#fee2e2' : (v.status === 'used' ? '#eff6ff' : '#ecfdf5'),
+                                                                color: v.is_expired ? '#b91c1c' : (v.status === 'used' ? '#1d4ed8' : '#047857'),
+                                                                border: v.is_expired ? '1px solid #fecaca' : (v.status === 'used' ? '1px solid #bfdbfe' : '1px solid #a7f3d0')
+                                                            }}>
+                                                                {v.status_label}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Code & Plan */}
+                                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                                                            <div>
+                                                                <div style={{ fontSize: '0.73rem', fontWeight: 700, color: '#64748b' }}>
+                                                                    {v.plan_name} • <span style={{ color: '#0f172a' }}>{v.duration}</span>
+                                                                </div>
+                                                                <div style={{
+                                                                    fontSize: '1.25rem', fontWeight: 900, letterSpacing: '0.1em',
+                                                                    color: v.is_expired ? '#94a3b8' : '#1e293b', marginTop: '0.15rem'
+                                                                }}>
+                                                                    {v.code}
+                                                                </div>
+                                                            </div>
+
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleCopyVoucher(v.code, v.id)}
+                                                                style={{
+                                                                    background: copiedVoucherId === v.id ? '#10b981' : '#f1f5f9',
+                                                                    color: copiedVoucherId === v.id ? '#fff' : '#475569',
+                                                                    border: 'none', padding: '0.45rem 0.8rem',
+                                                                    borderRadius: '8px', fontSize: '0.72rem', fontWeight: 800,
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
+                                                                {copiedVoucherId === v.id ? '✓ Tersalin' : 'Salin'}
+                                                            </button>
+                                                        </div>
+
+                                                        {/* Dates & Expiration details */}
+                                                        <div style={{ fontSize: '0.68rem', color: '#64748b', lineHeight: 1.5, borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem' }}>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                                                                <span>Diterbitkan: <strong>{v.created_at_formatted || '-'}</strong></span>
+                                                                {v.expires_at_formatted && (
+                                                                    <span style={{ color: v.is_expired ? '#ef4444' : '#d97706', fontWeight: 700 }}>
+                                                                        {v.is_expired ? 'Kedaluwarsa: ' : 'Berlaku s/d: '} {v.expires_at_formatted}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            {v.is_three_day_point_rule && !v.is_expired && (
+                                                                <div style={{ color: '#b45309', marginTop: '0.2rem' }}>
+                                                                    ⏱️ Batas waktu 3 hari. Jika tidak digunakan, user voucher akan otomatis terhapus dari MikroTik.
+                                                                </div>
+                                                            )}
+                                                            {v.is_expired && (
+                                                                <div style={{ color: '#94a3b8', marginTop: '0.2rem', fontStyle: 'italic' }}>
+                                                                    ℹ️ Telah kedaluwarsa & dihapus dari MikroTik. Riwayat voucher tetap tersimpan di database website.
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Action button if active */}
+                                                        {!v.is_expired && (
+                                                            <div style={{ marginTop: '0.65rem' }}>
+                                                                <a
+                                                                    href={v.login_url}
+                                                                    style={{
+                                                                        display: 'block', width: '100%', padding: '0.55rem',
+                                                                        textAlign: 'center', background: 'linear-gradient(135deg, #00a884, #00c298)',
+                                                                        color: '#fff', fontWeight: 800, fontSize: '0.75rem',
+                                                                        borderRadius: '999px', textDecoration: 'none'
+                                                                    }}
+                                                                >
+                                                                    <i className="fas fa-sign-in-alt" /> Login Otomatis ke ND-Hotspot
+                                                                </a>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )
+                                    })()}
                                 </div>
                             )}
                         </div>
@@ -1425,6 +1840,7 @@ export default function PublicPoints() {
                                         <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.78rem' }}>
                                             <li><strong>Non-Refundable:</strong> ND-Points bukan mata uang rupiah dan <u>tidak dapat diuangkan kembali (non-refundable)</u> atau ditarik ke rekening bank manapun.</li>
                                             <li><strong>Khusus Layanan ND-Hotspot:</strong> Poin hanya dapat digunakan untuk ditukarkan dengan paket voucher internet di portal ND-Hotspot.</li>
+                                            <li><strong>Masa Berlaku Voucher Poin (3 Hari):</strong> Voucher yang didapatkan dari ND-Points (tukar poin atau ND Auto-Voucher) memiliki masa berlaku 3 hari dan otomatis terhapus dari MikroTik jika batas 3 hari habis. Voucher yang dibeli via QRIS reguler tidak memiliki batas kedaluwarsa 3 hari. Seluruh data riwayat voucher tetap tersimpan aman di database website.</li>
                                             <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah membagikan 6-digit PIN atau kode OTP Anda kepada siapapun.</li>
                                         </ul>
                                     </div>
