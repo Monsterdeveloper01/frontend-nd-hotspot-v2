@@ -33,6 +33,10 @@ const bypassToken = localStorage.getItem('maintenance_bypass');
 if (bypassToken) {
   axios.defaults.headers.common['X-Maintenance-Bypass'] = bypassToken;
 }
+const pointBypassToken = localStorage.getItem('point_maintenance_bypass');
+if (pointBypassToken) {
+  axios.defaults.headers.common['X-Point-Maintenance-Bypass'] = pointBypassToken;
+}
 
 // Global Response Interceptor
 axios.interceptors.response.use(

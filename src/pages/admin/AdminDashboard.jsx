@@ -175,6 +175,7 @@ const AdminDashboard = () => {
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
   const [isMaintenance, setIsMaintenance] = useState(false)
+  const [isPointMaintenance, setIsPointMaintenance] = useState(false)
   const [routerStatus, setRouterStatus] = useState({ online: null, latency_ms: null })
 
   const fetchData = async () => {
@@ -192,6 +193,7 @@ const AdminDashboard = () => {
       setData(statsRes.data)
       setPeakHours(peakRes.data)
       setIsMaintenance(maintRes.data.maintenance_mode)
+      setIsPointMaintenance(maintRes.data.point_maintenance_mode || false)
     } catch (err) {
       console.error('Failed to fetch dashboard data')
     } finally {
@@ -209,6 +211,20 @@ const AdminDashboard = () => {
       setIsMaintenance(!isMaintenance)
     } catch (err) {
       alert('Gagal mengubah mode maintenance')
+    }
+  }
+
+  const togglePointMaintenance = async () => {
+    const action = isPointMaintenance ? 'MENONAKTIFKAN' : 'MENGAKTIFKAN'
+    if (!confirm(`Apakah Anda yakin ingin ${action} Mode Maintenance khusus ND-Points & Auto-Voucher?\n\n(Akses publik ke menu Point akan dinonaktifkan. Layanan hotspot & voucher reguler tetap berjalan normal).`)) return
+    try {
+      const token = localStorage.getItem('token')
+      await axios.post(`${import.meta.env.VITE_API_URL}/maintenance/points/toggle`, { active: !isPointMaintenance }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      setIsPointMaintenance(!isPointMaintenance)
+    } catch (err) {
+      alert('Gagal mengubah mode maintenance ND-Points')
     }
   }
 
@@ -430,9 +446,18 @@ const AdminDashboard = () => {
                 <button 
                     onClick={toggleMaintenance}
                     className={`px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors ${isMaintenance ? 'bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500/20' : 'bg-admin-base text-admin-text border-admin-border hover:bg-zinc-700'}`}
+                    title="Maintenance Keseluruhan Sistem Hotspot"
                 >
                     <div className={`w-1.5 h-1.5 rounded-full ${isMaintenance ? 'bg-red-500 animate-pulse' : 'bg-zinc-500'}`}></div>
                     <span className="hidden sm:inline">Maint</span>
+                </button>
+                <button 
+                    onClick={togglePointMaintenance}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors ${isPointMaintenance ? 'bg-amber-500/15 text-amber-400 border-amber-500/40 hover:bg-amber-500/25 shadow-sm shadow-amber-500/10' : 'bg-admin-base text-admin-text border-admin-border hover:bg-zinc-700'}`}
+                    title="Maintenance Khusus Menu ND-Points & Auto-Voucher (Hotspot normal)"
+                >
+                    <div className={`w-1.5 h-1.5 rounded-full ${isPointMaintenance ? 'bg-amber-400 animate-pulse' : 'bg-zinc-500'}`}></div>
+                    <span className="hidden sm:inline">Maint Point</span>
                 </button>
             </div>
         </div>

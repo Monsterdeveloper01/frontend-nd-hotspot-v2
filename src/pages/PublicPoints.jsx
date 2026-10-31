@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import PublicLayout from '../components/PublicLayout'
 
@@ -68,6 +69,101 @@ export default function PublicPoints() {
     const [qrisData, setQrisData] = useState(null)
     const [pollingInterval, setPollingInterval] = useState(null)
     const [showInfoModal, setShowInfoModal] = useState(false)
+
+    // Maintenance Mode & Hidden Admin Bypass states
+    const [isPointMaintenanceActive, setIsPointMaintenanceActive] = useState(false)
+    const [isAdminBypassed, setIsAdminBypassed] = useState(false)
+    const [showBypassModal, setShowBypassModal] = useState(false)
+    const [bypassPassword, setBypassPassword] = useState('')
+    const [bypassLoading, setBypassLoading] = useState(false)
+    const [bypassError, setBypassError] = useState('')
+    const [hiddenClickCount, setHiddenClickCount] = useState(0)
+    const [checkingMaintenance, setCheckingMaintenance] = useState(true)
+
+    // Check Point Maintenance Status on Mount
+    useEffect(() => {
+        let isMounted = true
+        const checkPointMaintenance = async () => {
+            try {
+                const res = await axios.get(`${API}/maintenance/status`)
+                if (!isMounted) return
+                if (res.data?.point_maintenance_mode) {
+                    const storedBypass = localStorage.getItem('point_maintenance_bypass')
+                    const pointSessionId = res.data.point_session_id
+                    if (storedBypass && (storedBypass === pointSessionId || storedBypass === res.data.session_id)) {
+                        axios.defaults.headers.common['X-Point-Maintenance-Bypass'] = storedBypass
+                        setIsAdminBypassed(true)
+                        setIsPointMaintenanceActive(false)
+                    } else {
+                        setIsAdminBypassed(false)
+                        setIsPointMaintenanceActive(true)
+                    }
+                } else {
+                    setIsPointMaintenanceActive(false)
+                    setIsAdminBypassed(false)
+                }
+            } catch (err) {
+                console.error('Failed to check point maintenance status:', err)
+            } finally {
+                if (isMounted) setCheckingMaintenance(false)
+            }
+        }
+        checkPointMaintenance()
+        return () => { isMounted = false }
+    }, [])
+
+    const handleSecretTrigger = () => {
+        setHiddenClickCount((prev) => {
+            const next = prev + 1
+            if (next >= 4) {
+                setShowBypassModal(true)
+                return 0
+            }
+            return next
+        })
+    }
+
+    const handleBypassSubmit = async (e) => {
+        e.preventDefault()
+        if (!bypassPassword) return
+        setBypassLoading(true)
+        setBypassError('')
+        try {
+            const res = await axios.post(`${API}/maintenance/points/bypass`, { password: bypassPassword })
+            if (res.data?.success && res.data?.token) {
+                localStorage.setItem('point_maintenance_bypass', res.data.token)
+                axios.defaults.headers.common['X-Point-Maintenance-Bypass'] = res.data.token
+                setIsAdminBypassed(true)
+                setIsPointMaintenanceActive(false)
+                setShowBypassModal(false)
+                setBypassPassword('')
+            }
+        } catch (err) {
+            setBypassError(err.response?.data?.message || 'Password salah. Akses ditolak.')
+        } finally {
+            setBypassLoading(false)
+        }
+    }
+
+    const handleLockAgain = () => {
+        if (!confirm('Kunci kembali akses ND-Points untuk sesi ini?')) return
+        localStorage.removeItem('point_maintenance_bypass')
+        delete axios.defaults.headers.common['X-Point-Maintenance-Bypass']
+        setIsAdminBypassed(false)
+        setIsPointMaintenanceActive(true)
+    }
+
+    const handlePointApiError = (err, fallbackMsg) => {
+        if (err.response?.status === 503 && err.response?.data?.error === 'point_maintenance_mode') {
+            setIsPointMaintenanceActive(true)
+            setIsAdminBypassed(false)
+            localStorage.removeItem('point_maintenance_bypass')
+            delete axios.defaults.headers.common['X-Point-Maintenance-Bypass']
+            setError('')
+            return
+        }
+        setError(err.response?.data?.message || fallbackMsg)
+    }
 
     // Countdown for OTP
     useEffect(() => {
@@ -209,7 +305,7 @@ export default function PublicPoints() {
                 setError(res.data?.message || 'Gagal mengubah pengaturan ND Auto-Voucher.')
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal mengubah ND Auto-Voucher. Pastikan PIN benar.')
+            handlePointApiError(err, 'Gagal mengubah ND Auto-Voucher. Pastikan PIN benar.')
         } finally {
             setAutoDebitLoading(false)
         }
@@ -248,7 +344,7 @@ export default function PublicPoints() {
                 setView('enter_pin')
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal memeriksa status nomor WhatsApp.')
+            handlePointApiError(err, 'Gagal memeriksa status nomor WhatsApp.')
         } finally {
             setLoading(false)
         }
@@ -278,7 +374,7 @@ export default function PublicPoints() {
                 setAccountData(stat.data)
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'PIN salah. Silakan coba lagi.')
+            handlePointApiError(err, 'PIN salah. Silakan coba lagi.')
         } finally {
             setLoading(false)
         }
@@ -301,7 +397,7 @@ export default function PublicPoints() {
                 setSuccessMsg('Kode OTP 4-digit berhasil dikirim ke WhatsApp Anda.')
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal mengirim kode OTP.')
+            handlePointApiError(err, 'Gagal mengirim kode OTP.')
         } finally {
             setLoading(false)
         }
@@ -349,7 +445,7 @@ export default function PublicPoints() {
                 setSuccessMsg('PIN keamanan berhasil disimpan!')
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal menyimpan PIN baru.')
+            handlePointApiError(err, 'Gagal menyimpan PIN baru.')
         } finally {
             setLoading(false)
         }
@@ -388,7 +484,7 @@ export default function PublicPoints() {
                 fetchMyVouchers()
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal menukar voucher. Silakan periksa PIN Anda.')
+            handlePointApiError(err, 'Gagal menukar voucher. Silakan periksa PIN Anda.')
         } finally {
             setLoading(false)
         }
@@ -410,7 +506,7 @@ export default function PublicPoints() {
                 startPollingPayment(res.data.transaction_id, res.data.package.total_points)
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal membuat QRIS Top-Up.')
+            handlePointApiError(err, 'Gagal membuat QRIS Top-Up.')
         } finally {
             setLoading(false)
         }
@@ -469,8 +565,221 @@ export default function PublicPoints() {
         if (pollingInterval) clearInterval(pollingInterval)
     }
 
+    if (checkingMaintenance) {
+        return (
+            <PublicLayout>
+                <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+                    <div style={{ width: '40px', height: '40px', border: '4px solid #f59e0b', borderTopColor: 'transparent', borderRadius: '50%' }} className="animate-spin" />
+                </div>
+            </PublicLayout>
+        )
+    }
+
+    if (isPointMaintenanceActive && !isAdminBypassed) {
+        return (
+            <PublicLayout>
+                <div style={{ minHeight: '85vh', background: '#f8fafc', padding: '3.5rem 1rem 5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ maxWidth: '32rem', width: '100%', margin: '0 auto' }}>
+                        <div className="card-nd-elevated text-center" style={{ padding: '2.5rem 2rem', background: '#ffffff', borderRadius: '28px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9' }}>
+                            {/* Maintenance Badge with secret multi-click trigger */}
+                            <div 
+                                onClick={handleSecretTrigger}
+                                style={{
+                                    width: '72px', height: '72px', borderRadius: '24px',
+                                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                    boxShadow: '0 12px 25px rgba(245, 158, 11, 0.35)',
+                                    marginBottom: '1.25rem', color: '#fff', fontSize: '2rem',
+                                    cursor: 'pointer', userSelect: 'none',
+                                    transition: 'transform 0.2s ease',
+                                }}
+                                className="active:scale-95"
+                                title="ND-Points System Maintenance"
+                            >
+                                <i className="fas fa-tools" />
+                            </div>
+
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-3">
+                                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                <span>PEMELIHARAAN SISTEM ND-POINTS</span>
+                            </div>
+
+                            <h1 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.02em', margin: '0 0 0.75rem', lineHeight: 1.3 }}>
+                                Layanan Poin & Auto-Voucher Sedang Dipelihara
+                            </h1>
+
+                            <p style={{ fontSize: '0.86rem', color: '#64748b', lineHeight: 1.6, margin: '0 0 1.5rem' }}>
+                                Portal ND-Points dan fitur ND Auto-Voucher sedang dalam proses pemeliharaan rutin untuk sinkronisasi saldo dan optimasi performa sistem. Mohon menunggu beberapa saat.
+                            </p>
+
+                            {/* Info Box: Hotspot Normal */}
+                            <div style={{ background: '#ecfdf5', padding: '1rem 1.15rem', borderRadius: '18px', border: '1px solid #a7f3d0', textAlign: 'left', marginBottom: '1.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                                    <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '1rem' }} />
+                                    <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#065f46' }}>
+                                        Layanan Hotspot Tetap Berjalan 100% Normal
+                                    </span>
+                                </div>
+                                <p style={{ margin: 0, fontSize: '0.78rem', color: '#047857', lineHeight: 1.5 }}>
+                                    Anda tetap dapat membeli voucher reguler dan mengakses internet seperti biasa melalui halaman utama ND-Hotspot.
+                                </p>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
+                                <Link
+                                    to="/"
+                                    style={{
+                                        padding: '0.85rem 1.5rem',
+                                        background: 'linear-gradient(135deg, #00a884, #008f6f)',
+                                        color: '#ffffff',
+                                        fontWeight: 800,
+                                        fontSize: '0.85rem',
+                                        borderRadius: '9999px',
+                                        textDecoration: 'none',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '0.5rem',
+                                        boxShadow: '0 4px 14px rgba(0, 168, 132, 0.25)',
+                                    }}
+                                >
+                                    <i className="fas fa-arrow-left" />
+                                    <span>Kembali ke Beranda</span>
+                                </Link>
+
+                                <a
+                                    href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20menanyakan%20status%20pemeliharaan%20ND-Points:"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        padding: '0.85rem 1.5rem',
+                                        background: '#ffffff',
+                                        color: '#475569',
+                                        fontWeight: 700,
+                                        fontSize: '0.85rem',
+                                        borderRadius: '9999px',
+                                        textDecoration: 'none',
+                                        border: '1px solid #cbd5e1',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '0.5rem',
+                                    }}
+                                >
+                                    <i className="fab fa-whatsapp text-emerald-600" />
+                                    <span>Hubungi Admin</span>
+                                </a>
+                            </div>
+
+                            {/* Subtle Admin Bypass Trigger */}
+                            <div className="pt-3 border-t border-slate-100 flex items-center justify-center">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowBypassModal(true)}
+                                    className="text-[11px] text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1.5 cursor-pointer py-1 px-2 rounded"
+                                >
+                                    <i className="fas fa-lock text-[10px]" />
+                                    <span>Admin Maintenance Access</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Bypass Modal Dialog */}
+                    {showBypassModal && (
+                        <div 
+                            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
+                            onClick={() => setShowBypassModal(false)}
+                        >
+                            <div 
+                                className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 animate-in zoom-in-95 duration-200"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="text-center mb-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 mx-auto flex items-center justify-center text-xl mb-2">
+                                        <i className="fas fa-shield-alt" />
+                                    </div>
+                                    <h3 className="font-extrabold text-base text-slate-900">Bypass Maintenance ND-Points</h3>
+                                    <p className="text-xs text-slate-500 mt-1">Masukkan password admin untuk membuka akses portal.</p>
+                                </div>
+
+                                {bypassError && (
+                                    <div className="mb-3 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs flex items-center gap-2">
+                                        <i className="fas fa-exclamation-circle flex-shrink-0" />
+                                        <span>{bypassError}</span>
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleBypassSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="block text-[11px] font-bold text-slate-600 uppercase mb-1.5">
+                                            Password Bypass
+                                        </label>
+                                        <input
+                                            type="password"
+                                            value={bypassPassword}
+                                            onChange={(e) => setBypassPassword(e.target.value)}
+                                            placeholder="Masukkan password admin..."
+                                            required
+                                            autoFocus
+                                            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                                        />
+                                    </div>
+
+                                    <div className="flex gap-2 pt-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => { setShowBypassModal(false); setBypassError(''); }}
+                                            className="flex-1 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            disabled={bypassLoading}
+                                            className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-black transition-all shadow-md shadow-amber-500/20 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
+                                        >
+                                            {bypassLoading ? (
+                                                <>
+                                                    <i className="fas fa-spinner fa-spin" />
+                                                    <span>Memverifikasi...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="fas fa-unlock-alt" />
+                                                    <span>Buka Akses</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </PublicLayout>
+        )
+    }
+
     return (
         <PublicLayout>
+            {isAdminBypassed && (
+                <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-2.5 text-xs text-amber-900 font-semibold flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span>Mode Maintenance ND-Points Aktif — Sesi <strong>Admin Bypass Terbuka</strong>.</span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={handleLockAgain}
+                        className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[11px] font-bold transition-all shadow-sm flex items-center gap-1 cursor-pointer"
+                    >
+                        <i className="fas fa-lock text-[10px]" />
+                        <span>Kunci Kembali</span>
+                    </button>
+                </div>
+            )}
             <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '3rem 1rem 5rem' }}>
                 <div style={{ maxWidth: '38rem', margin: '0 auto' }}>
 
