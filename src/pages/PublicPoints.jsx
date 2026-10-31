@@ -892,7 +892,7 @@ export default function PublicPoints() {
                                         <span style={{ fontSize: '1.1rem' }}>⏳</span>
                                         <div style={{ fontSize: '0.72rem', color: '#92400e', lineHeight: 1.4 }}>
                                             <strong>Masa Berlaku: 3 Hari</strong> (Kedaluwarsa: {redeemSuccess.expires_at || '3 hari kedepan'})<br />
-                                            <span>Khusus voucher poin, sistem otomatis menghapus user dari MikroTik jika tidak dipakai dalam 3 hari.</span>
+                                            <span>Khusus voucher poin, voucher otomatis terhapus jika tidak dipakai dalam 3 hari.</span>
                                         </div>
                                     </div>
 
@@ -1074,7 +1074,7 @@ export default function PublicPoints() {
                                         }}>
                                             <span style={{ fontSize: '0.85rem' }}>⏳</span>
                                             <div style={{ lineHeight: 1.4 }}>
-                                                <strong>Berlaku 3 Hari:</strong> Kedaluwarsa pada <strong>{activeVoucher.expires_at_formatted || '3 hari'}</strong>. Otomatis terhapus dari MikroTik jika batas waktu habis.
+                                                <strong>Berlaku 3 Hari:</strong> Kedaluwarsa pada <strong>{activeVoucher.expires_at_formatted || '3 hari'}</strong>. Voucher otomatis terhapus jika batas waktu habis.
                                             </div>
                                         </div>
                                     )}
@@ -1172,7 +1172,7 @@ export default function PublicPoints() {
                                     }}>
                                         <span style={{ fontSize: '1.2rem' }}>⏱️</span>
                                         <div style={{ fontSize: '0.73rem', color: '#065f46', lineHeight: 1.45 }}>
-                                            <strong>Ketentuan Voucher Poin (3 Hari):</strong> Voucher yang dibeli via tukar poin memiliki masa berlaku <strong>3 Hari</strong>. Jika tidak dipakai dalam 3 hari, voucher akan berstatus kedaluwarsa & otomatis dihapus dari MikroTik (record database tetap tersimpan).
+                                            <strong>Ketentuan Voucher Poin (3 Hari):</strong> Voucher yang dibeli via tukar poin memiliki masa berlaku <strong>3 Hari</strong>. Jika tidak dipakai dalam 3 hari, voucher otomatis terhapus.
                                         </div>
                                     </div>
 
@@ -1354,7 +1354,7 @@ export default function PublicPoints() {
                                     }}>
                                         <span style={{ fontSize: '1.1rem' }}>⚠️</span>
                                         <div style={{ fontSize: '0.71rem', color: '#92400e', lineHeight: 1.4 }}>
-                                            <strong>Ketentuan Masa Berlaku:</strong> Voucher yang dibeli menggunakan ND-Points (tukar poin atau ND Auto-Voucher) memiliki batas <strong>3 Hari</strong> dan otomatis terhapus dari MikroTik jika tidak dipakai. Voucher yang dibeli via QRIS biasa tidak memiliki batas kedaluwarsa 3 hari. Semua data riwayat voucher tetap tersimpan di database website.
+                                            <strong>Ketentuan Masa Berlaku:</strong> Voucher yang dibeli menggunakan ND-Points (tukar poin atau ND Auto-Voucher) memiliki batas <strong>3 Hari</strong> dan voucher otomatis terhapus jika tidak dipakai. Voucher yang dibeli via QRIS biasa tidak memiliki batas kedaluwarsa 3 hari.
                                         </div>
                                     </div>
 
@@ -1477,12 +1477,12 @@ export default function PublicPoints() {
                                                             </div>
                                                             {v.is_three_day_point_rule && !v.is_expired && (
                                                                 <div style={{ color: '#b45309', marginTop: '0.2rem' }}>
-                                                                    ⏱️ Batas waktu 3 hari. Jika tidak digunakan, user voucher akan otomatis terhapus dari MikroTik.
+                                                                    ⏱️ Batas waktu 3 hari. Jika tidak digunakan, voucher otomatis terhapus.
                                                                 </div>
                                                             )}
                                                             {v.is_expired && (
                                                                 <div style={{ color: '#94a3b8', marginTop: '0.2rem', fontStyle: 'italic' }}>
-                                                                    ℹ️ Telah kedaluwarsa & dihapus dari MikroTik. Riwayat voucher tetap tersimpan di database website.
+                                                                    ℹ️ Telah kedaluwarsa. Riwayat voucher tetap tersimpan.
                                                                 </div>
                                                             )}
                                                         </div>
@@ -1840,7 +1840,7 @@ export default function PublicPoints() {
                                         <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.78rem' }}>
                                             <li><strong>Non-Refundable:</strong> ND-Points bukan mata uang rupiah dan <u>tidak dapat diuangkan kembali (non-refundable)</u> atau ditarik ke rekening bank manapun.</li>
                                             <li><strong>Khusus Layanan ND-Hotspot:</strong> Poin hanya dapat digunakan untuk ditukarkan dengan paket voucher internet di portal ND-Hotspot.</li>
-                                            <li><strong>Masa Berlaku Voucher Poin (3 Hari):</strong> Voucher yang didapatkan dari ND-Points (tukar poin atau ND Auto-Voucher) memiliki masa berlaku 3 hari dan otomatis terhapus dari MikroTik jika batas 3 hari habis. Voucher yang dibeli via QRIS reguler tidak memiliki batas kedaluwarsa 3 hari. Seluruh data riwayat voucher tetap tersimpan aman di database website.</li>
+                                            <li><strong>Masa Berlaku Voucher Poin (3 Hari):</strong> Voucher yang didapatkan dari ND-Points (tukar poin atau ND Auto-Voucher) memiliki masa berlaku 3 hari dan voucher otomatis terhapus jika batas 3 hari habis. Voucher yang dibeli via QRIS reguler tidak memiliki batas kedaluwarsa 3 hari.</li>
                                             <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah membagikan 6-digit PIN atau kode OTP Anda kepada siapapun.</li>
                                         </ul>
                                     </div>
