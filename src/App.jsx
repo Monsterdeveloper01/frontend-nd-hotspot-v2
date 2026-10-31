@@ -392,239 +392,229 @@ function Home() {
         </div>
 
         {/* Carousel Slider Viewport */}
-        <div className="overflow-hidden rounded-3xl relative shadow-xl">
-          <div 
-            className="flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-          >
-            {/* Slide 1: Promotional Loyalty Event Banner */}
-            <div className="w-full flex-shrink-0">
+        <div className="relative rounded-3xl overflow-hidden shadow-xl">
+          {currentSlide === 0 ? (
+            /* Slide 1: Promotional Loyalty Event Banner */
+            <div 
+              key="loyalty"
+              className="relative overflow-hidden p-6 sm:p-8 text-white transition-all animate-in fade-in duration-300"
+              style={{
+                background: 'linear-gradient(135deg, #064e3b 0%, #065f46 45%, #0f172a 100%)',
+                border: '1px solid rgba(52, 211, 153, 0.3)',
+              }}
+            >
+              {/* Decorative glowing gradient blur */}
               <div 
-                className="relative overflow-hidden p-6 sm:p-8 text-white h-full"
-                style={{
-                  background: 'linear-gradient(135deg, #064e3b 0%, #065f46 45%, #0f172a 100%)',
-                  border: '1px solid rgba(52, 211, 153, 0.3)',
-                }}
-              >
-                {/* Decorative glowing gradient blur */}
-                <div 
-                  className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
-                  style={{ background: '#34d399' }}
-                />
-                <div 
-                  className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
-                  style={{ background: '#10b981' }}
-                />
+                className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
+                style={{ background: '#34d399' }}
+              />
+              <div 
+                className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
+                style={{ background: '#10b981' }}
+              />
 
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                  <div className="max-w-2xl">
-                    {/* Event Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3 shadow-sm">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                      <span>🔥 BONUS SPESIAL • AUTO CUAN TIAP BULAN</span>
-                    </div>
-
-                    {/* Title */}
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                      Makin Sering Internetan, Dapet <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis!</span>
-                    </h2>
-
-                    {/* Description */}
-                    <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
-                      {activeEvent ? (
-                        <>Cukup beli voucher seperti biasa sampai totalnya tembus <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> dalam sebulan. Begitu target tercapai, voucher bonus <strong className="text-emerald-300 font-bold">langsung dikirim ke WhatsApp</strong> kamu — tanpa diundi & tanpa ribet klaim!</>
-                      ) : (
-                        <>Kumpulin total jajan voucher kamu setiap bulannya. Begitu tembus target, voucher gratis <strong className="text-emerald-300 font-bold">langsung meluncur ke nomor WhatsApp</strong> kamu tanpa undian & tanpa repot!</>
-                      )}
-                    </p>
-
-                    {/* Feature Chips */}
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-emerald-200 font-semibold">
-                      <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                        <i className="fas fa-bolt text-emerald-400" /> Langsung Masuk WA
-                      </span>
-                      <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                        <i className="fas fa-clock text-emerald-400" /> Masa Aktif 5 Hari
-                      </span>
-                      <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                        <i className="fas fa-gift text-emerald-400" /> 100% Tanpa Diundi
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setShowTermsModal(true)}
-                        className="flex items-center gap-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white px-2.5 py-1 rounded-lg border border-emerald-400/40 transition-colors cursor-pointer font-bold underline decoration-emerald-400/60 underline-offset-2"
-                      >
-                        <i className="fas fa-file-contract text-emerald-400" /> *S&K Berlaku
-                      </button>
-                    </div>
+              <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="max-w-2xl">
+                  {/* Event Badge */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span>🔥 BONUS SPESIAL • AUTO CUAN TIAP BULAN</span>
                   </div>
 
-                  {/* Action Card Button */}
-                  <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
-                    <Link
-                      to="/loyalty"
-                      className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
-                      style={{ textDecoration: 'none' }}
+                  {/* Title */}
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
+                    Makin Sering Internetan, Dapet <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis!</span>
+                  </h2>
+
+                  {/* Description */}
+                  <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
+                    {activeEvent ? (
+                      <>Cukup beli voucher seperti biasa sampai totalnya tembus <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> dalam sebulan. Begitu target tercapai, voucher bonus <strong className="text-emerald-300 font-bold">langsung dikirim ke WhatsApp</strong> kamu — tanpa diundi & tanpa ribet klaim!</>
+                    ) : (
+                      <>Kumpulin total jajan voucher kamu setiap bulannya. Begitu tembus target, voucher gratis <strong className="text-emerald-300 font-bold">langsung meluncur ke nomor WhatsApp</strong> kamu tanpa undian & tanpa repot!</>
+                    )}
+                  </p>
+
+                  {/* Feature Chips */}
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-emerald-200 font-semibold">
+                    <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                      <i className="fas fa-bolt text-emerald-400" /> Langsung Masuk WA
+                    </span>
+                    <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                      <i className="fas fa-clock text-emerald-400" /> Masa Aktif 5 Hari
+                    </span>
+                    <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                      <i className="fas fa-gift text-emerald-400" /> 100% Tanpa Diundi
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTermsModal(true)}
+                      className="flex items-center gap-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white px-2.5 py-1 rounded-lg border border-emerald-400/40 transition-colors cursor-pointer font-bold underline decoration-emerald-400/60 underline-offset-2"
                     >
-                      <i className="fas fa-gift text-base" />
-                      <span>Cek Progres & Bonus Kamu</span>
-                      <i className="fas fa-arrow-right text-xs ml-1" />
-                    </Link>
-                    <div className="flex flex-col items-start lg:items-end gap-0.5">
-                      <span className="text-[11px] text-slate-300 font-medium opacity-85">
-                        Tinggal masukkan nomor HP untuk cek jajanmu
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setShowTermsModal(true)}
-                        className="text-[11px] text-emerald-300 hover:text-white underline cursor-pointer font-medium transition-colors"
-                      >
-                        * Baca Syarat & Ketentuan
-                      </button>
-                    </div>
+                      <i className="fas fa-file-contract text-emerald-400" /> *S&K Berlaku
+                    </button>
                   </div>
                 </div>
 
-                {/* Hype Teaser Footer */}
-                <div className="relative z-10 mt-5 pt-3.5 border-t border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
-                  <div className="flex items-center gap-2 text-slate-100 font-medium">
-                    <span className="text-amber-300 text-sm">✨</span>
-                    <span>
-                      <strong className="text-amber-300 font-bold">Beli terus voucher ND-Hotspot</strong> dan nantikan event-event cuan menarik lainnya yang akan datang! 🚀
+                {/* Action Card Button */}
+                <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
+                  <Link
+                    to="/loyalty"
+                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <i className="fas fa-gift text-base" />
+                    <span>Cek Progres & Bonus Kamu</span>
+                    <i className="fas fa-arrow-right text-xs ml-1" />
+                  </Link>
+                  <div className="flex flex-col items-start lg:items-end gap-0.5">
+                    <span className="text-[11px] text-slate-300 font-medium opacity-85">
+                      Tinggal masukkan nomor HP untuk cek jajanmu
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTermsModal(true)}
+                      className="text-[11px] text-emerald-300 hover:text-white underline cursor-pointer font-medium transition-colors"
+                    >
+                      * Baca Syarat & Ketentuan
+                    </button>
                   </div>
-                  <span className="text-[10px] text-emerald-300/80 font-bold tracking-wide uppercase sm:text-right">
-                    🔥 Internetan Lancar • Makin Cuan
-                  </span>
                 </div>
               </div>
-            </div>
 
-            {/* Slide 2: ND-Points & ND-Auto-Vouchers Campaign Banner */}
-            <div className="w-full flex-shrink-0">
-              <div 
-                className="relative overflow-hidden p-6 sm:p-8 text-white h-full"
-                style={{
-                  background: 'linear-gradient(135deg, #042f2e 0%, #064e3b 40%, #0c4a6e 100%)',
-                  border: '1px solid rgba(45, 212, 191, 0.35)',
-                }}
-              >
-                {/* Decorative glowing gradient blur */}
-                <div 
-                  className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
-                  style={{ background: '#06b6d4' }}
-                />
-                <div 
-                  className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
-                  style={{ background: '#10b981' }}
-                />
-
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                  <div className="max-w-2xl">
-                    {/* Event Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 mb-3 shadow-sm">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                      <span>⚡ FITUR BARU • ND-POINTS & ND AUTO-VOUCHER</span>
-                    </div>
-
-                    {/* Title */}
-                    <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                      Internetan Tanpa Putus, Tukar Voucher 1-Detik & <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">Auto-Perpanjang!</span>
-                    </h2>
-
-                    {/* Description */}
-                    <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
-                      Kumpulkan <strong className="text-cyan-300 font-bold">ND-Points</strong> dan nikmati kepraktisan tukar voucher 1-detik tanpa perlu scan QRIS berulang kali. Aktifkan fitur <strong className="text-cyan-300 font-bold">ND Auto-Voucher</strong> agar paket internet kamu otomatis diperpanjang saat masa aktif voucher habis!
-                    </p>
-
-                    {/* Feature Chips */}
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-cyan-200 font-semibold">
-                      <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                        <i className="fas fa-bolt text-cyan-400" /> 1-Detik Beli Voucher
-                      </span>
-                      <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                        <i className="fas fa-sync-alt text-cyan-400" /> ND Auto-Voucher
-                      </span>
-                      <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                        <i className="fas fa-shield-alt text-cyan-400" /> Proteksi Auto-Pause
-                      </span>
-                      <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                        <i className="fas fa-coins text-amber-300" /> Bonus Top-Up Poin
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setShowPointsTermsModal(true)}
-                        className="flex items-center gap-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 hover:text-white px-2.5 py-1 rounded-lg border border-cyan-400/40 transition-colors cursor-pointer font-bold underline decoration-cyan-400/60 underline-offset-2"
-                      >
-                        <i className="fas fa-file-contract text-cyan-400" /> *S&K Poin & Auto-Voucher
-                      </button>
-                    </div>
-
-                    {/* Note Kecil / Bug Reporting Notice Box (Requested by User) */}
-                    <div className="mt-4 p-3 sm:p-3.5 rounded-2xl bg-amber-500/15 border border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-start sm:items-center gap-2.5">
-                        <div className="w-6 h-6 rounded-lg bg-amber-500/25 text-amber-300 flex items-center justify-center flex-shrink-0 text-xs mt-0.5 sm:mt-0">
-                          <i className="fas fa-exclamation-triangle" />
-                        </div>
-                        <p className="text-[11px] sm:text-xs text-amber-200/95 font-medium leading-relaxed">
-                          <strong className="text-amber-300 font-bold">Catatan:</strong> Fitur baru masih ada kemungkinan bug, silakan lapor jika menemukan kesalahan atau bug.
-                        </p>
-                      </div>
-                      <a
-                        href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20bug/kesalahan%20pada%20fitur%20ND-Points%20/%20Auto-Voucher:"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white border border-amber-400/40 text-[11px] font-bold tracking-tight transition-all flex-shrink-0 cursor-pointer self-start sm:self-auto"
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <i className="fab fa-whatsapp text-emerald-400 text-sm" />
-                        <span>Lapor Bug ke Admin WA</span>
-                        <i className="fas fa-arrow-up-right-from-square text-[9px] opacity-70" />
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Action Card Button */}
-                  <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
-                    <Link
-                      to="/points"
-                      className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-cyan-400/25"
-                      style={{ textDecoration: 'none' }}
-                    >
-                      <i className="fas fa-coins text-base text-amber-900" />
-                      <span>Akses ND-Points Portal</span>
-                      <i className="fas fa-arrow-right text-xs ml-1" />
-                    </Link>
-                    <div className="flex flex-col items-start lg:items-end gap-0.5">
-                      <span className="text-[11px] text-slate-300 font-medium opacity-85">
-                        Tukar voucher instan & atur auto-debit
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setShowPointsTermsModal(true)}
-                        className="text-[11px] text-cyan-300 hover:text-white underline cursor-pointer font-medium transition-colors"
-                      >
-                        * Baca Ketentuan Poin & Auto-Voucher
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hype Teaser Footer */}
-                <div className="relative z-10 mt-5 pt-3.5 border-t border-cyan-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
-                  <div className="flex items-center gap-2 text-slate-100 font-medium">
-                    <span className="text-cyan-300 text-sm">✨</span>
-                    <span>
-                      <strong className="text-cyan-300 font-bold">Top Up ND-Points sekarang</strong> dan nikmati kepraktisan internetan tanpa jeda! 🚀
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-cyan-300/80 font-bold tracking-wide uppercase sm:text-right">
-                    ⚡ 1-DETIK BELI VOUCHER • AUTO PERPANJANG
+              {/* Hype Teaser Footer */}
+              <div className="relative z-10 mt-5 pt-3.5 border-t border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
+                <div className="flex items-center gap-2 text-slate-100 font-medium">
+                  <span className="text-amber-300 text-sm">✨</span>
+                  <span>
+                    <strong className="text-amber-300 font-bold">Beli terus voucher ND-Hotspot</strong> dan nantikan event-event cuan menarik lainnya yang akan datang! 🚀
                   </span>
                 </div>
+                <span className="text-[10px] text-emerald-300/80 font-bold tracking-wide uppercase sm:text-right">
+                  🔥 Internetan Lancar • Makin Cuan
+                </span>
               </div>
             </div>
-          </div>
+          ) : (
+            /* Slide 2: ND-Points & ND-Auto-Vouchers Campaign Banner */
+            <div 
+              key="points"
+              className="relative overflow-hidden p-6 sm:p-8 text-white transition-all animate-in fade-in duration-300"
+              style={{
+                background: 'linear-gradient(135deg, #042f2e 0%, #064e3b 40%, #0c4a6e 100%)',
+                border: '1px solid rgba(45, 212, 191, 0.35)',
+              }}
+            >
+              {/* Decorative glowing gradient blur */}
+              <div 
+                className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
+                style={{ background: '#06b6d4' }}
+              />
+              <div 
+                className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
+                style={{ background: '#10b981' }}
+              />
+
+              <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="max-w-2xl">
+                  {/* Event Badge */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 mb-3 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                    <span>⚡ FITUR BARU • ND-POINTS & ND AUTO-VOUCHER</span>
+                  </div>
+
+                  {/* Title */}
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
+                    Internetan Tanpa Putus, Tukar Voucher 1-Detik & <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">Auto-Perpanjang!</span>
+                  </h2>
+
+                  {/* Description */}
+                  <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
+                    Kumpulkan <strong className="text-cyan-300 font-bold">ND-Points</strong> dan nikmati kepraktisan tukar voucher 1-detik tanpa perlu scan QRIS berulang kali. Aktifkan fitur <strong className="text-cyan-300 font-bold">ND Auto-Voucher</strong> agar paket internet kamu otomatis diperpanjang saat masa aktif voucher habis!
+                  </p>
+
+                  {/* Feature Chips */}
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-cyan-200 font-semibold">
+                    <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                      <i className="fas fa-bolt text-cyan-400" /> 1-Detik Beli Voucher
+                    </span>
+                    <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                      <i className="fas fa-sync-alt text-cyan-400" /> ND Auto-Voucher
+                    </span>
+                    <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
+                      <i className="fas fa-shield-alt text-cyan-400" /> Proteksi Auto-Pause
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowPointsTermsModal(true)}
+                      className="flex items-center gap-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 hover:text-white px-2.5 py-1 rounded-lg border border-cyan-400/40 transition-colors cursor-pointer font-bold underline decoration-cyan-400/60 underline-offset-2"
+                    >
+                      <i className="fas fa-file-contract text-cyan-400" /> *S&K Poin & Auto-Voucher
+                    </button>
+                  </div>
+                </div>
+
+                {/* Action Card Button */}
+                <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
+                  <Link
+                    to="/points"
+                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-cyan-400/25"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <i className="fas fa-coins text-base text-amber-900" />
+                    <span>Akses ND-Points Portal</span>
+                    <i className="fas fa-arrow-right text-xs ml-1" />
+                  </Link>
+                  <div className="flex flex-col items-start lg:items-end gap-0.5">
+                    <span className="text-[11px] text-slate-300 font-medium opacity-85">
+                      Tukar voucher instan & atur auto-debit
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowPointsTermsModal(true)}
+                      className="text-[11px] text-cyan-300 hover:text-white underline cursor-pointer font-medium transition-colors"
+                    >
+                      * Baca Ketentuan Poin & Auto-Voucher
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Note Kecil / Bug Reporting Notice Box */}
+              <div className="relative z-10 mt-4 p-3 rounded-2xl bg-amber-500/15 border border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-start sm:items-center gap-2">
+                  <i className="fas fa-exclamation-triangle text-amber-300 text-xs mt-0.5 sm:mt-0" />
+                  <p className="text-[11px] sm:text-xs text-amber-200/95 font-medium leading-relaxed">
+                    <strong className="text-amber-300 font-bold">Catatan:</strong> Fitur baru masih ada kemungkinan bug, silakan lapor jika menemukan kesalahan atau bug.
+                  </p>
+                </div>
+                <a
+                  href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20bug/kesalahan%20pada%20fitur%20ND-Points%20/%20Auto-Voucher:"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white border border-amber-400/40 text-[11px] font-bold tracking-tight transition-all flex-shrink-0 cursor-pointer self-start sm:self-auto"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <i className="fab fa-whatsapp text-emerald-400 text-sm" />
+                  <span>Lapor Bug ke Admin WA</span>
+                  <i className="fas fa-arrow-up-right-from-square text-[9px] opacity-70" />
+                </a>
+              </div>
+
+              {/* Hype Teaser Footer */}
+              <div className="relative z-10 mt-4 pt-3 border-t border-cyan-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
+                <div className="flex items-center gap-2 text-slate-100 font-medium">
+                  <span className="text-cyan-300 text-sm">✨</span>
+                  <span>
+                    <strong className="text-cyan-300 font-bold">Top Up ND-Points sekarang</strong> dan nikmati kepraktisan internetan tanpa jeda! 🚀
+                  </span>
+                </div>
+                <span className="text-[10px] text-cyan-300/80 font-bold tracking-wide uppercase sm:text-right">
+                  ⚡ 1-DETIK BELI VOUCHER • AUTO PERPANJANG
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Modal Syarat & Ketentuan */}
