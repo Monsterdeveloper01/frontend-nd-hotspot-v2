@@ -1360,12 +1360,18 @@ export default function PublicPoints() {
                                     {/* 3-Day Rule Notice Box for Point Vouchers */}
                                     <div style={{
                                         background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '14px',
-                                        padding: '0.65rem 0.85rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem'
+                                        padding: '0.65rem 0.85rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem'
                                     }}>
                                         <span style={{ fontSize: '1.1rem' }}>⚠️</span>
                                         <div style={{ fontSize: '0.71rem', color: '#92400e', lineHeight: 1.4 }}>
                                             <strong>Ketentuan Masa Berlaku:</strong> Voucher yang dibeli menggunakan ND-Points (tukar poin atau ND Auto-Voucher) memiliki batas <strong>3 Hari</strong> dan voucher otomatis terhapus jika tidak dipakai. Voucher yang dibeli via QRIS biasa tidak memiliki batas kedaluwarsa 3 hari.
                                         </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', padding: '0 0.25rem' }}>
+                                        <span style={{ fontSize: '0.7rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                                            Menampilkan 10 voucher terbaru Anda
+                                        </span>
                                     </div>
 
                                     {loadingVouchers ? (
