@@ -10,7 +10,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
         edit: <path d="M11 5H6a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />,
         gaming: <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5zm3 4h2M8 12h2m-2 3h2" />,
         plus: <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />,
-        check: <path d="M5 13l4 4L19 7" />
+        check: <path d="M5 13l4 4L19 7" />,
+        refresh: <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
     };
 
     return (
@@ -30,6 +31,7 @@ const VoucherPlans = () => {
     const [generateQty, setGenerateQty] = useState(10)
     const [generateType, setGenerateType] = useState('radius')
     const [generating, setGenerating] = useState(false)
+    const [syncingProfiles, setSyncingProfiles] = useState(false)
     const [formData, setFormData] = useState({
         name: '',
         mikrotik_profile: '',
@@ -199,12 +201,48 @@ const VoucherPlans = () => {
         }
     }
 
+    const handleSyncProfiles = async () => {
+        if (syncingProfiles) return
+        setSyncingProfiles(true)
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/voucher-plans/sync-mikrotik`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Accept': 'application/json'
+                }
+            })
+            const data = await response.json()
+            if (response.ok && data.success) {
+                alert(`✓ ${data.message}`)
+                fetchPlans()
+            } else {
+                alert(`Gagal: ${data.message || 'Terjadi kesalahan saat sinkronisasi profil ke MikroTik'}`)
+            }
+        } catch (err) {
+            console.error('Failed to sync profiles', err)
+            alert('Terjadi kesalahan koneksi saat sinkron profil ke MikroTik')
+        } finally {
+            setSyncingProfiles(false)
+        }
+    }
+
     return (
         <div className="space-y-10">
             {/* Header Section */}
-            <div>
-                <h1 className="text-2xl font-black text-admin-text tracking-tight uppercase leading-none">Master Voucher</h1>
-                <p className="text-admin-muted font-bold text-[10px] uppercase tracking-widest mt-2">Kelola paket layanan dan limitasi bandwidth MikroTik</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-black text-admin-text tracking-tight uppercase leading-none">Master Voucher</h1>
+                    <p className="text-admin-muted font-bold text-[10px] uppercase tracking-widest mt-2">Kelola paket layanan dan limitasi bandwidth MikroTik</p>
+                </div>
+                <button
+                    onClick={handleSyncProfiles}
+                    disabled={syncingProfiles}
+                    className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-95 transition-all disabled:opacity-50 self-start sm:self-auto"
+                >
+                    <Icon name="refresh" className={`w-4 h-4 ${syncingProfiles ? 'animate-spin' : ''}`} />
+                    {syncingProfiles ? 'Menyinkronkan...' : 'Sinkron Profil ke MikroTik'}
+                </button>
             </div>
 
             {/* Form Card */}
