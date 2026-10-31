@@ -655,9 +655,13 @@ export default function PublicPoints() {
                             {!otpSent ? (
                                 <div>
                                     <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '1.25rem', fontSize: '0.82rem', color: '#475569', lineHeight: 1.6 }}>
-                                        <p style={{ margin: 0 }}>
+                                        <p style={{ margin: '0 0 0.5rem' }}>
                                             Kami akan mengirimkan <strong>kode verifikasi 4-digit</strong> ke WhatsApp Anda untuk memastikan kepemilikan nomor ini sebelum membuat PIN.
                                         </p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.74rem', color: '#065f46', background: '#ecfdf5', padding: '0.55rem 0.75rem', borderRadius: '10px', border: '1px solid #a7f3d0' }}>
+                                            <i className="fas fa-shield-alt" style={{ color: '#00a884', fontSize: '0.85rem' }} />
+                                            <span>PIN 6-digit ini melindungi saldo <strong>ND-Points</strong> & menjadi kunci otorisasi perpanjangan otomatis <strong>ND Auto-Voucher</strong> Anda.</span>
+                                        </div>
                                     </div>
 
                                     <button
@@ -783,9 +787,9 @@ export default function PublicPoints() {
                                                     onClick={() => setShowInfoModal(true)}
                                                     style={{ background: 'none', border: 'none', color: '#00a884', fontWeight: 800, textDecoration: 'underline', cursor: 'pointer', padding: 0, fontSize: '0.78rem' }}
                                                 >
-                                                    Syarat & Ketentuan ND-Points
+                                                    Ketentuan ND-Points & ND Auto-Voucher
                                                 </button>
-                                                {' '}(Termasuk ketentuan saldo tertutup & <em>non-refundable</em> / tidak dapat diuangkan kembali).
+                                                {' '}(Termasuk ketentuan saldo tertutup, <em>non-refundable</em>, batas voucher poin 3 hari, serta proteksi auto-pause hemat poin).
                                             </span>
                                         </label>
                                     </div>
@@ -1582,7 +1586,7 @@ export default function PublicPoints() {
                         borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem',
                     }}>
                         <p style={{ fontSize: '0.73rem', color: '#94a3b8', lineHeight: 1.6, margin: 0 }}>
-                            🔒 <strong>Ketentuan ND-Points:</strong> ND-Points adalah sistem token loyalitas tertutup (<em>closed-loop credit</em>) khusus untuk ekosistem ND-Hotspot. Poin tidak memiliki nilai tunai di luar sistem, tidak dapat di-refund/diuangkan kembali, dan tidak dapat ditransfer ke rekening bank.{' '}
+                            🔒 <strong>Ketentuan ND-Points & ND Auto-Voucher:</strong> ND-Points adalah sistem token loyalitas tertutup (<em>closed-loop credit</em>) khusus untuk ekosistem ND-Hotspot. Poin tidak memiliki nilai tunai di luar sistem, tidak dapat di-refund/diuangkan kembali, dan tidak dapat ditransfer ke rekening bank. Fitur perpanjangan otomatis ND Auto-Voucher dilengkapi proteksi masa aktif 3 hari & auto-pause hemat poin.{' '}
                             <button
                                 onClick={() => setShowInfoModal(true)}
                                 style={{
@@ -1591,7 +1595,7 @@ export default function PublicPoints() {
                                     padding: 0, fontSize: '0.73rem', display: 'inline',
                                 }}
                             >
-                                Baca Selengkapnya
+                                Baca Ketentuan Lengkap
                             </button>
                         </p>
                     </div>
@@ -1806,9 +1810,14 @@ export default function PublicPoints() {
                                         <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
                                             <i className="fas fa-coins" />
                                         </div>
-                                        <h3 style={{ fontSize: '1.1rem', fontWeight: 900, color: '#1e293b', margin: 0 }}>
-                                            Panduan & Ketentuan Poin
-                                        </h3>
+                                        <div>
+                                            <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#1e293b', margin: 0 }}>
+                                                Panduan & Ketentuan Lengkap
+                                            </h3>
+                                            <p style={{ margin: 0, fontSize: '0.7rem', color: '#64748b' }}>
+                                                Ekosistem ND-Points & ND Auto-Voucher
+                                            </p>
+                                        </div>
                                     </div>
                                     <button
                                         onClick={() => setShowInfoModal(false)}
@@ -1819,35 +1828,54 @@ export default function PublicPoints() {
                                 </div>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.8rem', color: '#475569', lineHeight: 1.6 }}>
+                                    {/* 1. APA ITU ND-POINTS */}
                                     <div style={{ background: '#f8fafc', padding: '0.9rem 1rem', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                                         <h4 style={{ margin: '0 0 0.3rem', fontSize: '0.85rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                             <i className="fas fa-info-circle" style={{ color: '#00a884' }} /> Apa Itu ND-Points?
                                         </h4>
                                         <p style={{ margin: 0 }}>
-                                            ND-Points adalah sistem saldo loyalty tertutup (<em>closed-loop credit</em>) khusus untuk pelanggan setia ND-Hotspot. Koin ini berfungsi sebagai saldo praktis untuk menukar paket internet kapan saja tanpa perlu bolak-balik scan QRIS di m-banking.
+                                            ND-Points adalah sistem saldo loyalty tertutup (<em>closed-loop credit</em>) khusus untuk pelanggan setia ND-Hotspot. Koin ini berfungsi sebagai saldo praktis untuk menukar paket internet secara instan tanpa perlu bolak-balik scan QRIS m-banking.
                                         </p>
                                     </div>
 
-                                    <div>
-                                        <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.85rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                            <i className="fas fa-star" style={{ color: '#f59e0b' }} /> Keuntungan Utama:
+                                    {/* 2. PANDUAN FULL ND AUTO-VOUCHER */}
+                                    <div style={{ background: '#ecfdf5', padding: '0.9rem 1rem', borderRadius: '16px', border: '1px solid #a7f3d0' }}>
+                                        <h4 style={{ margin: '0 0 0.4rem', fontSize: '0.85rem', fontWeight: 800, color: '#065f46', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <i className="fas fa-bolt" style={{ color: '#00a884' }} /> Apa Itu ND Auto-Voucher?
                                         </h4>
-                                        <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                            <li><strong>⚡ 1-Detik Beli Voucher:</strong> Pilih paket, klik tukar, langsung keluar kode voucher dan otomatis terhubung ke internet.</li>
-                                            <li><strong>🎁 Bonus Ekstra Saat Isi Ulang:</strong> Tersedia paket isi ulang dengan bonus koin gratis (contoh: isi Rp 50.000 dapat 55.000 Poin).</li>
-                                            <li><strong>🔒 Aman Terlindungi PIN:</strong> Saldo koin Anda terkunci dengan 6-digit PIN rahasia dan verifikasi WhatsApp OTP.</li>
+                                        <p style={{ margin: '0 0 0.5rem', color: '#047857', fontSize: '0.78rem' }}>
+                                            <strong>ND Auto-Voucher</strong> adalah fitur perpanjangan internet otomatis agar koneksi WiFi Anda tidak pernah terputus secara mendadak.
+                                        </p>
+                                        <ul style={{ margin: 0, paddingLeft: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.76rem', color: '#065f46' }}>
+                                            <li><strong>🔄 Otomatis Terbit:</strong> Saldo poin otomatis didebit untuk menerbitkan voucher baru ketika paket voucher lama habis, atau terjadwal di tanggal tertentu setiap bulan.</li>
+                                            <li><strong>⏳ Masa Berlaku 3 Hari:</strong> Khusus voucher yang dibeli dari poin (baik tukar mandiri maupun via ND Auto-Voucher), voucher memiliki batas waktu <strong>3 hari</strong> untuk mulai digunakan sebelum kedaluwarsa.</li>
+                                            <li><strong>🛡️ Proteksi Auto-Pause (Anti-Terkuras):</strong> Jika voucher sebelumnya kedaluwarsa tanpa pernah dipakai sama sekali (misal Anda sedang bepergian/keluar kota), sistem <strong>otomatis menjeda (pause)</strong> Auto-Voucher agar saldo poin Anda tidak hangus percuma!</li>
+                                            <li><strong>🔐 Kontrol Mandiri:</strong> Anda bebas mengaktifkan, mengubah paket, atau mematikan fitur ini kapan saja menggunakan 6-digit PIN rahasia.</li>
                                         </ul>
                                     </div>
 
+                                    {/* 3. KEUNTUNGAN SALDO POIN */}
+                                    <div>
+                                        <h4 style={{ margin: '0 0 0.5rem', fontSize: '0.85rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                            <i className="fas fa-star" style={{ color: '#f59e0b' }} /> Keuntungan Utama Saldo Poin:
+                                        </h4>
+                                        <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                                            <li><strong>⚡ 1-Detik Beli Voucher:</strong> Pilih paket, klik tukar, langsung terbit kode voucher dan tersedia tombol 1-klik login otomatis.</li>
+                                            <li><strong>🎁 Bonus Koin Gratis:</strong> Dapatkan bonus ekstra koin pada paket top-up tertentu.</li>
+                                            <li><strong>🔒 Aman Terlindungi PIN:</strong> Saldo Anda terlindungi 6-digit PIN keamanan dan verifikasi WhatsApp OTP resmi.</li>
+                                        </ul>
+                                    </div>
+
+                                    {/* 4. KETENTUAN HUKUM & ATURAN PENTING */}
                                     <div style={{ background: '#fffbeb', padding: '0.9rem 1rem', borderRadius: '16px', border: '1px solid #fef3c7', color: '#92400e' }}>
                                         <h4 style={{ margin: '0 0 0.3rem', fontSize: '0.85rem', fontWeight: 800, color: '#b45309', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                             <i className="fas fa-shield-alt" /> Ketentuan Penting (Harap Dibaca):
                                         </h4>
                                         <ul style={{ margin: 0, paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.78rem' }}>
                                             <li><strong>Non-Refundable:</strong> ND-Points bukan mata uang rupiah dan <u>tidak dapat diuangkan kembali (non-refundable)</u> atau ditarik ke rekening bank manapun.</li>
-                                            <li><strong>Khusus Layanan ND-Hotspot:</strong> Poin hanya dapat digunakan untuk ditukarkan dengan paket voucher internet di portal ND-Hotspot.</li>
-                                            <li><strong>Masa Berlaku Voucher Poin (3 Hari):</strong> Voucher yang didapatkan dari ND-Points (tukar poin atau ND Auto-Voucher) memiliki masa berlaku 3 hari dan voucher otomatis terhapus jika batas 3 hari habis. Voucher yang dibeli via QRIS reguler tidak memiliki batas kedaluwarsa 3 hari.</li>
-                                            <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah membagikan 6-digit PIN atau kode OTP Anda kepada siapapun.</li>
+                                            <li><strong>Khusus Ekosistem ND-Hotspot:</strong> Poin hanya berlaku untuk ditukarkan dengan paket voucher internet di jaringan ND-Hotspot.</li>
+                                            <li><strong>Perbedaan Voucher QRIS vs Voucher Poin:</strong> Voucher yang dibeli via QRIS reguler (rupiah) tidak memiliki batas kedaluwarsa 3 hari sebelum login pertama. Batas kedaluwarsa 3 hari hanya berlaku khusus untuk voucher yang dibeli menggunakan ND-Points.</li>
+                                            <li><strong>Jaga Kerahasiaan PIN:</strong> Jangan pernah memberikan 6-digit PIN atau kode OTP kepada orang lain. Tim ND-Hotspot tidak pernah meminta PIN Anda.</li>
                                         </ul>
                                     </div>
                                 </div>
