@@ -44,7 +44,8 @@ const PublicLayout = ({ children }) => {
                     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {[
                             { to: '/', icon: 'home', label: 'Beranda' },
-                            { to: '/loyalty', icon: 'gift', label: 'Event Loyalty & Reward', highlight: true },
+                            { to: '/points', icon: 'coins', label: 'ND-Points & Auto-Voucher', highlight: true, sublabel: 'Tukar Poin • Auto-Voucher', badge: 'Baru' },
+                            { to: '/loyalty', icon: 'gift', label: 'Event Loyalty & Reward', highlight: true, sublabel: 'Klaim Otomatis • Cek Reward' },
                             { to: '/check-voucher', icon: 'search', label: 'Cek Voucher' },
                             { to: '/payment', icon: 'credit-card', label: 'Bayar Tagihan' },
                         ].map((item) => (
@@ -67,10 +68,23 @@ const PublicLayout = ({ children }) => {
                                     <i className={`fas fa-${item.icon}`} />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>{item.label}</span>
-                                    {item.highlight && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>{item.label}</span>
+                                        {item.badge && (
+                                            <span style={{
+                                                fontSize: '0.62rem',
+                                                fontWeight: 800,
+                                                background: '#00a884',
+                                                color: '#ffffff',
+                                                padding: '1px 6px',
+                                                borderRadius: '9999px',
+                                                textTransform: 'uppercase'
+                                            }}>{item.badge}</span>
+                                        )}
+                                    </div>
+                                    {item.sublabel && (
                                         <span style={{ fontSize: '0.68rem', color: '#00a884', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                            Klaim Otomatis • Cek Reward
+                                            {item.sublabel}
                                         </span>
                                     )}
                                 </div>

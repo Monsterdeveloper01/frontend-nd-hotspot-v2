@@ -63,6 +63,7 @@ const Navbar = ({ toggleMenu }) => {
                             { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card' },
                             { to: '/check-voucher', label: 'Cek Voucher', icon: 'search' },
                             { to: '/loyalty', label: 'Event Loyalty', icon: 'gift', isHighlight: true },
+                            { to: '/points', label: 'Points', icon: 'coins', isHighlight: true, badge: 'Baru' },
                         ].map((item) => (
                             <Link 
                                 key={item.to} 
@@ -97,7 +98,22 @@ const Navbar = ({ toggleMenu }) => {
                             >
                                 <i className={`fas fa-${item.icon}`} style={{ fontSize: '0.75rem', color: item.isHighlight ? '#00a884' : 'inherit' }} />
                                 {item.label}
-                                {item.isHighlight && (
+                                {item.badge && (
+                                    <span style={{
+                                        fontSize: '0.62rem',
+                                        fontWeight: 800,
+                                        background: 'linear-gradient(135deg, #00a884, #059669)',
+                                        color: '#ffffff',
+                                        padding: '1px 6px',
+                                        borderRadius: '9999px',
+                                        letterSpacing: '0.04em',
+                                        textTransform: 'uppercase',
+                                        marginLeft: '2px',
+                                    }}>
+                                        {item.badge}
+                                    </span>
+                                )}
+                                {item.isHighlight && !item.badge && (
                                     <span style={{
                                         width: '6px', height: '6px', borderRadius: '50%',
                                         background: '#00a884',
