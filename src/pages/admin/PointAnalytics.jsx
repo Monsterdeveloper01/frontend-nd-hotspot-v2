@@ -495,7 +495,7 @@ export default function PointAnalytics() {
           </span>
         </div>
 
-        {/* Card 4: Auto-Debit Aktif */}
+        {/* Card 4: ND Auto-Voucher Aktif */}
         <div
           onClick={() => {
             setActiveTab('customers');
@@ -506,7 +506,7 @@ export default function PointAnalytics() {
           title="Klik untuk melihat customer yang mengaktifkan perpanjangan otomatis"
         >
           <div className="flex items-center justify-between text-cyan-600 dark:text-cyan-400 text-xs font-semibold mb-1.5">
-            <span>Auto-Debit Aktif</span>
+            <span>ND Auto-Voucher Aktif</span>
             <i className="fas fa-bolt text-cyan-500 group-hover:scale-110 transition-transform" />
           </div>
           <div className="text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400">
@@ -717,7 +717,7 @@ export default function PointAnalytics() {
               { id: 'all', label: 'Semua Akun' },
               { id: 'activated', label: 'Teraktivasi (PIN)' },
               { id: 'topup', label: 'Member Top-Up' },
-              { id: 'autodebit', label: '⚡ Auto-Debit' },
+              { id: 'autodebit', label: '⚡ ND Auto-Voucher' },
               { id: 'unactivated', label: 'Belum Aktivasi' },
             ].map((f) => (
               <button
@@ -829,9 +829,9 @@ export default function PointAnalytics() {
                             {acc.auto_debit_enabled && (
                               <span
                                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-300 border border-cyan-300 dark:border-cyan-500/30"
-                                title={acc.auto_debit_plan ? `Paket: ${acc.auto_debit_plan.name} (Rp ${Number(acc.auto_debit_plan.price || 0).toLocaleString('id-ID')}) - ${acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Setiap tgl ${acc.auto_debit_day}` : 'Setelah voucher habis')}` : 'Auto-debit aktif'}
+                                title={acc.auto_debit_plan ? `Paket: ${acc.auto_debit_plan.name} (Rp ${Number(acc.auto_debit_plan.price || 0).toLocaleString('id-ID')}) - ${acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Setiap tgl ${acc.auto_debit_day}` : 'Setelah voucher habis')}` : 'ND Auto-Voucher aktif'}
                               >
-                                <i className="fas fa-bolt text-[9px]" /> Auto: {acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Tgl ${acc.auto_debit_day}` : 'Setelah Habis')}
+                                <i className="fas fa-bolt text-[9px]" /> Auto-Voucher: {acc.auto_debit_schedule_desc || (acc.auto_debit_trigger_type === 'monthly_date' ? `Tgl ${acc.auto_debit_day}` : 'Setelah Habis')}
                               </span>
                             )}
                           </div>

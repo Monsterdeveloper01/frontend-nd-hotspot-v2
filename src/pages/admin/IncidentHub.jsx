@@ -310,7 +310,7 @@ export default function IncidentHub() {
             className="w-full sm:w-auto text-xs font-semibold rounded-xl border-admin-border bg-admin-base text-admin-text py-2"
           >
             <option value="all">Semua Kategori</option>
-            <option value="point_fraud">Khusus ND-Points & Auto-Debit</option>
+            <option value="point_fraud">Khusus ND-Points & ND Auto-Voucher</option>
             <option value="whatsapp">Khusus WhatsApp Gagal</option>
             <option value="payment_fraud">Khusus Fraud & Pembayaran</option>
             <option value="mikrotik">Khusus MikroTik / Jaringan</option>

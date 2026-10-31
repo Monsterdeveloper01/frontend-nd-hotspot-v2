@@ -88,10 +88,10 @@ const getTransactionMeta = (tx) => {
       type: 'point_redeem',
       title: phone || 'Member ND-Points',
       subtitle: isAuto
-        ? `⚡ Auto-Debit: ${tx.voucher?.code || tx.plan?.name || 'Voucher'}`
+        ? `⚡ ND Auto-Voucher: ${tx.voucher?.code || tx.plan?.name || 'Voucher'}`
         : `Tukar Poin: ${tx.voucher?.code || tx.plan?.name || 'Voucher'}`,
-      logText: isAuto ? `AUTO-DEBIT VOUCHER ${tx.voucher?.code || ''} SUKSES` : `TUKAR ND-POINTS ${tx.voucher?.code || ''} SUKSES`,
-      badgeText: isAuto ? '⚡ Auto-Debit' : 'Tukar Poin',
+      logText: isAuto ? `ND AUTO-VOUCHER ${tx.voucher?.code || ''} SUKSES` : `TUKAR ND-POINTS ${tx.voucher?.code || ''} SUKSES`,
+      badgeText: isAuto ? '⚡ ND Auto-Voucher' : 'Tukar Poin',
       badgeBg: isAuto ? 'bg-cyan-50 text-cyan-600 border-cyan-200 dark:bg-cyan-500/10 dark:text-cyan-400 dark:border-cyan-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20',
       icon: 'voucher',
       iconBg: isAuto ? 'bg-cyan-50 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
@@ -524,10 +524,10 @@ const AdminDashboard = () => {
                                 type="button"
                                 onClick={() => setAutoDebitModalOpen(true)}
                                 className="flex items-center gap-1 px-2 py-0.5 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold rounded-full border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors cursor-pointer"
-                                title="Klik untuk melihat daftar pelanggan Auto-Debit"
+                                title="Klik untuk melihat daftar pelanggan ND Auto-Voucher"
                             >
                                 <span className="text-cyan-500 font-black">⚡</span>
-                                {data.stats.auto_debit_count || 0} Auto-Debit
+                                {data.stats.auto_debit_count || 0} ND Auto-Voucher
                             </button>
                         </div>
                     </div>
@@ -579,7 +579,7 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        {/* KARTU MEMBER AUTO-DEBIT AKTIF */}
+        {/* KARTU MEMBER ND AUTO-VOUCHER AKTIF */}
         <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-5 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-admin-border">
                 <div className="flex items-center gap-2.5">
@@ -589,14 +589,14 @@ const AdminDashboard = () => {
                     <div>
                         <div className="flex items-center gap-2">
                             <h3 className="text-sm font-bold text-admin-text uppercase tracking-wider">
-                                Pelanggan Aktif Auto-Debit ND-Points
+                                Pelanggan Aktif ND Auto-Voucher
                             </h3>
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
                                 {data?.stats?.auto_debit_count || 0} Member
                             </span>
                         </div>
                         <p className="text-[11px] text-admin-muted mt-0.5">
-                            Customer yang otomatis memperpanjang voucher hotspot saat masa aktif habis menggunakan saldo koin
+                            Customer yang otomatis memperpanjang voucher hotspot menggunakan saldo ND-Points
                         </p>
                     </div>
                 </div>
@@ -623,7 +623,7 @@ const AdminDashboard = () => {
 
             {(!data?.stats?.auto_debit_users || data.stats.auto_debit_users.length === 0) ? (
                 <div className="py-6 text-center text-xs text-admin-muted">
-                    <span className="opacity-70">Belum ada pelanggan yang mengaktifkan perpanjangan voucher otomatis (Auto-Debit). Member dapat mengaktifkannya secara mandiri di portal ND-Points.</span>
+                    <span className="opacity-70">Belum ada pelanggan yang mengaktifkan perpanjangan voucher otomatis (ND Auto-Voucher). Member dapat mengaktifkannya secara mandiri di portal ND-Points.</span>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-3.5">
@@ -1047,7 +1047,7 @@ const AdminDashboard = () => {
             </div>
         )}
 
-        {/* AUTO-DEBIT USERS MODAL */}
+        {/* ND AUTO-VOUCHER USERS MODAL */}
         {autoDebitModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
                 <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden border border-admin-border animate-in zoom-in-95 duration-200">
@@ -1058,7 +1058,7 @@ const AdminDashboard = () => {
                             </div>
                             <div>
                                 <h3 className="text-base font-bold text-admin-text">
-                                    Daftar Pelanggan Auto-Debit ND-Points
+                                    Daftar Pelanggan ND Auto-Voucher
                                 </h3>
                                 <p className="text-admin-muted text-xs mt-0.5">
                                     Total {data?.stats?.auto_debit_count || 0} customer aktif memperpanjang voucher secara otomatis
@@ -1105,7 +1105,7 @@ const AdminDashboard = () => {
                             if (filtered.length === 0) {
                                 return (
                                     <div className="text-center py-12 text-admin-muted text-xs">
-                                        Tidak ada pelanggan auto-debit yang cocok dengan pencarian.
+                                        Tidak ada pelanggan ND Auto-Voucher yang cocok dengan pencarian.
                                     </div>
                                 );
                             }
@@ -1116,7 +1116,7 @@ const AdminDashboard = () => {
                                         <thead>
                                             <tr className="border-b border-admin-border text-admin-muted text-[10px] font-bold uppercase tracking-wider bg-admin-base/50">
                                                 <th className="p-3">Nomor WhatsApp</th>
-                                                <th className="p-3">Paket Auto-Debit</th>
+                                                <th className="p-3">Paket ND Auto-Voucher</th>
                                                 <th className="p-3 text-right">Saldo Poin</th>
                                                 <th className="p-3 text-center">Status & Eksekusi</th>
                                                 <th className="p-3 text-right">Aksi</th>
@@ -1147,7 +1147,7 @@ const AdminDashboard = () => {
                                                     </td>
                                                     <td className="p-3 text-center">
                                                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 inline-flex items-center gap-1">
-                                                            <span>⚡</span> Auto-Debit Aktif
+                                                            <span>⚡</span> ND Auto-Voucher Aktif
                                                         </span>
                                                         {u.last_run_at && (
                                                             <div className="text-[10px] text-admin-muted mt-0.5">

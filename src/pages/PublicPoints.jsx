@@ -165,11 +165,22 @@ export default function PublicPoints() {
                 })
                 setShowAutoDebitModal(false)
                 setAutoDebitPin('')
+
+                // OPSI A: Jika voucher pertama langsung diterbitkan saat aktivasi
+                if (res.data.initial_voucher) {
+                    setRedeemSuccess(res.data.initial_voucher)
+                    try {
+                        const stat = await axios.post(`${API}/points/account/status`, { phone: normalizedPhone })
+                        setAccountData(stat.data)
+                    } catch (e) {
+                        // Silently handle
+                    }
+                }
             } else {
-                setError(res.data?.message || 'Gagal mengubah pengaturan Auto-Debit.')
+                setError(res.data?.message || 'Gagal mengubah pengaturan ND Auto-Voucher.')
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Gagal mengubah Auto-Debit. Pastikan PIN benar.')
+            setError(err.response?.data?.message || 'Gagal mengubah ND Auto-Voucher. Pastikan PIN benar.')
         } finally {
             setAutoDebitLoading(false)
         }
@@ -864,7 +875,7 @@ export default function PublicPoints() {
                                 </div>
                             )}
 
-                            {/* AUTO-DEBIT CARD BANNER */}
+                            {/* ND AUTO-VOUCHER CARD BANNER */}
                             <div style={{
                                 background: autoDebit.enabled ? 'linear-gradient(135deg, #064e3b, #047857)' : '#ffffff',
                                 color: autoDebit.enabled ? '#fff' : '#1e293b',
@@ -885,7 +896,7 @@ export default function PublicPoints() {
                                     <div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800 }}>
-                                                Auto-Debit Voucher
+                                                ND Auto-Voucher
                                             </h4>
                                             <span style={{
                                                 fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '9999px',
@@ -897,8 +908,8 @@ export default function PublicPoints() {
                                         </div>
                                         <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: autoDebit.enabled ? '#a7f3d0' : '#64748b' }}>
                                             {autoDebit.enabled
-                                                ? `Perpanjangan otomatis paket ${autoDebit.plan?.name || ''} (${autoDebit.trigger_type === 'monthly_date' ? `Setiap tanggal ${autoDebit.day}` : 'Setelah voucher sebelumnya habis'}).`
-                                                : 'Beli voucher otomatis pakai ND-Points saat voucher habis atau di tanggal pilihan Anda.'}
+                                                ? `Voucher ${autoDebit.plan?.name || ''} otomatis terbit (${autoDebit.trigger_type === 'monthly_date' ? `Setiap tanggal ${autoDebit.day}` : 'Setelah voucher sebelumnya habis'}).`
+                                                : 'Internet tanpa putus, voucher otomatis diterbitkan pakai koin ND-Points.'}
                                         </p>
                                     </div>
                                 </div>
@@ -920,7 +931,7 @@ export default function PublicPoints() {
                                         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                                     }}
                                 >
-                                    <i className="fas fa-cog" /> {autoDebit.enabled ? 'Atur / Nonaktifkan' : 'Aktifkan Auto-Debit'}
+                                    <i className="fas fa-cog" /> {autoDebit.enabled ? 'Atur ND Auto-Voucher' : 'Aktifkan ND Auto-Voucher'}
                                 </button>
                             </div>
 
@@ -1164,7 +1175,7 @@ export default function PublicPoints() {
                         </p>
                     </div>
 
-                    {/* MODAL AUTO-DEBIT SETTINGS */}
+                    {/* MODAL ND AUTO-VOUCHER SETTINGS */}
                     {showAutoDebitModal && (
                         <div style={{
                             position: 'fixed', inset: 0, zIndex: 115,
@@ -1181,7 +1192,7 @@ export default function PublicPoints() {
                                             <i className="fas fa-bolt" />
                                         </div>
                                         <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: '#1e293b', margin: 0 }}>
-                                            Pengaturan Auto-Debit
+                                            Pengaturan ND Auto-Voucher
                                         </h3>
                                     </div>
                                     <button
@@ -1193,7 +1204,7 @@ export default function PublicPoints() {
                                 </div>
 
                                 <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0 0 1rem', lineHeight: 1.5 }}>
-                                    Pilih paket voucher dan atur waktu pembelian otomatis sesuai preferensi Anda. Saldo ND-Points Anda akan terpotong secara aman menggunakan proteksi PIN.
+                                    Sistem <strong>ND Auto-Voucher</strong> akan otomatis menerbitkan voucher hotspot baru menggunakan saldo ND-Points Anda saat voucher habis atau di tanggal pilihan Anda.
                                 </p>
 
                                 <div style={{ marginBottom: '1rem' }}>
@@ -1216,7 +1227,7 @@ export default function PublicPoints() {
                                     </select>
                                 </div>
 
-                                {/* OPSI JADWAL PEMBELIAN AUTO-DEBIT */}
+                                {/* OPSI JADWAL PEMBELIAN ND AUTO-VOUCHER */}
                                 <div style={{ marginBottom: '1.1rem' }}>
                                     <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem', textTransform: 'uppercase' }}>
                                         Waktu & Jadwal Pembelian
@@ -1242,7 +1253,7 @@ export default function PublicPoints() {
                                                     ⚡ Setelah Voucher Sebelumnya Habis
                                                 </div>
                                                 <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.15rem', lineHeight: 1.4 }}>
-                                                    Sistem otomatis membeli voucher baru begitu voucher aktif Anda kedaluwarsa.
+                                                    Sistem otomatis menerbitkan voucher baru begitu voucher aktif Anda kedaluwarsa.
                                                 </div>
                                             </div>
                                         </div>
@@ -1267,7 +1278,7 @@ export default function PublicPoints() {
                                                     📅 Tanggal Tertentu Setiap Bulan
                                                 </div>
                                                 <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '0.15rem', lineHeight: 1.4 }}>
-                                                    Pembelian dijalankan sekali sebulan pada tanggal yang Anda tentukan.
+                                                    Voucher diterbitkan sekali sebulan pada tanggal yang Anda tentukan.
                                                 </div>
                                             </div>
                                         </div>
@@ -1321,7 +1332,7 @@ export default function PublicPoints() {
                                         }}
                                     />
                                     <span style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem', display: 'block' }}>
-                                        Konfirmasi PIN diperlukan untuk keamanan otorisasi auto-debit.
+                                        Konfirmasi PIN diperlukan untuk otorisasi keamanan ND Auto-Voucher.
                                     </span>
                                 </div>
 
@@ -1352,7 +1363,7 @@ export default function PublicPoints() {
                                             boxShadow: '0 4px 15px rgba(0, 168, 132, 0.3)'
                                         }}
                                     >
-                                        {autoDebitLoading ? 'Menyimpan...' : (autoDebit.enabled ? 'Simpan Perubahan' : 'Aktifkan Auto-Debit')}
+                                        {autoDebitLoading ? 'Menyimpan...' : (autoDebit.enabled ? 'Simpan Pengaturan' : 'Aktifkan ND Auto-Voucher')}
                                     </button>
                                 </div>
                             </div>
