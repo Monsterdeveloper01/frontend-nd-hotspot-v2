@@ -266,41 +266,45 @@ function Home() {
     <PublicLayout>
 
       {/* Quick Action Buttons on Mobile */}
-      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.25rem', overflow: 'hidden', background: '#f8fafc' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.25rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
+      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.5rem', overflow: 'hidden', background: '#f8fafc' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
 
-          {/* Quick Action Pill Buttons (Responsive 4-Grid Layout) */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" style={{ maxWidth: '520px', margin: '0 auto' }}>
-            <Link to="/payment" className="btn-nd-pill" style={{ fontSize: '0.74rem', padding: '0.75rem 0.5rem', whiteSpace: 'nowrap' }}>
-              <i className="fas fa-credit-card" /> Bayar Tagihan
+          {/* Quick Action Pill Buttons (Responsive 4-Grid Layout - Symmetrical & Clean) */}
+          <div className="grid grid-cols-2 gap-2.5" style={{ maxWidth: '480px', margin: '0 auto' }}>
+            <Link 
+              to="/payment" 
+              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              style={{ textDecoration: 'none' }}
+            >
+              <i className="fas fa-credit-card text-[#00a884]" /> 
+              <span>Bayar Tagihan</span>
             </Link>
-            <Link to="/check-voucher" className="btn-nd-pill" style={{
-              fontSize: '0.74rem', padding: '0.75rem 0.5rem',
-              background: '#ffffff', color: '#00a884',
-              border: '1px solid #00a884',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
-              whiteSpace: 'nowrap'
-            }}>
-              <i className="fas fa-search" /> Cek Voucher
+            <Link 
+              to="/check-voucher" 
+              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              style={{ textDecoration: 'none' }}
+            >
+              <i className="fas fa-search text-[#00a884]" /> 
+              <span>Cek Voucher</span>
             </Link>
-            <Link to="/loyalty" className="btn-nd-pill" style={{
-              fontSize: '0.74rem', padding: '0.75rem 0.5rem',
-              background: '#ffffff',
-              color: '#00a884',
-              border: '1px solid #a7f3d0',
-              boxShadow: '0 4px 14px rgba(0,168,132,0.12)',
-              whiteSpace: 'nowrap'
-            }}>
-              <i className="fas fa-gift" /> Loyalty
+            <Link 
+              to="/loyalty" 
+              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              style={{ textDecoration: 'none' }}
+            >
+              <i className="fas fa-gift text-[#00a884]" /> 
+              <span>Loyalty</span>
             </Link>
-            <Link to="/points" className="btn-nd-pill" style={{
-              fontSize: '0.74rem', padding: '0.75rem 0.5rem',
-              background: 'linear-gradient(135deg, #00a884, #008f6f)',
-              color: '#ffffff',
-              boxShadow: '0 4px 14px rgba(0,168,132,0.25)',
-              whiteSpace: 'nowrap'
-            }}>
-              <i className="fas fa-coins" /> Points
+            <Link 
+              to="/points" 
+              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              style={{ textDecoration: 'none' }}
+            >
+              <i className="fas fa-coins text-[#00a884]" /> 
+              <span>Points</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-amber-950 font-black uppercase">
+                Baru
+              </span>
             </Link>
           </div>
         </div>
@@ -315,40 +319,40 @@ function Home() {
         onTouchEnd={handleTouchEnd}
       >
         {/* Carousel Header / Quick Selector */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3 px-1">
-          {/* Slide Tab Buttons */}
-          <div className="flex items-center gap-1.5 bg-white p-1 rounded-2xl border border-slate-200/90 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 px-1">
+          {/* Segmented Slide Tabs (Full width on mobile, auto on desktop) */}
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex sm:items-center gap-1 bg-white p-1 rounded-2xl border border-slate-200/90 shadow-sm">
             <button
               type="button"
               onClick={() => setCurrentSlide(0)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 currentSlide === 0
-                  ? 'bg-emerald-600 text-white shadow-sm font-extrabold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-[#00a884] text-white shadow-sm font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
               <i className="fas fa-gift text-[11px]" />
-              <span>Event Loyalty</span>
+              <span className="truncate">Event Loyalty</span>
             </button>
             <button
               type="button"
               onClick={() => setCurrentSlide(1)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 currentSlide === 1
-                  ? 'bg-teal-700 text-white shadow-sm font-extrabold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-[#00a884] text-white shadow-sm font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
               <i className="fas fa-coins text-[11px]" />
-              <span>ND-Points & Auto-Voucher</span>
-              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-400 text-amber-950 font-black uppercase">
+              <span className="truncate">ND-Points</span>
+              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-amber-950 font-black uppercase">
                 Baru
               </span>
             </button>
           </div>
 
-          {/* Navigation Controls: Arrows + Dots */}
-          <div className="flex items-center gap-2.5">
+          {/* Navigation Controls: Hidden on mobile (swipe & tabs used instead), Clean on desktop */}
+          <div className="hidden sm:flex items-center gap-2.5">
             {/* Prev / Next Buttons */}
             <div className="flex items-center gap-1">
               <button
@@ -377,7 +381,7 @@ function Home() {
                 type="button"
                 onClick={() => setCurrentSlide(0)}
                 className={`h-2 rounded-full transition-all cursor-pointer ${
-                  currentSlide === 0 ? 'w-6 bg-emerald-600' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                  currentSlide === 0 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300 hover:bg-slate-400'
                 }`}
                 title="Event Loyalty"
                 aria-label="Slide 1"
@@ -386,7 +390,7 @@ function Home() {
                 type="button"
                 onClick={() => setCurrentSlide(1)}
                 className={`h-2 rounded-full transition-all cursor-pointer ${
-                  currentSlide === 1 ? 'w-6 bg-teal-600' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                  currentSlide === 1 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300 hover:bg-slate-400'
                 }`}
                 title="ND-Points & Auto-Voucher"
                 aria-label="Slide 2"
@@ -619,6 +623,28 @@ function Home() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Mobile Carousel Indicator Dots (Centered cleanly below slider on mobile) */}
+        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3">
+          <button
+            type="button"
+            onClick={() => setCurrentSlide(0)}
+            className={`h-2 rounded-full transition-all cursor-pointer ${
+              currentSlide === 0 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300'
+            }`}
+            title="Event Loyalty"
+            aria-label="Slide 1"
+          />
+          <button
+            type="button"
+            onClick={() => setCurrentSlide(1)}
+            className={`h-2 rounded-full transition-all cursor-pointer ${
+              currentSlide === 1 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300'
+            }`}
+            title="ND-Points & Auto-Voucher"
+            aria-label="Slide 2"
+          />
         </div>
 
         {/* Modal Syarat & Ketentuan */}

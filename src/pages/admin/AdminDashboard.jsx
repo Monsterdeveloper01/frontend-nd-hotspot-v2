@@ -298,33 +298,81 @@ const AdminDashboard = () => {
     </div>
   )
 
-  const chartDataArray = data?.chart.map(c => c.total) || [];
-  const maxVal = chartDataArray.length > 0 ? Math.max(...chartDataArray) : 0;
-  const maxIdx = chartDataArray.indexOf(maxVal);
+  // Full Calendar Month Days (01 s/d 30/31)
+  const currentMonthDate = new Date();
+  const currentYear = currentMonthDate.getFullYear();
+  const currentMonthIdx = currentMonthDate.getMonth();
+  const daysInCurrentMonth = data?.month_meta?.days_in_month || new Date(currentYear, currentMonthIdx + 1, 0).getDate();
+  const currentDayNum = currentMonthDate.getDate();
+
+  // Create full month labels ['01', '02', '03', ..., '30']
+  const fullMonthLabels = Array.from({ length: daysInCurrentMonth }, (_, i) => String(i + 1).padStart(2, '0'));
+
+  // Build daily data mapping from API response
+  const thisMonthDayMap = {};
+  const lastMonthDayMap = {};
+  if (Array.isArray(data?.chart)) {
+    data.chart.forEach(item => {
+      const d = item.day ? String(item.day).padStart(2, '0') : String(new Date(item.date).getDate()).padStart(2, '0');
+      thisMonthDayMap[d] = Number(item.total || 0);
+      if (item.last_month_total !== undefined) {
+        lastMonthDayMap[d] = Number(item.last_month_total || 0);
+      }
+    });
+  }
+
+  const thisMonthData = fullMonthLabels.map(d => thisMonthDayMap[d] || 0);
+  const lastMonthData = fullMonthLabels.map(d => lastMonthDayMap[d] || 0);
+
+  const maxVal = thisMonthData.length > 0 ? Math.max(...thisMonthData) : 0;
+  const maxIdx = thisMonthData.indexOf(maxVal);
+  const peakDay = maxVal > 0 ? fullMonthLabels[maxIdx] : '-';
+  const totalRevenueThisMonth = thisMonthData.reduce((acc, curr) => acc + curr, 0);
+  const totalRevenueLastMonth = lastMonthData.reduce((acc, curr) => acc + curr, 0);
+  const activeDaysCount = Math.max(1, currentDayNum);
+  const dailyAverageThisMonth = totalRevenueThisMonth / activeDaysCount;
 
   const chartConfig = {
-    labels: data?.chart.map(c => new Date(c.date).getDate()) || [],
-    datasets: [{
-      label: 'Pendapatan (Rp)',
-      data: chartDataArray,
-      fill: true,
-      borderColor: '#0ea5e9', // admin-accent
-      backgroundColor: (context) => {
-        const ctx = context.chart.ctx;
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(14, 165, 233, 0.25)');
-        gradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
-        return gradient;
+    labels: fullMonthLabels,
+    datasets: [
+      {
+        label: `Bulan Ini (${data?.month_meta?.month_short || time.toLocaleDateString('id-ID', { month: 'short' })})`,
+        data: thisMonthData,
+        fill: true,
+        borderColor: '#3b82f6', // Vibrant blue matching the screenshot
+        backgroundColor: (context) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+          gradient.addColorStop(0, 'rgba(59, 130, 246, 0.35)');
+          gradient.addColorStop(0.7, 'rgba(59, 130, 246, 0.05)');
+          gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+          return gradient;
+        },
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: '#3b82f6',
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 2,
+        borderWidth: 2.5,
+        order: 1
       },
-      tension: 0.4,
-      pointRadius: context => context.dataIndex === maxIdx ? 5 : 0,
-      pointBackgroundColor: context => context.dataIndex === maxIdx ? '#0ea5e9' : 'transparent',
-      pointBorderColor: context => context.dataIndex === maxIdx ? '#ffffff' : 'transparent',
-      pointBorderWidth: 2,
-      pointHoverRadius: 6,
-      borderWidth: 2
-    }]
-  }
+      {
+        label: `Bulan Lalu (${data?.month_meta?.last_month_short || 'Lalu'})`,
+        data: lastMonthData,
+        fill: false,
+        borderColor: '#f87171', // Coral red matching horizontal line in screenshot
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#f87171',
+        pointHoverBorderColor: '#ffffff',
+        pointHoverBorderWidth: 2,
+        borderWidth: 2,
+        order: 2
+      }
+    ]
+  };
 
   const chartOptions = {
     responsive: true,
@@ -336,27 +384,64 @@ const AdminDashboard = () => {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#ffffff', // admin-card
-        titleColor: '#64748b', // zinc-400
-        bodyColor: '#0f172a', // zinc-100
-        borderColor: '#e2e8f0', // admin-border
+        backgroundColor: '#0f172a',
+        titleColor: '#e2e8f0',
+        bodyColor: '#cbd5e1',
+        borderColor: '#334155',
         borderWidth: 1,
-        padding: 10,
-        displayColors: false,
+        padding: 12,
+        displayColors: true,
+        boxWidth: 8,
+        boxHeight: 8,
+        usePointStyle: true,
         callbacks: {
-          label: (ctx) => `Rp ${formatPrice(ctx.parsed.y)}`
+          title: (items) => {
+            const day = items[0]?.label;
+            const monthName = data?.month_meta?.month_name || time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+            return `📅 Tanggal ${day} ${monthName}`;
+          },
+          label: (ctx) => {
+            const val = ctx.parsed.y || 0;
+            return ` ${ctx.dataset.label}: Rp ${formatPrice(val)}`;
+          },
+          afterBody: (items) => {
+            const thisVal = items.find(i => i.datasetIndex === 0)?.parsed.y || 0;
+            const lastVal = items.find(i => i.datasetIndex === 1)?.parsed.y || 0;
+            if (lastVal > 0) {
+              const diff = thisVal - lastVal;
+              const sign = diff >= 0 ? '+' : '';
+              return [`📈 Selisih: ${sign}Rp ${formatPrice(diff)}`];
+            }
+            return [];
+          }
         }
       }
     },
     scales: {
       y: {
         beginAtZero: true,
-        grid: { color: '#e2e8f0', drawBorder: false, borderDash: [4, 4], lineWidth: 1 },
+        grid: { 
+          color: 'rgba(148, 163, 184, 0.12)', 
+          drawBorder: false, 
+          borderDash: [3, 3], 
+          lineWidth: 1 
+        },
         border: { display: false },
         ticks: { 
-          color: '#64748b', // zinc-500
-          font: { size: 11 },
-          callback: (v) => v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : v >= 1000 ? (v/1000).toFixed(0) + 'K' : v,
+          color: '#94a3b8',
+          font: { size: 11, weight: '600' },
+          callback: (v) => {
+            if (v === 0) return '0';
+            if (v >= 1000000) {
+              const jt = v / 1000000;
+              return Number.isInteger(jt) ? `${jt} jt` : `${jt.toFixed(1)} jt`;
+            }
+            if (v >= 1000) {
+              const rb = v / 1000;
+              return Number.isInteger(rb) ? `${rb} rb` : `${rb.toFixed(0)} rb`;
+            }
+            return `${v}`;
+          },
           padding: 10
         }
       },
@@ -364,13 +449,15 @@ const AdminDashboard = () => {
         grid: { display: false, drawBorder: false },
         border: { display: false },
         ticks: {
-          color: '#64748b',
-          font: { size: 11 },
-          padding: 10
+          color: '#94a3b8',
+          font: { size: 10, weight: '600', family: 'ui-monospace, monospace, sans-serif' },
+          padding: 8,
+          maxRotation: 0,
+          autoSkip: false
         }
       }
     }
-  }
+  };
 
   const getUnifiedChartData = () => {
       if (!data) return { labels: [], datasets: [] };
@@ -693,19 +780,80 @@ const AdminDashboard = () => {
             )}
         </div>
 
-        <div className="bg-admin-card rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        {/* Trend Pendapatan Bulanan (Model Navy Dark Telemetry - 01 s/d Akhir Bulan) */}
+        <div 
+            className="rounded-2xl shadow-xl border border-slate-800 p-5 sm:p-6 mb-6 text-white relative overflow-hidden"
+            style={{ background: 'linear-gradient(180deg, #0b1329 0%, #0d1733 100%)' }}
+        >
+            {/* Ambient decorative glow */}
+            <div 
+                className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl"
+                style={{ background: '#3b82f6' }}
+            />
+            <div 
+                className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full pointer-events-none opacity-10 blur-3xl"
+                style={{ background: '#f87171' }}
+            />
+
+            {/* Header Chart */}
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800/80">
                 <div>
-                    <h3 className="text-lg font-bold text-admin-text tracking-tight">Trend Pendapatan {time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</h3>
-                    <p className="text-xs text-slate-400 mt-1">Statistik pendapatan harian bulan ini</p>
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <h3 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></span>
+                            Trend Pendapatan {data?.month_meta?.month_name || time.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                        </h3>
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                            📅 Periode: 01 s/d {data?.month_meta?.end_day || daysInCurrentMonth} {data?.month_meta?.month_short || time.toLocaleDateString('id-ID', { month: 'short' })} (Awal s/d Akhir Bulan)
+                        </span>
+                    </div>
+                    <p className="text-xs text-slate-400 font-medium">
+                        Statistik fluktuasi pendapatan harian penuh dari tanggal awal (01) hingga akhir bulan ({data?.month_meta?.end_day || daysInCurrentMonth})
+                    </p>
                 </div>
-                <div className="flex items-center gap-2 mt-4 md:mt-0">
-                    <span className="flex items-center text-[10px] text-admin-muted font-medium"><span className="w-2 h-2 rounded-full bg-admin-accent mr-1.5"></span> Total Pendapatan</span>
+
+                {/* KPI Quick Chips & Legend */}
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                    {/* Legend Bulan Ini */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></span>
+                        <span className="text-slate-300 font-semibold text-[11px]">Bulan Ini:</span>
+                        <span className="text-blue-400 font-black text-xs">Rp {formatPrice(totalRevenueThisMonth)}</span>
+                    </div>
+
+                    {/* Legend Bulan Lalu */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-400 shadow-[0_0_8px_#f87171]"></span>
+                        <span className="text-slate-300 font-semibold text-[11px]">Bulan Lalu:</span>
+                        <span className="text-red-400 font-black text-xs">Rp {formatPrice(totalRevenueLastMonth)}</span>
+                    </div>
+
+                    {/* Peak Day Chip */}
+                    {maxVal > 0 && (
+                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 text-[11px] font-bold">
+                            <span>🏆 Puncak: Tgl {peakDay}</span>
+                            <span className="text-amber-200 font-extrabold">(Rp {formatPrice(maxVal)})</span>
+                        </div>
+                    )}
                 </div>
             </div>
             
-            <div className="h-72 w-full">
-                <Line data={chartConfig} options={chartOptions} />
+            {/* Chart Canvas Viewport */}
+            <div className="relative z-10 w-full overflow-x-auto pb-2">
+                <div className="h-72 sm:h-80 min-w-[640px] sm:min-w-0 w-full">
+                    <Line data={chartConfig} options={chartOptions} />
+                </div>
+            </div>
+
+            {/* Footer Summary Notice */}
+            <div className="relative z-10 mt-3 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-400">
+                <div className="flex items-center gap-2">
+                    <span className="text-blue-400 font-bold">💡 Info:</span>
+                    <span>Sumbu X menampilkan seluruh tanggal kalender bulan ini ({fullMonthLabels[0]} s/d {fullMonthLabels[fullMonthLabels.length - 1]}). Hari tanpa transaksi berada di angka 0 rb.</span>
+                </div>
+                <div className="flex items-center gap-3 font-semibold text-slate-300">
+                    <span>Rata-rata/hari: <strong className="text-white">Rp {formatPrice(dailyAverageThisMonth)}</strong></span>
+                </div>
             </div>
         </div>
 

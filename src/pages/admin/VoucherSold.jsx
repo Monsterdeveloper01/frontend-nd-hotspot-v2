@@ -7,6 +7,28 @@ const VoucherSold = () => {
     const [loading, setLoading] = useState(true)
     const [meta, setMeta] = useState(null)
     const [search, setSearch] = useState('')
+    const [cleaning, setCleaning] = useState(false)
+
+    const handleCleanupAbandoned = async () => {
+        if (!confirm('Apakah Anda yakin ingin menghapus dari MikroTik semua voucher QRIS yang dibeli lebih dari 2 bulan lalu dan tidak pernah dipakai sama sekali?')) {
+            return
+        }
+
+        try {
+            setCleaning(true)
+            const token = localStorage.getItem('token')
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/vouchers/cleanup-abandoned`, { days: 60 }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            alert(response.data.message || 'Pembersihan voucher hangus selesai.')
+            fetchSoldVouchers(1, search)
+        } catch (err) {
+            console.error('Failed to cleanup abandoned vouchers', err)
+            alert('Gagal membersihkan voucher hangus: ' + (err.response?.data?.message || err.message))
+        } finally {
+            setCleaning(false)
+        }
+    }
 
     const fetchSoldVouchers = async (page = 1, searchQuery = search) => {
         try {
@@ -39,16 +61,30 @@ const VoucherSold = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h2 className="text-xl font-bold text-admin-text">Riwayat Voucher Terjual</h2>
-                <div className="relative">
-                    <input 
-                        type="text" 
-                        placeholder="Cari kode atau no WA..." 
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-admin-border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64 text-sm"
-                    />
-                    <i className="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-admin-muted"></i>
+                <div>
+                    <h2 className="text-xl font-bold text-admin-text">Riwayat Voucher Terjual</h2>
+                    <p className="text-xs text-admin-muted font-bold mt-1">Daftar transaksi dan voucher hotspot yang telah diterbitkan</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                    <button
+                        onClick={handleCleanupAbandoned}
+                        disabled={cleaning}
+                        className="px-4 py-2 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
+                        title="Hapus voucher QRIS yang dibeli >2 bulan lalu dan tidak pernah dipakai sama sekali"
+                    >
+                        <i className={`fas fa-trash-alt ${cleaning ? 'animate-spin' : ''}`}></i>
+                        <span>{cleaning ? 'Membersihkan...' : 'Bersihkan Hangus (>2 Bln)'}</span>
+                    </button>
+                    <div className="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Cari kode atau no WA..." 
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-10 pr-4 py-2 border border-admin-border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64 text-sm"
+                        />
+                        <i className="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-admin-muted"></i>
+                    </div>
                 </div>
             </div>
 
