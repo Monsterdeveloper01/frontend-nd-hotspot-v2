@@ -392,7 +392,7 @@ function Home() {
                 className={`h-2 rounded-full transition-all cursor-pointer ${
                   currentSlide === 1 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300 hover:bg-slate-400'
                 }`}
-                title="ND-Points & Auto-Voucher"
+                title="ND-Points"
                 aria-label="Slide 2"
               />
             </div>
@@ -528,36 +528,36 @@ function Home() {
                   {/* Event Badge */}
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 mb-3 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                    <span>⚡ FITUR BARU • ND-POINTS & ND AUTO-VOUCHER</span>
+                    <span>⚡ FITUR BARU • ND-POINTS (TUKAR VOUCHER INSTAN)</span>
                   </div>
 
                   {/* Title */}
                   <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                    Internetan Tanpa Putus, Tukar Voucher 1-Detik & <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">Auto-Perpanjang!</span>
+                    Internetan Makin Praktis, Tukar Voucher 1-Detik <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">Pakai ND-Points!</span>
                   </h2>
 
                   {/* Description */}
                   <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
-                    Kumpulkan <strong className="text-cyan-300 font-bold">ND-Points</strong> dan nikmati kepraktisan tukar voucher 1-detik tanpa perlu scan QRIS berulang kali. Aktifkan fitur <strong className="text-cyan-300 font-bold">ND Auto-Voucher</strong> agar paket internet kamu otomatis diperpanjang saat masa aktif voucher habis!
+                    Kumpulkan <strong className="text-cyan-300 font-bold">ND-Points</strong> dan nikmati kepraktisan tukar voucher 1-detik kapan saja tanpa perlu scan QRIS berulang kali. Cukup masukkan nomor HP dan tukarkan poinmu dengan voucher pilihan!
                   </p>
 
                   {/* Feature Chips */}
                   <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-cyan-200 font-semibold">
                     <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      <i className="fas fa-bolt text-cyan-400" /> 1-Detik Beli Voucher
+                      <i className="fas fa-bolt text-cyan-400" /> 1-Detik Tukar Voucher
                     </span>
                     <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      <i className="fas fa-sync-alt text-cyan-400" /> ND Auto-Voucher
+                      <i className="fas fa-coins text-cyan-400" /> Saldo Poin Aman
                     </span>
                     <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      <i className="fas fa-shield-alt text-cyan-400" /> Proteksi Auto-Pause
+                      <i className="fas fa-shield-alt text-cyan-400" /> Proteksi PIN Keamanan
                     </span>
                     <button
                       type="button"
                       onClick={() => setShowPointsTermsModal(true)}
                       className="flex items-center gap-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 hover:text-white px-2.5 py-1 rounded-lg border border-cyan-400/40 transition-colors cursor-pointer font-bold underline decoration-cyan-400/60 underline-offset-2"
                     >
-                      <i className="fas fa-file-contract text-cyan-400" /> *S&K Poin & Auto-Voucher
+                      <i className="fas fa-file-contract text-cyan-400" /> *S&K ND-Points
                     </button>
                   </div>
                 </div>
@@ -575,14 +575,14 @@ function Home() {
                   </Link>
                   <div className="flex flex-col items-start lg:items-end gap-0.5">
                     <span className="text-[11px] text-slate-300 font-medium opacity-85">
-                      Tukar voucher instan & atur auto-debit
+                      Tukar koin dengan voucher instan
                     </span>
                     <button
                       type="button"
                       onClick={() => setShowPointsTermsModal(true)}
                       className="text-[11px] text-cyan-300 hover:text-white underline cursor-pointer font-medium transition-colors"
                     >
-                      * Baca Ketentuan Poin & Auto-Voucher
+                      * Baca Ketentuan ND-Points
                     </button>
                   </div>
                 </div>
@@ -597,7 +597,7 @@ function Home() {
                   </p>
                 </div>
                 <a
-                  href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20bug/kesalahan%20pada%20fitur%20ND-Points%20/%20Auto-Voucher:"
+                  href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20bug/kesalahan%20pada%20fitur%20ND-Points:"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white border border-amber-400/40 text-[11px] font-bold tracking-tight transition-all flex-shrink-0 cursor-pointer self-start sm:self-auto"
@@ -614,11 +614,11 @@ function Home() {
                 <div className="flex items-center gap-2 text-slate-100 font-medium">
                   <span className="text-cyan-300 text-sm">✨</span>
                   <span>
-                    <strong className="text-cyan-300 font-bold">Top Up ND-Points sekarang</strong> dan nikmati kepraktisan internetan tanpa jeda! 🚀
+                    <strong className="text-cyan-300 font-bold">Top Up ND-Points sekarang</strong> dan nikmati kepraktisan internetan tanpa ribet scan berulang kali! 🚀
                   </span>
                 </div>
                 <span className="text-[10px] text-cyan-300/80 font-bold tracking-wide uppercase sm:text-right">
-                  ⚡ 1-DETIK BELI VOUCHER • AUTO PERPANJANG
+                  ⚡ 1-DETIK TUKAR VOUCHER • LEBIH HEMAT & PRAKTIS
                 </span>
               </div>
             </div>
@@ -642,7 +642,7 @@ function Home() {
             className={`h-2 rounded-full transition-all cursor-pointer ${
               currentSlide === 1 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300'
             }`}
-            title="ND-Points & Auto-Voucher"
+            title="ND-Points"
             aria-label="Slide 2"
           />
         </div>
@@ -769,8 +769,8 @@ function Home() {
                     <i className="fas fa-coins" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-base sm:text-lg leading-tight">Ketentuan ND-Points & Auto-Voucher</h3>
-                    <p className="text-teal-100 text-xs font-medium">Sistem Poin Tertutup & Perpanjangan Otomatis</p>
+                    <h3 className="font-extrabold text-base sm:text-lg leading-tight">Ketentuan ND-Points</h3>
+                    <p className="text-teal-100 text-xs font-medium">Sistem Poin Tertutup & Penukaran Voucher Instan</p>
                   </div>
                 </div>
                 <button 
@@ -809,14 +809,14 @@ function Home() {
                   <div className="flex items-start gap-3">
                     <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">3</span>
                     <p>
-                      <strong className="text-slate-900 font-bold">Fitur ND Auto-Voucher:</strong> Pelanggan dapat mengaktifkan fitur perpanjangan otomatis. Sistem akan memotong saldo poin dan menerbitkan kode voucher baru saat masa aktif voucher berakhir atau pada tanggal bulanan pilihan.
+                      <strong className="text-slate-900 font-bold">Penukaran Voucher Fleksibel:</strong> Pelanggan dapat menukarkan poin secara mandiri kapan saja dengan beragam paket voucher hotspot yang tersedia tanpa minimum jeda.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-3">
                     <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center flex-shrink-0 text-xs">4</span>
                     <p>
-                      <strong className="text-slate-900 font-bold">Proteksi Auto-Pause Saldo:</strong> Jika voucher hasil perpanjangan sebelumnya belum pernah digunakan sama sekali (0 bytes) hingga expired, sistem otomatis menonaktifkan sementara (Auto-Pause) perpanjangan berikutnya agar saldo poin pelanggan tidak terbuang sia-sia.
+                      <strong className="text-slate-900 font-bold">Masa Berlaku Voucher Poin:</strong> Voucher hasil penukaran poin memiliki batas waktu 3 hari untuk mulai digunakan sebelum kedaluwarsa.
                     </p>
                   </div>
 

@@ -1253,70 +1253,6 @@ export default function PublicPoints() {
                                 </div>
                             )}
 
-                            {/* ND AUTO-VOUCHER CARD BANNER */}
-                            <div style={{
-                                background: autoDebit.is_paused_unused
-                                    ? 'linear-gradient(135deg, #78350f, #92400e)'
-                                    : (autoDebit.enabled ? 'linear-gradient(135deg, #064e3b, #047857)' : '#ffffff'),
-                                color: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : '#1e293b',
-                                border: autoDebit.is_paused_unused ? '1px solid #d97706' : (autoDebit.enabled ? '1px solid #059669' : '1px solid #e2e8f0'),
-                                borderRadius: '20px', padding: '1.1rem 1.25rem', marginBottom: '1.25rem',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
-                                display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                                    <div style={{
-                                        width: '40px', height: '40px', borderRadius: '12px',
-                                        background: (autoDebit.enabled || autoDebit.is_paused_unused) ? 'rgba(255,255,255,0.2)' : '#ecfdf5',
-                                        color: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : '#00a884',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.15rem'
-                                    }}>
-                                        <i className={autoDebit.is_paused_unused ? "fas fa-pause-circle" : "fas fa-bolt"} />
-                                    </div>
-                                    <div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <h4 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 800 }}>
-                                                ND Auto-Voucher
-                                            </h4>
-                                            <span style={{
-                                                fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '9999px',
-                                                background: autoDebit.is_paused_unused ? '#f59e0b' : (autoDebit.enabled ? '#10b981' : '#f1f5f9'),
-                                                color: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : '#64748b'
-                                            }}>
-                                                {autoDebit.is_paused_unused ? 'DIJEDA (HEMAT POIN)' : (autoDebit.enabled ? 'AKTIF' : 'NONAKTIF')}
-                                            </span>
-                                        </div>
-                                        <p style={{ margin: '0.2rem 0 0', fontSize: '0.74rem', color: autoDebit.is_paused_unused ? '#fde68a' : (autoDebit.enabled ? '#a7f3d0' : '#64748b') }}>
-                                            {autoDebit.is_paused_unused
-                                                ? 'Voucher sebelumnya kedaluwarsa tanpa dipakai. Auto-Voucher dijeda sementara agar poin Anda tidak terbuang sia-sia.'
-                                                : (autoDebit.enabled
-                                                    ? `Voucher ${autoDebit.plan?.name || ''} otomatis terbit (${autoDebit.trigger_type === 'monthly_date' ? `Setiap tanggal ${autoDebit.day}` : 'Setelah voucher sebelumnya habis'}).`
-                                                    : 'Internet tanpa putus, voucher otomatis diterbitkan pakai koin ND-Points.')}
-                                        </p>
-                                    </div>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setError('')
-                                        setAutoDebitPin('')
-                                        if (!autoDebitPlanId && voucherPlans.length > 0) {
-                                            setAutoDebitPlanId(voucherPlans[0].id)
-                                        }
-                                        setShowAutoDebitModal(true)
-                                    }}
-                                    style={{
-                                        padding: '0.55rem 1rem', borderRadius: '9999px',
-                                        background: (autoDebit.enabled || autoDebit.is_paused_unused) ? '#fff' : 'linear-gradient(135deg, #00a884, #00c298)',
-                                        color: autoDebit.is_paused_unused ? '#92400e' : (autoDebit.enabled ? '#065f46' : '#fff'),
-                                        fontWeight: 800, fontSize: '0.78rem', border: 'none', cursor: 'pointer',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                                    }}
-                                >
-                                    <i className="fas fa-cog" /> {autoDebit.is_paused_unused ? 'Atur / Lanjutkan Auto-Voucher' : (autoDebit.enabled ? 'Atur ND Auto-Voucher' : 'Aktifkan ND Auto-Voucher')}
-                                </button>
-                            </div>
-
                             {/* SPOTLIGHT: VOUCHER AKTIF ANDA */}
                             {activeVoucher && !redeemSuccess && (
                                 <div style={{
@@ -2153,19 +2089,19 @@ export default function PublicPoints() {
                                         </p>
                                     </div>
 
-                                    {/* 2. PANDUAN FULL ND AUTO-VOUCHER */}
+                                    {/* 2. PANDUAN PENUKARAN VOUCHER */}
                                     <div style={{ background: '#ecfdf5', padding: '0.9rem 1rem', borderRadius: '16px', border: '1px solid #a7f3d0' }}>
                                         <h4 style={{ margin: '0 0 0.4rem', fontSize: '0.85rem', fontWeight: 800, color: '#065f46', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                            <i className="fas fa-bolt" style={{ color: '#00a884' }} /> Apa Itu ND Auto-Voucher?
+                                            <i className="fas fa-ticket-alt" style={{ color: '#00a884' }} /> Cara Menukarkan Voucher
                                         </h4>
                                         <p style={{ margin: '0 0 0.5rem', color: '#047857', fontSize: '0.78rem' }}>
-                                            <strong>ND Auto-Voucher</strong> adalah fitur perpanjangan internet otomatis agar koneksi WiFi Anda tidak pernah terputus secara mendadak.
+                                            Anda dapat menukarkan poin secara langsung kapan saja dengan langkah mudah:
                                         </p>
                                         <ul style={{ margin: 0, paddingLeft: '1.15rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.76rem', color: '#065f46' }}>
-                                            <li><strong>🔄 Otomatis Terbit:</strong> Saldo poin otomatis didebit untuk menerbitkan voucher baru ketika paket voucher lama habis, atau terjadwal di tanggal tertentu setiap bulan.</li>
-                                            <li><strong>⏳ Masa Berlaku 3 Hari:</strong> Khusus voucher yang dibeli dari poin (baik tukar mandiri maupun via ND Auto-Voucher), voucher memiliki batas waktu <strong>3 hari</strong> untuk mulai digunakan sebelum kedaluwarsa.</li>
-                                            <li><strong>🛡️ Proteksi Auto-Pause (Anti-Terkuras):</strong> Jika voucher sebelumnya kedaluwarsa tanpa pernah dipakai sama sekali (misal Anda sedang bepergian/keluar kota), sistem <strong>otomatis menjeda (pause)</strong> Auto-Voucher agar saldo poin Anda tidak hangus percuma!</li>
-                                            <li><strong>🔐 Kontrol Mandiri:</strong> Anda bebas mengaktifkan, mengubah paket, atau mematikan fitur ini kapan saja menggunakan PIN keamanan (4-6 angka).</li>
+                                            <li><strong>⚡ 1-Klik Tukar:</strong> Pilih paket voucher yang diinginkan pada daftar voucher, lalu klik tombol Tukar.</li>
+                                            <li><strong>🔐 Otorisasi PIN:</strong> Masukkan PIN keamanan 4-6 angka akun Anda untuk menyetujui pemotongan saldo.</li>
+                                            <li><strong>🚀 Terbit Seketika:</strong> Kode voucher langsung muncul dan dapat digunakan langsung untuk login internet.</li>
+                                            <li><strong>⏳ Masa Berlaku 3 Hari:</strong> Voucher yang sudah ditukar wajib mulai digunakan dalam <strong>3 hari</strong> sebelum kedaluwarsa.</li>
                                         </ul>
                                     </div>
 

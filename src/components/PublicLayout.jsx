@@ -44,7 +44,7 @@ const PublicLayout = ({ children }) => {
                     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {[
                             { to: '/', icon: 'home', label: 'Beranda' },
-                            { to: '/points', icon: 'coins', label: 'ND-Points & Auto-Voucher', highlight: true, sublabel: 'Tukar Poin • Auto-Voucher', badge: 'Baru' },
+                            { to: '/points', icon: 'coins', label: 'ND-Points', highlight: true, sublabel: 'Tukar Voucher Instan', badge: 'Baru' },
                             { to: '/loyalty', icon: 'gift', label: 'Event Loyalty & Reward', highlight: true, sublabel: 'Klaim Otomatis • Cek Reward' },
                             { to: '/check-voucher', icon: 'search', label: 'Cek Voucher' },
                             { to: '/payment', icon: 'credit-card', label: 'Bayar Tagihan' },
