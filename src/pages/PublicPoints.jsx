@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
+import { QRCodeSVG } from 'qrcode.react'
 import PublicLayout from '../components/PublicLayout'
 
 const API = import.meta.env.VITE_API_URL
@@ -1796,6 +1797,31 @@ export default function PublicPoints() {
                                     background: '#fff', padding: '0.75rem', borderRadius: '18px',
                                     border: '1px solid #e2e8f0', display: 'inline-block', marginBottom: '1rem',
                                 }}>
+                                    {/* IMPLEMENTASI BARU: Render QRIS secara lokal (Client-Side SVG) dari qr_string.
+                                        Anti-Gagal: Tidak butuh koneksi internet ke Midtrans/QRServer, aman dari Walled Garden & Private DNS */}
+                                    {qrisData.qr_string ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <QRCodeSVG
+                                                value={qrisData.qr_string}
+                                                size={224}
+                                                level="M"
+                                                includeMargin={true}
+                                                style={{ borderRadius: '12px', background: '#fff' }}
+                                            />
+                                            <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.7rem', fontWeight: 800, color: '#00a884' }}>
+                                                <i className="fas fa-check-circle" />
+                                                <span>QRIS Top-Up Siap di-Scan</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <img
+                                            src={qrisData.payment_url || qrisData.qris_url}
+                                            alt="QRIS Top-Up"
+                                            style={{ width: '14rem', height: '14rem', borderRadius: '12px', objectFit: 'contain' }}
+                                        />
+                                    )}
+
+                                    {/* FITUR LAMA (DI-COMMENT): Mengambil gambar QR dari server luar Midtrans / QRServer
                                     <img
                                         src={qrisData.payment_url || qrisData.qris_url}
                                         alt="QRIS Top-Up"
@@ -1806,6 +1832,7 @@ export default function PublicPoints() {
                                             e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrStr)
                                         }}
                                     />
+                                    */}
                                 </div>
 
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', fontSize: '0.75rem', color: '#00a884', fontWeight: 700, marginBottom: '1.25rem' }}>

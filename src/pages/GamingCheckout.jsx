@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
+import { QRCodeSVG } from 'qrcode.react'
 import PublicLayout from '../components/PublicLayout'
 
 const GamingCheckout = () => {
@@ -115,6 +116,27 @@ const GamingCheckout = () => {
                             
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <div style={{ background: '#fff', padding: '0.85rem', borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 8px 25px rgba(0,0,0,0.05)', display: 'inline-block' }}>
+                                    {/* IMPLEMENTASI BARU: Render QRIS secara lokal (Client-Side SVG) dari qr_string.
+                                        Anti-Gagal: Tidak butuh koneksi internet ke Midtrans/QRServer, aman dari Walled Garden & Private DNS */}
+                                    {paymentResult.qr_string ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <QRCodeSVG
+                                                value={paymentResult.qr_string}
+                                                size={224}
+                                                level="M"
+                                                includeMargin={true}
+                                                style={{ borderRadius: '12px', background: '#fff' }}
+                                            />
+                                            <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.7rem', fontWeight: 800, color: '#00a884' }}>
+                                                <i className="fas fa-check-circle" />
+                                                <span>QRIS Siap di-Scan</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <img src={paymentResult.payment_url} style={{ width: '14rem', height: '14rem', borderRadius: '12px' }} alt="QR Code" />
+                                    )}
+
+                                    {/* FITUR LAMA (DI-COMMENT): Mengambil gambar QR dari server luar Midtrans / QRServer
                                     <img src={paymentResult.payment_url} style={{ width: '14rem', height: '14rem', borderRadius: '12px' }} alt="QR Code"
                                         onError={(e) => { e.target.onerror = null; const qrData = paymentResult.qr_string || paymentResult.payment_url; e.target.src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + encodeURIComponent(qrData) }}
                                     />
@@ -123,6 +145,7 @@ const GamingCheckout = () => {
                                             <i className="fas fa-external-link-alt" style={{ marginRight: '4px' }} /> Buka Gambar di Tab Baru
                                         </a>
                                     </div>
+                                    */}
                                 </div>
                             </div>
 
