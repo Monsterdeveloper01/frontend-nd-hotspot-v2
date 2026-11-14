@@ -51,6 +51,18 @@ const Checkout = () => {
         }, 3000)
     }
 
+    const openQrisInBrowser = (url) => {
+        const targetUrl = url || paymentResult?.payment_url || window.location.href
+        if (!targetUrl) return
+        const isAndroid = /android/i.test(navigator.userAgent)
+        if (isAndroid && targetUrl.startsWith('http')) {
+            const noProtocol = targetUrl.replace(/^https?:\/\//, '')
+            window.location.href = `intent://${noProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;end;`
+        } else {
+            window.open(targetUrl, '_blank')
+        }
+    }
+
     if (!plan) return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
             <div style={{ width: '48px', height: '48px', border: '4px solid #00a884', borderTopColor: 'transparent', borderRadius: '50%' }} className="animate-spin" />
@@ -162,16 +174,56 @@ const Checkout = () => {
                             </div>
 
                             <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '16px', padding: '1rem', marginBottom: '1.5rem', textAlign: 'left' }}>
-                                <p style={{ fontSize: '0.7rem', fontWeight: 800, color: '#92400e', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                    <i className="fas fa-info-circle" /> QR Tidak Muncul?
+                                <p style={{ fontSize: '0.72rem', fontWeight: 800, color: '#92400e', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    <i className="fas fa-info-circle" /> QR Tidak Muncul atau Terputus?
                                 </p>
-                                <p style={{ fontSize: '0.72rem', color: '#a16207', fontWeight: 600, lineHeight: 1.5 }}>Jika menggunakan browser login Wifi, <b>Salin Link</b> lalu buka di <b>Chrome/Safari</b>.</p>
-                                <button 
-                                    onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link pembayaran berhasil disalin!') }} 
-                                    style={{ marginTop: '0.6rem', width: '100%', padding: '0.55rem', background: '#fef3c7', color: '#92400e', borderRadius: '9999px', border: '1px solid #f59e0b', fontWeight: 700, fontSize: '0.72rem', cursor: 'pointer' }}
-                                >
-                                    Salin Link Pembayaran
-                                </button>
+                                <p style={{ fontSize: '0.72rem', color: '#a16207', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                                    Buka langsung kode QRIS di <b>Chrome/Safari</b> (browser utama) untuk menyelesaikan pembayaran.
+                                </p>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.75rem' }}>
+                                    {/* IMPLEMENTASI BARU: Buka kode QRIS api.midtrans langsung di browser default HP */}
+                                    <button 
+                                        type="button"
+                                        onClick={() => openQrisInBrowser(paymentResult?.payment_url)} 
+                                        style={{ 
+                                            width: '100%', padding: '0.65rem 1rem', background: '#f59e0b', color: '#fff', 
+                                            borderRadius: '9999px', border: 'none', fontWeight: 800, fontSize: '0.75rem', 
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
+                                            boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)' 
+                                        }}
+                                    >
+                                        <i className="fas fa-external-link-alt" />
+                                        <span>Buka QRIS di Chrome / Browser Utama</span>
+                                    </button>
+
+                                    {/* Salin link QRIS api.midtrans langsung */}
+                                    <button 
+                                        type="button"
+                                        onClick={() => { 
+                                            const targetUrl = paymentResult?.payment_url || window.location.href
+                                            navigator.clipboard.writeText(targetUrl)
+                                            alert('Link QRIS Midtrans berhasil disalin! Silakan tempel di Google Chrome atau Safari.') 
+                                        }} 
+                                        style={{ 
+                                            width: '100%', padding: '0.55rem', background: '#fef3c7', color: '#92400e', 
+                                            borderRadius: '9999px', border: '1px solid #f59e0b', fontWeight: 700, fontSize: '0.72rem', 
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' 
+                                        }}
+                                    >
+                                        <i className="fas fa-copy" />
+                                        <span>Salin Link QRIS Midtrans</span>
+                                    </button>
+
+                                    {/* FITUR LAMA (DI-COMMENT): Hanya menyalin window.location.href
+                                    <button 
+                                        onClick={() => { navigator.clipboard.writeText(window.location.href); alert('Link pembayaran berhasil disalin!') }} 
+                                        style={{ marginTop: '0.6rem', width: '100%', padding: '0.55rem', background: '#fef3c7', color: '#92400e', borderRadius: '9999px', border: '1px solid #f59e0b', fontWeight: 700, fontSize: '0.72rem', cursor: 'pointer' }}
+                                    >
+                                        Salin Link Pembayaran
+                                    </button>
+                                    */}
+                                </div>
                             </div>
 
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#00a884', fontSize: '0.75rem', fontWeight: 700, background: '#ecfdf5', padding: '0.5rem 1.25rem', borderRadius: '9999px' }} className="animate-pulse">

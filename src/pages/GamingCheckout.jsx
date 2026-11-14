@@ -51,6 +51,18 @@ const GamingCheckout = () => {
         }, 3000)
     }
 
+    const openQrisInBrowser = (url) => {
+        const targetUrl = url || paymentResult?.payment_url || window.location.href
+        if (!targetUrl) return
+        const isAndroid = /android/i.test(navigator.userAgent)
+        if (isAndroid && targetUrl.startsWith('http')) {
+            const noProtocol = targetUrl.replace(/^https?:\/\//, '')
+            window.location.href = `intent://${noProtocol}#Intent;scheme=https;action=android.intent.action.VIEW;end;`
+        } else {
+            window.open(targetUrl, '_blank')
+        }
+    }
+
     if (!plan) return null
 
     return (
@@ -155,6 +167,48 @@ const GamingCheckout = () => {
                                     <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#00a884' }}>Rp {formatRupiah(plan.price)}</span>
                                 </div>
                                 <div style={{ fontSize: '0.65rem', color: '#94a3b8', fontWeight: 700, textAlign: 'left' }}>Order ID: {paymentResult.external_id}</div>
+                            </div>
+
+                            <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '16px', padding: '1rem', marginBottom: '1.5rem', textAlign: 'left' }}>
+                                <p style={{ fontSize: '0.72rem', fontWeight: 800, color: '#92400e', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                    <i className="fas fa-info-circle" /> QR Tidak Muncul atau Terputus?
+                                </p>
+                                <p style={{ fontSize: '0.72rem', color: '#a16207', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                                    Buka langsung kode QRIS di <b>Chrome/Safari</b> (browser utama) untuk menyelesaikan pembayaran.
+                                </p>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginTop: '0.75rem' }}>
+                                    <button 
+                                        type="button"
+                                        onClick={() => openQrisInBrowser(paymentResult?.payment_url)} 
+                                        style={{ 
+                                            width: '100%', padding: '0.65rem 1rem', background: '#f59e0b', color: '#fff', 
+                                            borderRadius: '9999px', border: 'none', fontWeight: 800, fontSize: '0.75rem', 
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
+                                            boxShadow: '0 2px 6px rgba(245, 158, 11, 0.25)' 
+                                        }}
+                                    >
+                                        <i className="fas fa-external-link-alt" />
+                                        <span>Buka QRIS di Chrome / Browser Utama</span>
+                                    </button>
+
+                                    <button 
+                                        type="button"
+                                        onClick={() => { 
+                                            const targetUrl = paymentResult?.payment_url || window.location.href
+                                            navigator.clipboard.writeText(targetUrl)
+                                            alert('Link QRIS Midtrans berhasil disalin! Silakan tempel di Google Chrome atau Safari.') 
+                                        }} 
+                                        style={{ 
+                                            width: '100%', padding: '0.55rem', background: '#fef3c7', color: '#92400e', 
+                                            borderRadius: '9999px', border: '1px solid #f59e0b', fontWeight: 700, fontSize: '0.72rem', 
+                                            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' 
+                                        }}
+                                    >
+                                        <i className="fas fa-copy" />
+                                        <span>Salin Link QRIS Midtrans</span>
+                                    </button>
+                                </div>
                             </div>
 
                             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: '#00a884', fontSize: '0.75rem', fontWeight: 700, background: '#ecfdf5', padding: '0.5rem 1.25rem', borderRadius: '9999px' }} className="animate-pulse">
