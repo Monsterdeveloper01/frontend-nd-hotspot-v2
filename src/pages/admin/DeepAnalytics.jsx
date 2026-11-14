@@ -417,8 +417,8 @@ export default function DeepAnalytics() {
               <i className="fas fa-fire" />
             </div>
           </div>
-          <div className="text-2xl font-black text-amber-400 tracking-tight">
-            {peak_hours?.peak_range_label || '19:00 - 22:00'}
+          <div className="text-xl sm:text-2xl font-black text-amber-400 tracking-tight">
+            {peak_hours?.peak_range_label || 'Belum ada data aktivitas'}
           </div>
           <div className="flex items-center gap-1.5 mt-2 text-xs text-admin-muted">
             <i className="fas fa-users text-amber-400 text-[10px]" />
@@ -458,7 +458,7 @@ export default function DeepAnalytics() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
-              🔥 Paling Penuh: {peak_hours?.peak_range_label}
+              🔥 Paling Penuh: {peak_hours?.peak_range_label || 'Belum ada data'}
             </span>
           </div>
         </div>
@@ -473,20 +473,27 @@ export default function DeepAnalytics() {
           <h4 className="text-xs font-bold text-admin-muted uppercase tracking-wider mb-3">
             Di Mana Saja Pelanggan Kamu Paling Banyak Internetan?
           </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {peak_hours?.locations?.map((loc, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-center justify-between">
-                <div>
-                  <div className="text-xs font-bold text-admin-text">{loc.name}</div>
-                  <div className="text-[10px] text-admin-muted">{loc.ip}</div>
+          {peak_hours?.locations && peak_hours.locations.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {peak_hours.locations.map((loc, idx) => (
+                <div key={idx} className="p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-admin-text">{loc.name}</div>
+                    <div className="text-[10px] text-admin-muted">{loc.ip}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs font-black text-amber-400">{loc.sessions} Orang Konek</div>
+                    <div className="text-[10px] text-slate-400">{loc.traffic_gb} GB Data Terpakai</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs font-black text-amber-400">{loc.sessions} Orang Konek</div>
-                  <div className="text-[10px] text-slate-400">{loc.traffic_gb} GB Data Terpakai</div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 rounded-xl bg-admin-base/50 border border-admin-border/60 text-center text-xs text-admin-muted">
+              <i className="fas fa-network-wired text-slate-500 mb-1.5 block text-base" />
+              Belum ada router atau lokasi hotspot yang mencatat sesi koneksi pada periode ini.
+            </div>
+          )}
         </div>
       </div>
 
@@ -527,11 +534,11 @@ export default function DeepAnalytics() {
           <div className="mt-4 p-3.5 rounded-xl bg-admin-base border border-admin-border flex items-center justify-between text-xs">
             <div>
               <span className="text-slate-400 block text-[10px] uppercase font-bold">👑 Paling Banyak Nyumbang Uang:</span>
-              <span className="text-emerald-400 font-extrabold">{plans_matrix?.most_profitable?.name || '-'}</span>
+              <span className="text-emerald-400 font-extrabold">{plans_matrix?.most_profitable?.name || 'Belum ada data'}</span>
             </div>
             <div className="text-right">
               <span className="text-slate-400 block text-[10px] uppercase font-bold">🔥 Paling Sering Dibeli:</span>
-              <span className="text-amber-400 font-extrabold">{plans_matrix?.most_popular?.name || '-'}</span>
+              <span className="text-amber-400 font-extrabold">{plans_matrix?.most_popular?.name || 'Belum ada data'}</span>
             </div>
           </div>
         </div>
@@ -564,37 +571,45 @@ export default function DeepAnalytics() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-admin-border/50">
-                {plans_matrix?.plans?.map((plan) => (
-                  <tr key={plan.id} className="hover:bg-admin-base/50 transition-colors">
-                    <td className="py-3 font-bold text-admin-text">
-                      <div className="flex items-center gap-1.5">
-                        {plan.is_gaming && <span className="text-[10px] text-emerald-400">⚡</span>}
-                        <span>{plan.name}</span>
-                      </div>
-                      <span className="text-[10px] text-admin-muted">{plan.duration}</span>
-                    </td>
-                    <td className="py-3 font-semibold text-admin-muted">
-                      Rp {formatRupiah(plan.price)}
-                    </td>
-                    <td className="py-3 text-center">
-                      <span className="font-bold text-admin-text">{plan.volume_sold} kali</span>
-                      <span className="text-[10px] text-admin-muted block">({plan.volume_share_pct}%)</span>
-                    </td>
-                    <td className="py-3 text-right">
-                      <span className="font-extrabold text-emerald-400">Rp {formatRupiah(plan.total_revenue)}</span>
-                      <span className="text-[10px] text-admin-muted block">({plan.revenue_share_pct}%)</span>
-                    </td>
-                    <td className="py-3 text-right">
-                      <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                        plan.badge === 'emerald' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' :
-                        (plan.badge === 'amber' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' :
-                        (plan.badge === 'blue' ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30' : 'bg-slate-700/50 text-slate-300'))
-                      }`}>
-                        {plan.classification}
-                      </span>
+                {plans_matrix?.plans && plans_matrix.plans.length > 0 ? (
+                  plans_matrix.plans.map((plan) => (
+                    <tr key={plan.id} className="hover:bg-admin-base/50 transition-colors">
+                      <td className="py-3 font-bold text-admin-text">
+                        <div className="flex items-center gap-1.5">
+                          {plan.is_gaming && <span className="text-[10px] text-emerald-400">⚡</span>}
+                          <span>{plan.name}</span>
+                        </div>
+                        <span className="text-[10px] text-admin-muted">{plan.duration}</span>
+                      </td>
+                      <td className="py-3 font-semibold text-admin-muted">
+                        Rp {formatRupiah(plan.price)}
+                      </td>
+                      <td className="py-3 text-center">
+                        <span className="font-bold text-admin-text">{plan.volume_sold} kali</span>
+                        <span className="text-[10px] text-admin-muted block">({plan.volume_share_pct}%)</span>
+                      </td>
+                      <td className="py-3 text-right">
+                        <span className="font-extrabold text-emerald-400">Rp {formatRupiah(plan.total_revenue)}</span>
+                        <span className="text-[10px] text-admin-muted block">({plan.revenue_share_pct}%)</span>
+                      </td>
+                      <td className="py-3 text-right">
+                        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                          plan.badge === 'emerald' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' :
+                          (plan.badge === 'amber' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' :
+                          (plan.badge === 'blue' ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30' : 'bg-slate-700/50 text-slate-300'))
+                        }`}>
+                          {plan.classification}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-admin-muted text-xs">
+                      Belum ada paket voucher yang terdaftar di database.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
