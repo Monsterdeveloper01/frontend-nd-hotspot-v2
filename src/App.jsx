@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import DeepAnalytics from './pages/admin/DeepAnalytics'
 import VoucherPlans from './pages/admin/VoucherPlans'
 import VoucherStock from './pages/admin/VoucherStock'
 import WhatsAppSettings from './pages/admin/WhatsAppSettings'
@@ -144,6 +145,7 @@ function App() {
         {/* PROTECTED ADMIN ROUTES */}
         <Route element={<PrivateRoute><AdminLayoutWrapper /></PrivateRoute>}>
           <Route path="/admin-dashboard-access-granted" element={<AdminDashboard />} />
+          <Route path="/admin/deep-analytics" element={<DeepAnalytics />} />
           <Route path="/admin/vouchers" element={<VoucherStock />} />
           <Route path="/admin/vouchers-online" element={<VoucherOnline />} />
           <Route path="/admin/vouchers-sold" element={<VoucherSold />} />

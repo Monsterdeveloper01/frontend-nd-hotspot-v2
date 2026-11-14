@@ -32,6 +32,7 @@ const Sidebar = () => {
   
   const menuItems = [
     { name: 'Dashboard', path: '/admin-dashboard-access-granted', icon: 'dashboard', section: 'GENERAL' },
+    { name: 'Deep Analytics', path: '/admin/deep-analytics', icon: 'dashboard' },
     { name: 'RADIUS Settings', path: '/admin/radius-settings', icon: 'master', section: 'RADIUS SYSTEM' },
     { name: 'Data Pelanggan', path: '/admin/customers', icon: 'customers', section: 'PELANGGAN BULANAN' },
     { name: 'Pelanggan Aktif/Isolir', path: '/admin/customers', icon: 'customers' },
