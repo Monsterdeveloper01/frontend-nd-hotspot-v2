@@ -388,6 +388,128 @@ function Home() {
         )
       })}
 
+      {/* Packages Grid */}
+      <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1 }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: '52px', height: '52px', borderRadius: '16px',
+              background: '#ecfdf5', color: '#00a884',
+              boxShadow: '0 4px 14px rgba(0, 168, 132, 0.15)',
+              marginBottom: '0.75rem', fontSize: '1.35rem',
+            }}>
+              <FaIcon name="ticket-alt" />
+            </div>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>
+              Pilih Paket Voucher
+            </h2>
+            <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>
+              Pilihan durasi fleksibel dengan koneksi prioritas tanpa batas kuota
+            </p>
+          </div>
+
+          {/* Elevated Voucher Cards Grid */}
+          <div className="flex flex-wrap justify-center gap-6">
+            {loading ? (
+              [1, 2, 3, 4, 5].map(i => <div key={i} className="w-full max-w-[340px]"><VoucherSkeleton /></div>)
+            ) : (
+              plans.map((plan, index) => {
+                const durationLabel = plan.duration.endsWith('h') 
+                  ? plan.duration.replace('h', ' Jam') 
+                  : plan.duration.endsWith('d') 
+                  ? plan.duration.replace('d', ' Hari') 
+                  : plan.duration.replace('m', ' Bulan')
+
+                return (
+                  <div 
+                    key={plan.id} 
+                    className="card-nd-elevated w-full max-w-[340px]" 
+                    style={{
+                      borderRadius: '22px',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      position: 'relative',
+                      border: '1px solid rgba(0, 0, 0, 0.05)',
+                    }}
+                  >
+                    {index === 2 && (
+                      <div style={{
+                        position: 'absolute', top: 0, right: 0,
+                        background: '#00a884', color: '#fff',
+                        fontSize: '0.65rem', fontWeight: 900,
+                        padding: '0.35rem 0.85rem',
+                        borderBottomLeftRadius: '14px',
+                        zIndex: 10, display: 'flex', alignItems: 'center', gap: '0.3rem',
+                        textTransform: 'uppercase', letterSpacing: '0.08em',
+                        boxShadow: '0 2px 8px rgba(0, 168, 132, 0.3)'
+                      }}>
+                        <i className="fas fa-fire" style={{ color: '#fef08a' }} /> BEST SELLER
+                      </div>
+                    )}
+
+                    <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                      {/* Top Row: Duration & Price matching reference layout (NO Tarif label) */}
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                        <div>
+                          <div style={{
+                            display: 'inline-block',
+                            background: '#ecfdf5', color: '#00a884',
+                            fontSize: '0.75rem', fontWeight: 800,
+                            padding: '0.25rem 0.65rem', borderRadius: '8px',
+                            marginBottom: '0.5rem', textTransform: 'uppercase'
+                          }}>
+                            {durationLabel}
+                          </div>
+                          <h3 style={{ fontWeight: 900, fontSize: '1.35rem', color: '#1e293b', letterSpacing: '-0.02em', margin: 0 }}>
+                            {plan.name}
+                          </h3>
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#00a884', letterSpacing: '-0.02em' }}>
+                            Rp {plan.price.toLocaleString('id-ID')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div style={{ height: '1px', background: '#f1f5f9', margin: '0 0 1.25rem' }} />
+
+                      <div style={{ marginBottom: '1.5rem', flex: 1 }}>
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
+                            <span>Unlimited Kuota 100%</span>
+                          </li>
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
+                            <span>Masa aktif {durationLabel}</span>
+                          </li>
+                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
+                            <span>Koneksi prioritas kecepatan tinggi</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      {/* Pill Button matching uploaded reference */}
+                      <button
+                        onClick={() => navigate('/checkout', { state: { plan } })}
+                        className="btn-nd-pill"
+                        style={{ width: '100%', padding: '0.9rem 1.5rem', fontSize: '0.88rem' }}
+                      >
+                        <i className="fas fa-shopping-cart" /> Beli Sekarang
+                      </button>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Unified Promotional Campaign Banner (Loyalty & ND-Points Combined into 1 Simple Banner) */}
       <section style={{ padding: '1.25rem 1rem 0', maxWidth: '1280px', margin: '0 auto', width: '100%', position: 'relative' }}>
         <div 
@@ -739,127 +861,6 @@ function Home() {
           </div>
         )}
 
-      {/* Packages Grid */}
-      <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1 }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: '52px', height: '52px', borderRadius: '16px',
-              background: '#ecfdf5', color: '#00a884',
-              boxShadow: '0 4px 14px rgba(0, 168, 132, 0.15)',
-              marginBottom: '0.75rem', fontSize: '1.35rem',
-            }}>
-              <FaIcon name="ticket-alt" />
-            </div>
-            <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>
-              Pilih Paket Voucher
-            </h2>
-            <p style={{ color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>
-              Pilihan durasi fleksibel dengan koneksi prioritas tanpa batas kuota
-            </p>
-          </div>
-
-          {/* Elevated Voucher Cards Grid */}
-          <div className="flex flex-wrap justify-center gap-6">
-            {loading ? (
-              [1, 2, 3, 4, 5].map(i => <div key={i} className="w-full max-w-[340px]"><VoucherSkeleton /></div>)
-            ) : (
-              plans.map((plan, index) => {
-                const durationLabel = plan.duration.endsWith('h') 
-                  ? plan.duration.replace('h', ' Jam') 
-                  : plan.duration.endsWith('d') 
-                  ? plan.duration.replace('d', ' Hari') 
-                  : plan.duration.replace('m', ' Bulan')
-
-                return (
-                  <div 
-                    key={plan.id} 
-                    className="card-nd-elevated w-full max-w-[340px]" 
-                    style={{
-                      borderRadius: '22px',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      position: 'relative',
-                      border: '1px solid rgba(0, 0, 0, 0.05)',
-                    }}
-                  >
-                    {index === 2 && (
-                      <div style={{
-                        position: 'absolute', top: 0, right: 0,
-                        background: '#00a884', color: '#fff',
-                        fontSize: '0.65rem', fontWeight: 900,
-                        padding: '0.35rem 0.85rem',
-                        borderBottomLeftRadius: '14px',
-                        zIndex: 10, display: 'flex', alignItems: 'center', gap: '0.3rem',
-                        textTransform: 'uppercase', letterSpacing: '0.08em',
-                        boxShadow: '0 2px 8px rgba(0, 168, 132, 0.3)'
-                      }}>
-                        <i className="fas fa-fire" style={{ color: '#fef08a' }} /> BEST SELLER
-                      </div>
-                    )}
-
-                    <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                      {/* Top Row: Duration & Price matching reference layout (NO Tarif label) */}
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                        <div>
-                          <div style={{
-                            display: 'inline-block',
-                            background: '#ecfdf5', color: '#00a884',
-                            fontSize: '0.75rem', fontWeight: 800,
-                            padding: '0.25rem 0.65rem', borderRadius: '8px',
-                            marginBottom: '0.5rem', textTransform: 'uppercase'
-                          }}>
-                            {durationLabel}
-                          </div>
-                          <h3 style={{ fontWeight: 900, fontSize: '1.35rem', color: '#1e293b', letterSpacing: '-0.02em', margin: 0 }}>
-                            {plan.name}
-                          </h3>
-                        </div>
-
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#00a884', letterSpacing: '-0.02em' }}>
-                            Rp {plan.price.toLocaleString('id-ID')}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div style={{ height: '1px', background: '#f1f5f9', margin: '0 0 1.25rem' }} />
-
-                      <div style={{ marginBottom: '1.5rem', flex: 1 }}>
-                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
-                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
-                            <span>Unlimited Kuota 100%</span>
-                          </li>
-                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
-                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
-                            <span>Masa aktif {durationLabel}</span>
-                          </li>
-                          <li style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>
-                            <i className="fas fa-check-circle" style={{ color: '#00a884', fontSize: '0.9rem' }} />
-                            <span>Koneksi prioritas kecepatan tinggi</span>
-                          </li>
-                        </ul>
-                      </div>
-
-                      {/* Pill Button matching uploaded reference */}
-                      <button
-                        onClick={() => navigate('/checkout', { state: { plan } })}
-                        className="btn-nd-pill"
-                        style={{ width: '100%', padding: '0.9rem 1.5rem', fontSize: '0.88rem' }}
-                      >
-                        <i className="fas fa-shopping-cart" /> Beli Sekarang
-                      </button>
-                    </div>
-                  </div>
-                )
-              })
-            )}
-          </div>
-        </div>
-      </section>
 
       {/* High-Speed Zone Section */}
       {!loading && (
