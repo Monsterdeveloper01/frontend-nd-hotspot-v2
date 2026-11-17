@@ -510,7 +510,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Unified Promotional Campaign Banner (Loyalty & ND-Points Combined into 1 Simple Banner) */}
+      {/* Unified Promotional Campaign Banner */}
       <section style={{ padding: '1.25rem 1rem 0', maxWidth: '1280px', margin: '0 auto', width: '100%', position: 'relative' }}>
         <div 
           className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-xl transition-all"
