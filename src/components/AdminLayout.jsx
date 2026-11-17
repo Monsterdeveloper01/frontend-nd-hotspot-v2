@@ -198,7 +198,7 @@ const AdminLayout = ({ children, title, subtitle }) => {
 
     const menuItems = [
     { name: 'Dashboard', path: '/admin-dashboard-access-granted', icon: 'dashboard', section: 'GENERAL' },
-    { name: 'Deep Analytics', path: '/admin/deep-analytics', icon: 'brain', badge: 'AI & Insight' },
+    { name: 'Informasi & Pengumuman', path: '/admin/announcements', icon: 'bell', badge: 'Portal Info' },
     { name: 'RADIUS Settings', path: '/admin/radius-settings', icon: 'master', section: 'RADIUS SYSTEM' },
     { name: 'Data Pelanggan', path: '/admin/customers', icon: 'customers', section: 'PELANGGAN BULANAN' },
     { name: 'Master Voucher', path: '/admin/voucher-plans', icon: 'master', section: 'VOUCHER MANAGEMENT' },

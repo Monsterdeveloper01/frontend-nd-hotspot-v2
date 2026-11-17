@@ -15,6 +15,7 @@ import RadiusSettings from './pages/admin/RadiusSettings'
 import NetworkCenter from './pages/admin/NetworkCenter'
 import EventAnalytics from './pages/admin/EventAnalytics'
 import PointAnalytics from './pages/admin/PointAnalytics'
+import Announcements from './pages/admin/Announcements'
 import CheckVoucher from './pages/CheckVoucher'
 import PublicLoyalty from './pages/PublicLoyalty'
 import PublicPoints from './pages/PublicPoints'
@@ -145,6 +146,7 @@ function App() {
         {/* PROTECTED ADMIN ROUTES */}
         <Route element={<PrivateRoute><AdminLayoutWrapper /></PrivateRoute>}>
           <Route path="/admin-dashboard-access-granted" element={<AdminDashboard />} />
+          <Route path="/admin/announcements" element={<Announcements />} />
           <Route path="/admin/deep-analytics" element={<DeepAnalytics />} />
           <Route path="/admin/vouchers" element={<VoucherStock />} />
           <Route path="/admin/vouchers-online" element={<VoucherOnline />} />
@@ -189,37 +191,22 @@ function Home() {
   const [activeEvent, setActiveEvent] = useState(null)
   const [showTermsModal, setShowTermsModal] = useState(false)
   const [showPointsTermsModal, setShowPointsTermsModal] = useState(false)
-  const [currentSlide, setCurrentSlide] = useState(0) // 0: Loyalty, 1: Points
-  const [isPaused, setIsPaused] = useState(false)
-  const touchStartX = useRef(0)
-  const touchEndX = useRef(0)
+  const [announcements, setAnnouncements] = useState([])
+  const [dismissedNotices, setDismissedNotices] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('dismissed_announcements') || '[]')
+    } catch {
+      return []
+    }
+  })
   const navigate = useNavigate()
 
-  const totalSlides = 2
-
-  // Auto-advance campaign slider every 6 seconds if not paused
-  useEffect(() => {
-    if (isPaused) return
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % totalSlides)
-    }, 6000)
-    return () => clearInterval(interval)
-  }, [isPaused, totalSlides])
-
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX
-  }
-
-  const handleTouchEnd = (e) => {
-    touchEndX.current = e.changedTouches[0].clientX
-    const diff = touchStartX.current - touchEndX.current
-    if (diff > 50) {
-      // Swipe left -> next slide
-      setCurrentSlide((prev) => (prev + 1) % totalSlides)
-    } else if (diff < -50) {
-      // Swipe right -> prev slide
-      setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)
-    }
+  const dismissNotice = (id) => {
+    const updated = [...dismissedNotices, id]
+    setDismissedNotices(updated)
+    try {
+      sessionStorage.setItem('dismissed_announcements', JSON.stringify(updated))
+    } catch {}
   }
 
   const toggleMenu = () => setShowMenu(!showMenu);
@@ -255,9 +242,21 @@ function Home() {
       }
     }
 
+    const fetchAnnouncements = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/announcements/active`)
+        if (res.data?.success) {
+          setAnnouncements(res.data.data || [])
+        }
+      } catch (err) {
+        // Silently fail
+      }
+    }
+
     fetchPlans()
     logVisit()
     fetchActiveEvent()
+    fetchAnnouncements()
   }, [])
 
   const handleWhatsAppClick = () => {
@@ -312,342 +311,220 @@ function Home() {
         </div>
       </section>
 
-      {/* Promotional Campaign Slider / Carousel Section */}
-      <section 
-        style={{ padding: '1.25rem 1rem 0', maxWidth: '1280px', margin: '0 auto', width: '100%', position: 'relative' }}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Carousel Header / Quick Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 px-1">
-          {/* Segmented Slide Tabs (Full width on mobile, auto on desktop) */}
-          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex sm:items-center gap-1 bg-white p-1 rounded-2xl border border-slate-200/90 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setCurrentSlide(0)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                currentSlide === 0
-                  ? 'bg-[#00a884] text-white shadow-sm font-extrabold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <i className="fas fa-gift text-[11px]" />
-              <span className="truncate">Event Loyalty</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentSlide(1)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                currentSlide === 1
-                  ? 'bg-[#00a884] text-white shadow-sm font-extrabold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <i className="fas fa-coins text-[11px]" />
-              <span className="truncate">ND-Points</span>
-              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-amber-950 font-black uppercase">
-                Baru
-              </span>
-            </button>
-          </div>
+      {/* Public Announcements & Maintenance Notices */}
+      {announcements.filter(a => !dismissedNotices.includes(a.id)).map((notice) => {
+        const isMaint = notice.type === 'maintenance'
+        const isWarn = notice.type === 'warning'
+        const isPromo = notice.type === 'promo'
 
-          {/* Navigation Controls: Hidden on mobile (swipe & tabs used instead), Clean on desktop */}
-          <div className="hidden sm:flex items-center gap-2.5">
-            {/* Prev / Next Buttons */}
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides)}
-                className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer text-xs shadow-sm active:scale-95"
-                title="Promo Sebelumnya"
-                aria-label="Previous Slide"
-              >
-                <i className="fas fa-chevron-left" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentSlide((prev) => (prev + 1) % totalSlides)}
-                className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer text-xs shadow-sm active:scale-95"
-                title="Promo Selanjutnya"
-                aria-label="Next Slide"
-              >
-                <i className="fas fa-chevron-right" />
-              </button>
-            </div>
+        const themeClass = isMaint 
+          ? 'from-amber-950/80 via-slate-900 to-slate-950 border-amber-500/40 text-amber-100' 
+          : isWarn 
+          ? 'from-rose-950/80 via-slate-900 to-slate-950 border-rose-500/40 text-rose-100'
+          : isPromo
+          ? 'from-emerald-950/80 via-slate-900 to-slate-950 border-emerald-500/40 text-emerald-100'
+          : 'from-cyan-950/80 via-slate-900 to-slate-950 border-cyan-500/40 text-cyan-100'
 
-            {/* Indicator Dots */}
-            <div className="flex items-center gap-1.5 px-1">
-              <button
-                type="button"
-                onClick={() => setCurrentSlide(0)}
-                className={`h-2 rounded-full transition-all cursor-pointer ${
-                  currentSlide === 0 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300 hover:bg-slate-400'
-                }`}
-                title="Event Loyalty"
-                aria-label="Slide 1"
-              />
-              <button
-                type="button"
-                onClick={() => setCurrentSlide(1)}
-                className={`h-2 rounded-full transition-all cursor-pointer ${
-                  currentSlide === 1 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300 hover:bg-slate-400'
-                }`}
-                title="ND-Points"
-                aria-label="Slide 2"
-              />
-            </div>
-          </div>
-        </div>
+        const iconColor = isMaint ? 'text-amber-400 bg-amber-500/20 border-amber-500/30' : isWarn ? 'text-rose-400 bg-rose-500/20 border-rose-500/30' : isPromo ? 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30' : 'text-cyan-400 bg-cyan-500/20 border-cyan-500/30'
+        const iconName = isMaint ? 'fa-tools' : isWarn ? 'fa-exclamation-triangle' : isPromo ? 'fa-gift' : 'fa-info-circle'
+        const badgeLabel = isMaint ? '🛠️ PEMELIHARAAN SISTEM' : isWarn ? '⚠️ PERINGATAN GANGGUAN' : isPromo ? '🎁 PROMO SPESIAL' : 'ℹ️ INFORMASI PENTING'
 
-        {/* Carousel Slider Viewport */}
-        <div className="relative rounded-3xl overflow-hidden shadow-xl">
-          {currentSlide === 0 ? (
-            /* Slide 1: Promotional Loyalty Event Banner */
-            <div 
-              key="loyalty"
-              className="relative overflow-hidden p-6 sm:p-8 text-white transition-all animate-in fade-in duration-300"
-              style={{
-                background: 'linear-gradient(135deg, #064e3b 0%, #065f46 45%, #0f172a 100%)',
-                border: '1px solid rgba(52, 211, 153, 0.3)',
-              }}
-            >
-              {/* Decorative glowing gradient blur */}
-              <div 
-                className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
-                style={{ background: '#34d399' }}
-              />
-              <div 
-                className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
-                style={{ background: '#10b981' }}
-              />
-
-              <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="max-w-2xl">
-                  {/* Event Badge */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 mb-3 shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                    <span>🔥 BONUS SPESIAL • AUTO CUAN TIAP BULAN</span>
+        return (
+          <section key={notice.id} style={{ padding: '0.75rem 1rem 0', maxWidth: '1280px', margin: '0 auto', width: '100%', position: 'relative' }}>
+            <div className={`p-4 sm:p-5 rounded-3xl bg-gradient-to-br ${themeClass} border shadow-xl relative overflow-hidden backdrop-blur-md`}>
+              <div className="flex items-start justify-between gap-3 relative z-10">
+                <div className="flex items-start gap-3.5">
+                  <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center text-lg flex-shrink-0 shadow-inner mt-0.5 ${iconColor}`}>
+                    <i className={`fas ${iconName}`} />
                   </div>
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-black/40 border border-white/10 text-white">
+                        {badgeLabel}
+                      </span>
+                      {notice.is_ongoing && (
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                          <span>Sedang Berlangsung</span>
+                        </span>
+                      )}
+                      {notice.is_upcoming && (
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                          Akan Datang
+                        </span>
+                      )}
+                    </div>
 
-                  {/* Title */}
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                    Makin Sering Internetan, Dapet <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis!</span>
-                  </h2>
+                    <h3 className="text-sm sm:text-base font-black text-white tracking-tight">
+                      {notice.title}
+                    </h3>
 
-                  {/* Description */}
-                  <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
-                    {activeEvent ? (
-                      <>Cukup beli voucher seperti biasa sampai totalnya tembus <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> dalam sebulan. Begitu target tercapai, voucher bonus <strong className="text-emerald-300 font-bold">langsung dikirim ke WhatsApp</strong> kamu — tanpa diundi & tanpa ribet klaim!</>
-                    ) : (
-                      <>Kumpulin total jajan voucher kamu setiap bulannya. Begitu tembus target, voucher gratis <strong className="text-emerald-300 font-bold">langsung meluncur ke nomor WhatsApp</strong> kamu tanpa undian & tanpa repot!</>
+                    <p className="text-xs text-slate-200 leading-relaxed font-medium">
+                      {notice.message}
+                    </p>
+
+                    {notice.time_range_formatted && (
+                      <div className="pt-1 flex items-center gap-2 text-xs font-bold text-amber-300">
+                        <i className="fas fa-clock text-[11px]" />
+                        <span>Jadwal: {notice.time_range_formatted}</span>
+                      </div>
                     )}
-                  </p>
-
-                  {/* Feature Chips */}
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-emerald-200 font-semibold">
-                    <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                      <i className="fas fa-bolt text-emerald-400" /> Langsung Masuk WA
-                    </span>
-                    <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                      <i className="fas fa-clock text-emerald-400" /> Masa Aktif 5 Hari
-                    </span>
-                    <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                      <i className="fas fa-gift text-emerald-400" /> 100% Tanpa Diundi
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowTermsModal(true)}
-                      className="flex items-center gap-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-white px-2.5 py-1 rounded-lg border border-emerald-400/40 transition-colors cursor-pointer font-bold underline decoration-emerald-400/60 underline-offset-2"
-                    >
-                      <i className="fas fa-file-contract text-emerald-400" /> *S&K Berlaku
-                    </button>
                   </div>
                 </div>
 
-                {/* Action Card Button */}
-                <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
-                  <Link
-                    to="/loyalty"
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
-                    style={{ textDecoration: 'none' }}
+                {notice.dismissible && (
+                  <button
+                    type="button"
+                    onClick={() => dismissNotice(notice.id)}
+                    className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                    title="Tutup pemberitahuan"
                   >
-                    <i className="fas fa-gift text-base" />
-                    <span>Cek Progres & Bonus Kamu</span>
-                    <i className="fas fa-arrow-right text-xs ml-1" />
-                  </Link>
-                  <div className="flex flex-col items-start lg:items-end gap-0.5">
-                    <span className="text-[11px] text-slate-300 font-medium opacity-85">
-                      Tinggal masukkan nomor HP untuk cek jajanmu
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowTermsModal(true)}
-                      className="text-[11px] text-emerald-300 hover:text-white underline cursor-pointer font-medium transition-colors"
-                    >
-                      * Baca Syarat & Ketentuan
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Hype Teaser Footer */}
-              <div className="relative z-10 mt-5 pt-3.5 border-t border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
-                <div className="flex items-center gap-2 text-slate-100 font-medium">
-                  <span className="text-amber-300 text-sm">✨</span>
-                  <span>
-                    <strong className="text-amber-300 font-bold">Beli terus voucher ND-Hotspot</strong> dan nantikan event-event cuan menarik lainnya yang akan datang! 🚀
-                  </span>
-                </div>
-                <span className="text-[10px] text-emerald-300/80 font-bold tracking-wide uppercase sm:text-right">
-                  🔥 Internetan Lancar • Makin Cuan
-                </span>
+                    <i className="fas fa-times text-xs" />
+                  </button>
+                )}
               </div>
             </div>
-          ) : (
-            /* Slide 2: ND-Points & ND-Auto-Vouchers Campaign Banner */
-            <div 
-              key="points"
-              className="relative overflow-hidden p-6 sm:p-8 text-white transition-all animate-in fade-in duration-300"
-              style={{
-                background: 'linear-gradient(135deg, #042f2e 0%, #064e3b 40%, #0c4a6e 100%)',
-                border: '1px solid rgba(45, 212, 191, 0.35)',
-              }}
+          </section>
+        )
+      })}
+
+      {/* Unified Promotional Campaign Banner (Loyalty & ND-Points Combined into 1 Simple Banner) */}
+      <section style={{ padding: '1.25rem 1rem 0', maxWidth: '1280px', margin: '0 auto', width: '100%', position: 'relative' }}>
+        <div 
+          className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-xl transition-all"
+          style={{
+            background: 'linear-gradient(135deg, #042f2e 0%, #064e3b 40%, #0c4a6e 100%)',
+            border: '1px solid rgba(52, 211, 153, 0.35)',
+          }}
+        >
+          {/* Decorative glowing gradient blur */}
+          <div 
+            className="absolute -right-16 -top-16 w-72 h-72 rounded-full pointer-events-none opacity-25 blur-3xl"
+            style={{ background: '#34d399' }}
+          />
+          <div 
+            className="absolute -left-16 -bottom-16 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl"
+            style={{ background: '#06b6d4' }}
+          />
+
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              {/* Unified Badges */}
+              <div className="flex items-center gap-2 flex-wrap mb-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span>🎁 EVENT LOYALTY & REWARD</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 shadow-sm">
+                  <i className="fas fa-coins text-cyan-400 text-[11px]" />
+                  <span>⚡ ND-POINTS (TUKAR INSTAN)</span>
+                </span>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
+                Makin Sering Internetan, Dapet <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis</span> & Praktis Pakai <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">ND-Points!</span>
+              </h2>
+
+              {/* Description */}
+              <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
+                {activeEvent ? (
+                  <>Kumpulkan total pembelian voucher sampai <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> sebulan untuk klaim voucher gratis via WA tanpa diundi. Atau isi saldo <strong className="text-cyan-300 font-bold">ND-Points</strong> untuk tukar voucher 1-detik kapan saja tanpa ribet scan QRIS berulang kali!</>
+                ) : (
+                  <>Kumpulkan jajan voucher bulanan untuk bonus voucher gratis otomatis ke WhatsApp. Atau gunakan saldo <strong className="text-cyan-300 font-bold">ND-Points</strong> untuk tukar voucher instan 1-detik kapan saja tanpa ribet scan QRIS berulang kali!</>
+                )}
+              </p>
+
+              {/* Feature Chips */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-200 font-semibold">
+                <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/25">
+                  <i className="fas fa-gift text-emerald-400" /> Voucher Gratis Tiap Bulan
+                </span>
+                <span className="flex items-center gap-1.5 bg-cyan-950/70 px-2.5 py-1 rounded-lg border border-cyan-500/25">
+                  <i className="fas fa-bolt text-cyan-400" /> 1-Detik Tukar Voucher
+                </span>
+                <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-slate-700">
+                  <i className="fas fa-paper-plane text-emerald-400" /> Auto Masuk WA
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowTermsModal(true)}
+                    className="text-emerald-300 hover:text-white underline cursor-pointer text-[11px] font-bold"
+                  >
+                    *S&K Loyalty
+                  </button>
+                  <span className="text-slate-500">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowPointsTermsModal(true)}
+                    className="text-cyan-300 hover:text-white underline cursor-pointer text-[11px] font-bold"
+                  >
+                    *S&K Points
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons: Dual clean buttons for Loyalty & Points */}
+            <div className="flex-shrink-0 flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3">
+              <Link
+                to="/loyalty"
+                className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs sm:text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
+                style={{ textDecoration: 'none' }}
+              >
+                <i className="fas fa-gift text-base" />
+                <span>Cek Progres Loyalty</span>
+                <i className="fas fa-arrow-right text-xs ml-0.5" />
+              </Link>
+
+              <Link
+                to="/points"
+                className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs sm:text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-cyan-400/25"
+                style={{ textDecoration: 'none' }}
+              >
+                <i className="fas fa-coins text-base text-amber-950" />
+                <span>Tukar / Beli ND-Points</span>
+                <i className="fas fa-arrow-right text-xs ml-0.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Note Kecil / Bug Reporting Notice Box */}
+          <div className="relative z-10 mt-4 p-3 rounded-2xl bg-amber-500/15 border border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-start sm:items-center gap-2">
+              <i className="fas fa-exclamation-triangle text-amber-300 text-xs mt-0.5 sm:mt-0" />
+              <p className="text-[11px] sm:text-xs text-amber-200/95 font-medium leading-relaxed">
+                <strong className="text-amber-300 font-bold">Catatan:</strong> Fitur koin & loyalty terintegrasi otomatis. Silakan lapor ke admin jika menemukan bug atau kesalahan reward.
+              </p>
+            </div>
+            <a
+              href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20kendala%20fitur%20ND-Hotspot:"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white border border-amber-400/40 text-[11px] font-bold tracking-tight transition-all flex-shrink-0 cursor-pointer self-start sm:self-auto"
+              style={{ textDecoration: 'none' }}
             >
-              {/* Decorative glowing gradient blur */}
-              <div 
-                className="absolute -right-16 -top-16 w-64 h-64 rounded-full pointer-events-none opacity-25 blur-3xl"
-                style={{ background: '#06b6d4' }}
-              />
-              <div 
-                className="absolute -left-16 -bottom-16 w-64 h-64 rounded-full pointer-events-none opacity-20 blur-3xl"
-                style={{ background: '#10b981' }}
-              />
+              <i className="fab fa-whatsapp text-emerald-400 text-sm" />
+              <span>Bantuan Admin WA</span>
+              <i className="fas fa-arrow-up-right-from-square text-[9px] opacity-70" />
+            </a>
+          </div>
 
-              <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="max-w-2xl">
-                  {/* Event Badge */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 mb-3 shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-                    <span>⚡ FITUR BARU • ND-POINTS (TUKAR VOUCHER INSTAN)</span>
-                  </div>
-
-                  {/* Title */}
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                    Internetan Makin Praktis, Tukar Voucher 1-Detik <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">Pakai ND-Points!</span>
-                  </h2>
-
-                  {/* Description */}
-                  <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
-                    Kumpulkan <strong className="text-cyan-300 font-bold">ND-Points</strong> dan nikmati kepraktisan tukar voucher 1-detik kapan saja tanpa perlu scan QRIS berulang kali. Cukup masukkan nomor HP dan tukarkan poinmu dengan voucher pilihan!
-                  </p>
-
-                  {/* Feature Chips */}
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-cyan-200 font-semibold">
-                    <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      <i className="fas fa-bolt text-cyan-400" /> 1-Detik Tukar Voucher
-                    </span>
-                    <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      <i className="fas fa-coins text-cyan-400" /> Saldo Poin Aman
-                    </span>
-                    <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-cyan-500/20">
-                      <i className="fas fa-shield-alt text-cyan-400" /> Proteksi PIN Keamanan
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowPointsTermsModal(true)}
-                      className="flex items-center gap-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 hover:text-white px-2.5 py-1 rounded-lg border border-cyan-400/40 transition-colors cursor-pointer font-bold underline decoration-cyan-400/60 underline-offset-2"
-                    >
-                      <i className="fas fa-file-contract text-cyan-400" /> *S&K ND-Points
-                    </button>
-                  </div>
-                </div>
-
-                {/* Action Card Button */}
-                <div className="flex-shrink-0 flex flex-col items-start lg:items-end gap-2">
-                  <Link
-                    to="/points"
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-cyan-400/25"
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <i className="fas fa-coins text-base text-amber-900" />
-                    <span>Akses ND-Points Portal</span>
-                    <i className="fas fa-arrow-right text-xs ml-1" />
-                  </Link>
-                  <div className="flex flex-col items-start lg:items-end gap-0.5">
-                    <span className="text-[11px] text-slate-300 font-medium opacity-85">
-                      Tukar koin dengan voucher instan
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowPointsTermsModal(true)}
-                      className="text-[11px] text-cyan-300 hover:text-white underline cursor-pointer font-medium transition-colors"
-                    >
-                      * Baca Ketentuan ND-Points
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Note Kecil / Bug Reporting Notice Box */}
-              <div className="relative z-10 mt-4 p-3 rounded-2xl bg-amber-500/15 border border-amber-400/35 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                <div className="flex items-start sm:items-center gap-2">
-                  <i className="fas fa-exclamation-triangle text-amber-300 text-xs mt-0.5 sm:mt-0" />
-                  <p className="text-[11px] sm:text-xs text-amber-200/95 font-medium leading-relaxed">
-                    <strong className="text-amber-300 font-bold">Catatan:</strong> Fitur baru masih ada kemungkinan bug, silakan lapor jika menemukan kesalahan atau bug.
-                  </p>
-                </div>
-                <a
-                  href="https://wa.me/6285129391531?text=Halo%20Admin,%20saya%20ingin%20melaporkan%20bug/kesalahan%20pada%20fitur%20ND-Points:"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white border border-amber-400/40 text-[11px] font-bold tracking-tight transition-all flex-shrink-0 cursor-pointer self-start sm:self-auto"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <i className="fab fa-whatsapp text-emerald-400 text-sm" />
-                  <span>Lapor Bug ke Admin WA</span>
-                  <i className="fas fa-arrow-up-right-from-square text-[9px] opacity-70" />
-                </a>
-              </div>
-
-              {/* Hype Teaser Footer */}
-              <div className="relative z-10 mt-4 pt-3 border-t border-cyan-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] sm:text-xs">
-                <div className="flex items-center gap-2 text-slate-100 font-medium">
-                  <span className="text-cyan-300 text-sm">✨</span>
-                  <span>
-                    <strong className="text-cyan-300 font-bold">Top Up ND-Points sekarang</strong> dan nikmati kepraktisan internetan tanpa ribet scan berulang kali! 🚀
-                  </span>
-                </div>
-                <span className="text-[10px] text-cyan-300/80 font-bold tracking-wide uppercase sm:text-right">
-                  ⚡ 1-DETIK TUKAR VOUCHER • LEBIH HEMAT & PRAKTIS
-                </span>
-              </div>
+          {/* Footer Teaser */}
+          <div className="relative z-10 mt-4 pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
+            <div className="flex items-center gap-2 text-slate-200">
+              <span className="text-amber-300">✨</span>
+              <span>
+                <strong className="text-amber-300 font-bold">Tips Cuan:</strong> Beli voucher pakai nomor WA yang sama agar jajan terakumulasi otomatis ke reward loyalty & koin!
+              </span>
             </div>
-          )}
+            <span className="text-[10px] text-emerald-300/80 font-bold tracking-wide uppercase sm:text-right">
+              🔥 INTERNETAN CEPAT • LEBIH HEMAT & BERHADIAH
+            </span>
+          </div>
         </div>
-
-        {/* Mobile Carousel Indicator Dots (Centered cleanly below slider on mobile) */}
-        <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3">
-          <button
-            type="button"
-            onClick={() => setCurrentSlide(0)}
-            className={`h-2 rounded-full transition-all cursor-pointer ${
-              currentSlide === 0 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300'
-            }`}
-            title="Event Loyalty"
-            aria-label="Slide 1"
-          />
-          <button
-            type="button"
-            onClick={() => setCurrentSlide(1)}
-            className={`h-2 rounded-full transition-all cursor-pointer ${
-              currentSlide === 1 ? 'w-6 bg-[#00a884]' : 'w-2 bg-slate-300'
-            }`}
-            title="ND-Points"
-            aria-label="Slide 2"
-          />
-        </div>
+      </section>
 
         {/* Modal Syarat & Ketentuan */}
         {showTermsModal && (
@@ -861,7 +738,6 @@ function Home() {
             </div>
           </div>
         )}
-      </section>
 
       {/* Packages Grid */}
       <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1 }}>
