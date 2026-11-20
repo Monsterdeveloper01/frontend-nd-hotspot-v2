@@ -209,7 +209,6 @@ const AdminLayout = ({ children, title, subtitle }) => {
     { name: 'Network Monitoring', path: '/admin/network-center', icon: 'network' },
     { name: 'WhatsApp Gateway', path: '/admin/whatsapp', icon: 'whatsapp', section: 'MESSAGING' },
     { name: 'Event Analytics', path: '/admin/event-analytics', icon: 'trend', section: 'EVENT SYSTEM' },
-    { name: 'ND-Point Analytics', path: '/admin/points', icon: 'points', section: 'POINT SYSTEM' },
     { name: 'Fraud & Incidents', path: '/admin/incidents', icon: 'shield', section: 'SECURITY & FRAUD' },
   ]
 

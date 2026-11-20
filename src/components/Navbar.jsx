@@ -63,7 +63,6 @@ const Navbar = ({ toggleMenu }) => {
                             { to: '/payment', label: 'Bayar Tagihan', icon: 'credit-card' },
                             { to: '/check-voucher', label: 'Cek Voucher', icon: 'search' },
                             { to: '/loyalty', label: 'Event Loyalty', icon: 'gift', isHighlight: true },
-                            { to: '/points', label: 'Points', icon: 'coins', isHighlight: true, badge: 'Baru' },
                         ].map((item) => (
                             <Link 
                                 key={item.to} 

@@ -132,7 +132,7 @@ function App() {
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/check-voucher" element={<CheckVoucher />} />
           <Route path="/loyalty" element={<PublicLoyalty />} />
-          <Route path="/points" element={<PublicPoints />} />
+          <Route path="/points" element={<Navigate to="/" replace />} />
           <Route path="/payment" element={<BillLookup />} />
           <Route path="/bill-lookup" element={<BillLookup />} />
         </Route>
@@ -158,7 +158,7 @@ function App() {
           <Route path="/admin/whatsapp" element={<WhatsAppSettings />} />
           <Route path="/admin/customers" element={<CustomerManagement />} />
           <Route path="/admin/event-analytics" element={<EventAnalytics />} />
-          <Route path="/admin/points" element={<PointAnalytics />} />
+          <Route path="/admin/points" element={<Navigate to="/admin-dashboard-access-granted" replace />} />
           <Route path="/admin/incidents" element={<IncidentHub />} />
         </Route>
 
@@ -270,19 +270,19 @@ function Home() {
       <section className="lg:hidden" style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.5rem', overflow: 'hidden', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
 
-          {/* Quick Action Pill Buttons (Responsive 4-Grid Layout - Symmetrical & Clean) */}
-          <div className="grid grid-cols-2 gap-2.5" style={{ maxWidth: '480px', margin: '0 auto' }}>
+          {/* Quick Action Pill Buttons (Responsive 3-Grid Layout - Symmetrical & Clean) */}
+          <div className="grid grid-cols-3 gap-2" style={{ maxWidth: '480px', margin: '0 auto' }}>
             <Link 
               to="/payment" 
-              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
               style={{ textDecoration: 'none' }}
             >
               <i className="fas fa-credit-card text-[#00a884]" /> 
-              <span>Bayar Tagihan</span>
+              <span>Bayar</span>
             </Link>
             <Link 
               to="/check-voucher" 
-              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
               style={{ textDecoration: 'none' }}
             >
               <i className="fas fa-search text-[#00a884]" /> 
@@ -290,22 +290,11 @@ function Home() {
             </Link>
             <Link 
               to="/loyalty" 
-              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
+              className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
               style={{ textDecoration: 'none' }}
             >
               <i className="fas fa-gift text-[#00a884]" /> 
               <span>Loyalty</span>
-            </Link>
-            <Link 
-              to="/points" 
-              className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white rounded-full border border-slate-200/90 shadow-sm text-slate-700 font-bold text-xs hover:border-[#00a884] hover:text-[#00a884] transition-all active:scale-95"
-              style={{ textDecoration: 'none' }}
-            >
-              <i className="fas fa-coins text-[#00a884]" /> 
-              <span>Points</span>
-              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-400 text-amber-950 font-black uppercase">
-                Baru
-              </span>
             </Link>
           </div>
         </div>
@@ -537,23 +526,19 @@ function Home() {
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                   <span>🎁 EVENT LOYALTY & REWARD</span>
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 shadow-sm">
-                  <i className="fas fa-coins text-cyan-400 text-[11px]" />
-                  <span>⚡ ND-POINTS (TUKAR INSTAN)</span>
-                </span>
               </div>
 
               {/* Title */}
               <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white mb-2 leading-tight">
-                Makin Sering Internetan, Dapet <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis</span> & Praktis Pakai <span className="text-cyan-300 underline decoration-cyan-400/50 underline-offset-4">ND-Points!</span>
+                Makin Sering Internetan, Kumpulkan Jajan & Dapatkan <span className="text-emerald-400 underline decoration-emerald-400/50 underline-offset-4">Voucher Gratis!</span>
               </h2>
 
               {/* Description */}
               <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed mb-4">
                 {activeEvent ? (
-                  <>Kumpulkan total pembelian voucher sampai <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> sebulan untuk klaim voucher gratis via WA tanpa diundi. Atau isi saldo <strong className="text-cyan-300 font-bold">ND-Points</strong> untuk tukar voucher 1-detik kapan saja tanpa ribet scan QRIS berulang kali!</>
+                  <>Kumpulkan total pembelian voucher sampai <strong className="text-emerald-300 font-bold">{activeEvent.target_amount_formatted}</strong> sebulan untuk klaim voucher gratis via WhatsApp otomatis tanpa diundi!</>
                 ) : (
-                  <>Kumpulkan jajan voucher bulanan untuk bonus voucher gratis otomatis ke WhatsApp. Atau gunakan saldo <strong className="text-cyan-300 font-bold">ND-Points</strong> untuk tukar voucher instan 1-detik kapan saja tanpa ribet scan QRIS berulang kali!</>
+                  <>Kumpulkan jajan voucher bulanan untuk bonus voucher gratis otomatis yang langsung dikirimkan ke nomor WhatsApp Anda!</>
                 )}
               </p>
 
@@ -561,9 +546,6 @@ function Home() {
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-slate-200 font-semibold">
                 <span className="flex items-center gap-1.5 bg-emerald-950/70 px-2.5 py-1 rounded-lg border border-emerald-500/25">
                   <i className="fas fa-gift text-emerald-400" /> Voucher Gratis Tiap Bulan
-                </span>
-                <span className="flex items-center gap-1.5 bg-cyan-950/70 px-2.5 py-1 rounded-lg border border-cyan-500/25">
-                  <i className="fas fa-bolt text-cyan-400" /> 1-Detik Tukar Voucher
                 </span>
                 <span className="flex items-center gap-1.5 bg-slate-900/70 px-2.5 py-1 rounded-lg border border-slate-700">
                   <i className="fas fa-paper-plane text-emerald-400" /> Auto Masuk WA
@@ -574,39 +556,21 @@ function Home() {
                     onClick={() => setShowTermsModal(true)}
                     className="text-emerald-300 hover:text-white underline cursor-pointer text-[11px] font-bold"
                   >
-                    *S&K Loyalty
-                  </button>
-                  <span className="text-slate-500">•</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowPointsTermsModal(true)}
-                    className="text-cyan-300 hover:text-white underline cursor-pointer text-[11px] font-bold"
-                  >
-                    *S&K Points
+                    *S&K Ketentuan Loyalty
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons: Dual clean buttons for Loyalty & Points */}
+            {/* Action Buttons: Loyalty */}
             <div className="flex-shrink-0 flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3">
               <Link
                 to="/loyalty"
-                className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs sm:text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
+                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs sm:text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-400/25"
                 style={{ textDecoration: 'none' }}
               >
                 <i className="fas fa-gift text-base" />
                 <span>Cek Progres Loyalty</span>
-                <i className="fas fa-arrow-right text-xs ml-0.5" />
-              </Link>
-
-              <Link
-                to="/points"
-                className="inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs sm:text-sm tracking-tight transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-cyan-400/25"
-                style={{ textDecoration: 'none' }}
-              >
-                <i className="fas fa-coins text-base text-amber-950" />
-                <span>Tukar / Beli ND-Points</span>
                 <i className="fas fa-arrow-right text-xs ml-0.5" />
               </Link>
             </div>
@@ -617,7 +581,7 @@ function Home() {
             <div className="flex items-start sm:items-center gap-2">
               <i className="fas fa-exclamation-triangle text-amber-300 text-xs mt-0.5 sm:mt-0" />
               <p className="text-[11px] sm:text-xs text-amber-200/95 font-medium leading-relaxed">
-                <strong className="text-amber-300 font-bold">Catatan:</strong> Fitur koin & loyalty terintegrasi otomatis. Silakan lapor ke admin jika menemukan bug atau kesalahan reward.
+                <strong className="text-amber-300 font-bold">Catatan:</strong> Akumulasi jajan voucher tercatat otomatis berdasarkan nomor WhatsApp. Silakan lapor ke admin jika menemukan kendala.
               </p>
             </div>
             <a
@@ -638,7 +602,7 @@ function Home() {
             <div className="flex items-center gap-2 text-slate-200">
               <span className="text-amber-300">✨</span>
               <span>
-                <strong className="text-amber-300 font-bold">Tips Cuan:</strong> Beli voucher pakai nomor WA yang sama agar jajan terakumulasi otomatis ke reward loyalty & koin!
+                <strong className="text-amber-300 font-bold">Tips Cuan:</strong> Beli voucher selalu pakai nomor WA yang sama agar jajan terakumulasi rapi ke reward bonus voucher gratis!
               </span>
             </div>
             <span className="text-[10px] text-emerald-300/80 font-bold tracking-wide uppercase sm:text-right">
