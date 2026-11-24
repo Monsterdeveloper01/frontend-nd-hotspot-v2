@@ -169,8 +169,7 @@ const AdminDashboard = () => {
   const [chartModalOpen, setChartModalOpen] = useState(false)
 
   // Auto-Debit Modal State
-  const [autoDebitModalOpen, setAutoDebitModalOpen] = useState(false)
-  const [autoDebitSearch, setAutoDebitSearch] = useState('')
+
 
   const formatPrice = (val) => Math.floor(val || 0).toLocaleString('id-ID');
 
@@ -582,21 +581,10 @@ const AdminDashboard = () => {
                 <div>
                     <div className="flex items-center justify-between mb-1">
                         <p className="text-sm font-medium text-admin-muted">Pelanggan Aktif</p>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium rounded-full border border-emerald-500/20">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                {data.stats.online_count} Online
-                            </span>
-                            <button
-                                type="button"
-                                onClick={() => setAutoDebitModalOpen(true)}
-                                className="flex items-center gap-1 px-2 py-0.5 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 text-[10px] font-bold rounded-full border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors cursor-pointer"
-                                title="Klik untuk melihat daftar pelanggan ND Auto-Voucher"
-                            >
-                                <span className="text-cyan-500 font-black">⚡</span>
-                                {data.stats.auto_debit_count || 0} ND Auto-Voucher
-                            </button>
-                        </div>
+                        <span className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[10px] font-medium rounded-full border border-emerald-500/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            {data.stats.online_count} Online
+                        </span>
                     </div>
                     <p className="text-4xl font-bold tabular-nums text-admin-text tracking-tight">{data.stats.total_customers?.toLocaleString('id-ID') || 0}</p>
                 </div>
@@ -646,94 +634,7 @@ const AdminDashboard = () => {
             </div>
         </div>
 
-        {/* KARTU MEMBER ND AUTO-VOUCHER AKTIF */}
-        <div className="bg-admin-card rounded-xl shadow-sm border border-admin-border p-5 mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-admin-border">
-                <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 flex items-center justify-center font-bold">
-                        <span className="text-base font-black">⚡</span>
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-admin-text uppercase tracking-wider">
-                                Pelanggan Aktif ND Auto-Voucher
-                            </h3>
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
-                                {data?.stats?.auto_debit_count || 0} Member
-                            </span>
-                        </div>
-                        <p className="text-[11px] text-admin-muted mt-0.5">
-                            Customer yang otomatis memperpanjang voucher hotspot menggunakan saldo ND-Points
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    {data?.stats?.auto_debit_count > 0 && (
-                        <button
-                            type="button"
-                            onClick={() => setAutoDebitModalOpen(true)}
-                            className="px-3 py-1.5 bg-admin-base border border-admin-border text-xs font-bold text-admin-text rounded-lg hover:bg-admin-card transition-colors flex items-center gap-1.5 cursor-pointer"
-                        >
-                            <span>Daftar Lengkap</span>
-                            <span className="text-[10px] bg-cyan-500/20 text-cyan-500 px-1.5 py-0.2 rounded font-black">{data.stats.auto_debit_count}</span>
-                        </button>
-                    )}
-                    <Link
-                        to="/admin/points"
-                        className="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold text-cyan-600 dark:text-cyan-400 rounded-lg hover:bg-cyan-500/20 transition-colors flex items-center gap-1"
-                    >
-                        <span>Kelola di ND-Points</span>
-                        <span className="text-xs">→</span>
-                    </Link>
-                </div>
-            </div>
 
-            {(!data?.stats?.auto_debit_users || data.stats.auto_debit_users.length === 0) ? (
-                <div className="py-6 text-center text-xs text-admin-muted">
-                    <span className="opacity-70">Belum ada pelanggan yang mengaktifkan perpanjangan voucher otomatis (ND Auto-Voucher). Member dapat mengaktifkannya secara mandiri di portal ND-Points.</span>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-3.5">
-                    {data.stats.auto_debit_users.slice(0, 6).map((u) => (
-                        <div
-                            key={u.id}
-                            className="p-3.5 rounded-xl bg-admin-base/50 border border-admin-border flex items-start justify-between gap-3 hover:border-cyan-500/40 transition-colors"
-                        >
-                            <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-xs">📱</span>
-                                    <span className="text-xs font-black text-admin-text truncate">
-                                        {u.phone}
-                                    </span>
-                                </div>
-                                <div className="text-[11px] text-cyan-600 dark:text-cyan-400 font-bold mt-1 truncate flex items-center gap-1">
-                                    <span className="text-cyan-500 text-[10px]">⚡</span>
-                                    <span>{u.plan_name}</span>
-                                    <span className="text-admin-muted font-normal text-[10px]">
-                                        (Rp {formatPrice(u.plan_price)})
-                                    </span>
-                                </div>
-                                <div className="text-[10px] text-cyan-700 dark:text-cyan-300 font-semibold mt-0.5 flex items-center gap-1">
-                                    <span>🗓️</span>
-                                    <span>{u.schedule_desc || (u.trigger_type === 'monthly_date' ? `Setiap tgl ${u.day}` : 'Setelah voucher habis')}</span>
-                                </div>
-                                <div className="text-[10px] text-admin-muted mt-1.5 flex items-center gap-2">
-                                    <span>Saldo: <strong className="text-emerald-500 font-bold">{u.balance.toLocaleString('id-ID')} Pts</strong></span>
-                                    {u.fail_count > 0 && (
-                                        <span className="text-rose-500 font-bold bg-rose-500/10 px-1 rounded">
-                                            {u.fail_count}x Gagal Saldo
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                            <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 shrink-0">
-                                AKTIF
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
 
         {/* Trend Pendapatan Harian (01 s/d Akhir Bulan) */}
         <div className="bg-[#131b2e] rounded-xl border border-slate-800/80 p-5 sm:p-6 mb-6">
@@ -1126,139 +1027,7 @@ const AdminDashboard = () => {
             </div>
         )}
 
-        {/* ND AUTO-VOUCHER USERS MODAL */}
-        {autoDebitModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-admin-card rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden border border-admin-border animate-in zoom-in-95 duration-200">
-                    <div className="bg-admin-card border-b border-admin-border px-6 py-4 flex items-center justify-between shrink-0">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 flex items-center justify-center font-bold">
-                                <span className="text-sm font-black">⚡</span>
-                            </div>
-                            <div>
-                                <h3 className="text-base font-bold text-admin-text">
-                                    Daftar Pelanggan ND Auto-Voucher
-                                </h3>
-                                <p className="text-admin-muted text-xs mt-0.5">
-                                    Total {data?.stats?.auto_debit_count || 0} customer aktif memperpanjang voucher secara otomatis
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => setAutoDebitModalOpen(false)}
-                            className="p-1.5 text-admin-muted hover:text-admin-text hover:bg-admin-base rounded-lg transition-colors cursor-pointer"
-                        >
-                            <Icon name="close" className="w-5 h-5" />
-                        </button>
-                    </div>
 
-                    <div className="px-6 py-3 bg-admin-base/40 border-b border-admin-border">
-                        <div className="relative">
-                            <Icon name="search" className="w-4 h-4 text-admin-muted absolute left-3 top-1/2 -translate-y-1/2" />
-                            <input
-                                type="text"
-                                placeholder="Cari nomor WhatsApp atau paket..."
-                                value={autoDebitSearch}
-                                onChange={(e) => setAutoDebitSearch(e.target.value)}
-                                className="w-full pl-9 pr-8 py-2 text-xs bg-admin-card border border-admin-border rounded-xl text-admin-text placeholder-admin-muted focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                            />
-                            {autoDebitSearch && (
-                                <button
-                                    onClick={() => setAutoDebitSearch('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-admin-muted hover:text-admin-text text-xs"
-                                >
-                                    ×
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto p-6">
-                        {(() => {
-                            const filtered = (data?.stats?.auto_debit_users || []).filter((u) => {
-                                if (!autoDebitSearch.trim()) return true;
-                                const q = autoDebitSearch.toLowerCase();
-                                return (u.phone || '').toLowerCase().includes(q) || (u.plan_name || '').toLowerCase().includes(q);
-                            });
-
-                            if (filtered.length === 0) {
-                                return (
-                                    <div className="text-center py-12 text-admin-muted text-xs">
-                                        Tidak ada pelanggan ND Auto-Voucher yang cocok dengan pencarian.
-                                    </div>
-                                );
-                            }
-
-                            return (
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-xs border-collapse">
-                                        <thead>
-                                            <tr className="border-b border-admin-border text-admin-muted text-[10px] font-bold uppercase tracking-wider bg-admin-base/50">
-                                                <th className="p-3">Nomor WhatsApp</th>
-                                                <th className="p-3">Paket ND Auto-Voucher</th>
-                                                <th className="p-3 text-right">Saldo Poin</th>
-                                                <th className="p-3 text-center">Status & Eksekusi</th>
-                                                <th className="p-3 text-right">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-admin-border/50">
-                                            {filtered.map((u) => (
-                                                <tr key={u.id} className="hover:bg-admin-base/40 transition-colors">
-                                                    <td className="p-3">
-                                                        <div className="font-bold text-admin-text flex items-center gap-1.5">
-                                                            <span>{u.phone}</span>
-                                                        </div>
-                                                        <span className="text-[10px] text-admin-muted">ID #{u.id}</span>
-                                                    </td>
-                                                    <td className="p-3">
-                                                        <div className="font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
-                                                            <span>⚡ {u.plan_name}</span>
-                                                        </div>
-                                                        <span className="text-[10px] text-admin-muted">
-                                                            Rp {formatPrice(u.plan_price)} ({u.plan_duration})
-                                                        </span>
-                                                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
-                                                            🗓️ {u.schedule_desc || (u.trigger_type === 'monthly_date' ? `Setiap tgl ${u.day}` : 'Setelah voucher habis')}
-                                                        </div>
-                                                    </td>
-                                                    <td className="p-3 text-right font-black text-emerald-500 text-sm">
-                                                        {u.balance?.toLocaleString('id-ID')} Pts
-                                                    </td>
-                                                    <td className="p-3 text-center">
-                                                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/10 text-cyan-500 border border-cyan-500/20 inline-flex items-center gap-1">
-                                                            <span>⚡</span> ND Auto-Voucher Aktif
-                                                        </span>
-                                                        {u.last_run_at && (
-                                                            <div className="text-[10px] text-admin-muted mt-0.5">
-                                                                Run: {u.last_run_at}
-                                                            </div>
-                                                        )}
-                                                        {u.fail_count > 0 && (
-                                                            <div className="text-[10px] text-rose-500 font-bold mt-0.5">
-                                                                Gagal Saldo: {u.fail_count}x
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3 text-right">
-                                                        <Link
-                                                            to="/admin/points"
-                                                            className="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 font-bold text-[11px] transition-colors inline-flex items-center gap-1"
-                                                        >
-                                                            <span>Buku Poin</span>
-                                                            <span className="text-[9px]">→</span>
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            );
-                        })()}
-                    </div>
-                </div>
-            </div>
-        )}
     </div>
   )
 }
