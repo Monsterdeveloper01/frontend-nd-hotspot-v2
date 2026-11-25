@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import PublicLayout from '../components/PublicLayout'
+import { decryptPayload } from '../utils/crypto'
 
 const formatTanggal = (dateString) => {
     if (!dateString || dateString === '0000-00-00') return '-'
@@ -34,7 +35,18 @@ const BillLookup = () => {
         setLoading(true); setError(''); setSearchResults([])
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/search-bill`, { params: { query } })
-            setSearchResults(Array.isArray(response.data) ? response.data : [response.data])
+            const data = decryptPayload(response.data)
+            if (data && data.found === false) {
+                setError(data.message || 'Data tagihan tidak ditemukan. Pastikan Nama atau No. WA benar.')
+                return
+            }
+            if (Array.isArray(data)) {
+                setSearchResults(data)
+            } else if (data && data.name) {
+                setSearchResults([data])
+            } else {
+                setError('Data tagihan tidak ditemukan. Pastikan Nama atau No. WA benar.')
+            }
         } catch { setError('Data tagihan tidak ditemukan. Pastikan Nama atau No. WA benar.') }
         finally { setLoading(false) }
     }
@@ -49,7 +61,9 @@ const BillLookup = () => {
         setPaymentLoading(true)
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/customers/${selectedCustomer.id}/snap-token`)
-            window.snap.pay(response.data.token, {
+            const data = decryptPayload(response.data)
+            const token = data?.token || response.data?.token
+            window.snap.pay(token, {
                 onSuccess: () => { setActiveView('success'); setPaymentLoading(false) },
                 onPending: () => { alert('Pembayaran Tertunda.'); setPaymentLoading(false) },
                 onError: () => { alert('Pembayaran Gagal!'); setPaymentLoading(false) },

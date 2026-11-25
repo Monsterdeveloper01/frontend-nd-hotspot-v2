@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import PublicLayout from '../components/PublicLayout'
+import { decryptPayload } from '../utils/crypto'
 
 const CheckVoucher = () => {
     const [code, setCode] = useState('')
@@ -24,8 +25,19 @@ const CheckVoucher = () => {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/check-voucher`, {
                 params: { code: code.trim() }
             })
-            setVoucher(response.data)
-            setTimeout(() => setShowResult(true), 50)
+            const data = decryptPayload(response.data)
+            if (data && data.found === false) {
+                setError(data.message || 'Voucher tidak ditemukan. Pastikan kode yang Anda masukkan sudah benar.')
+                setTimeout(() => setShowResult(true), 50)
+                return
+            }
+            if (data && data.code) {
+                setVoucher(data)
+                setTimeout(() => setShowResult(true), 50)
+            } else {
+                setError('Voucher tidak ditemukan. Pastikan kode yang Anda masukkan sudah benar.')
+                setTimeout(() => setShowResult(true), 50)
+            }
         } catch (err) {
             setError(err.response?.data?.message || 'Terjadi kesalahan saat memeriksa voucher.')
             setTimeout(() => setShowResult(true), 50)
