@@ -34,7 +34,14 @@ const Checkout = () => {
         setShowConfirmModal(false); setLoading(true)
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/checkout`, { voucher_plan_id: plan.id, phone: '62' + phone })
-            if (response.data.success) { setPaymentResult(response.data.transaction); startPaymentPolling(response.data.transaction.id) }
+            if (response.data.success) { 
+                try {
+                    localStorage.setItem('nd_last_purchase', JSON.stringify({ phone, plan, timestamp: Date.now() }))
+                    localStorage.setItem('nd_last_phone', phone)
+                } catch (e) { console.error('Failed to save nd_last_purchase:', e) }
+                setPaymentResult(response.data.transaction); 
+                startPaymentPolling(response.data.transaction.id) 
+            }
             else { setError(response.data.message || 'Terjadi kesalahan saat memproses pembayaran') }
         } catch (err) { setError(err.response?.data?.message || 'Gagal menghubungi server pembayaran') }
         finally { setLoading(false) }

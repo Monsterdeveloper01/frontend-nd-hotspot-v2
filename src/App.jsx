@@ -27,6 +27,7 @@ import GamingSuccess from './pages/GamingSuccess'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import PublicLayout from './components/PublicLayout'
+import QuickReorderModal from './components/QuickReorderModal'
 import { VoucherSkeleton } from './components/Skeleton'
 import axios from 'axios'
 
@@ -188,6 +189,15 @@ function Home() {
   const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
+  const [showQuickReorder, setShowQuickReorder] = useState(false)
+  const [lastPurchase, setLastPurchase] = useState(() => {
+    try {
+      const raw = localStorage.getItem('nd_last_purchase')
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  })
   const [activeEvent, setActiveEvent] = useState(null)
   const [showTermsModal, setShowTermsModal] = useState(false)
   const [showPointsTermsModal, setShowPointsTermsModal] = useState(false)
@@ -266,8 +276,8 @@ function Home() {
   return (
     <PublicLayout>
 
-      {/* Quick Action Buttons on Mobile */}
-      <section className="lg:hidden" style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.5rem', overflow: 'hidden', background: '#f8fafc' }}>
+      {/* Quick Action Buttons */}
+      <section style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.5rem', overflow: 'hidden', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
 
           {/* Quick Action Pill Buttons (Responsive 3-Grid Layout - Symmetrical & Clean) */}
@@ -296,6 +306,43 @@ function Home() {
               <i className="fas fa-gift text-[#00a884]" /> 
               <span>Loyalty</span>
             </Link>
+          </div>
+
+          {/* Tombol Beli Lagi Voucher (Quick Reorder) */}
+          <div style={{ maxWidth: '480px', margin: '0.65rem auto 0' }}>
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  const raw = localStorage.getItem('nd_last_purchase')
+                  if (raw) setLastPurchase(JSON.parse(raw))
+                } catch (e) {}
+                setShowQuickReorder(true)
+              }}
+              className="w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-[#00a884] to-teal-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/30 active:scale-[0.98] transition-all flex items-center justify-between gap-2 border border-emerald-400/30 cursor-pointer"
+              style={{ textDecoration: 'none' }}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-xs flex-shrink-0">
+                  <i className="fas fa-bolt" />
+                </span>
+                <span className="font-extrabold tracking-wide truncate text-[12.5px]">
+                  {lastPurchase?.plan ? 'Beli Lagi Voucher Terakhir' : 'Beli Cepat Voucher'}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                {lastPurchase?.plan ? (
+                  <span className="text-[11px] font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                    {lastPurchase.plan.name}
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm">
+                    Pesan Cepat
+                  </span>
+                )}
+                <i className="fas fa-arrow-right text-[10px] opacity-80" />
+              </div>
+            </button>
           </div>
         </div>
       </section>
@@ -954,6 +1001,19 @@ function Home() {
           </Link>
         </div>
       </div>
+
+      {/* Quick Reorder Modal (Beli Lagi Voucher) */}
+      <QuickReorderModal
+        isOpen={showQuickReorder}
+        onClose={() => {
+          setShowQuickReorder(false)
+          try {
+            const raw = localStorage.getItem('nd_last_purchase')
+            if (raw) setLastPurchase(JSON.parse(raw))
+          } catch (e) {}
+        }}
+        plans={plans}
+      />
     </PublicLayout>
   )
 }
