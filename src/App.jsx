@@ -1,35 +1,50 @@
-import { useState, useEffect, useRef } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link } from 'react-router-dom'
-import AdminLogin from './pages/AdminLogin'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import DeepAnalytics from './pages/admin/DeepAnalytics'
-import VoucherPlans from './pages/admin/VoucherPlans'
-import VoucherStock from './pages/admin/VoucherStock'
-import WhatsAppSettings from './pages/admin/WhatsAppSettings'
-import Checkout from './pages/Checkout'
-import CustomerManagement from './pages/admin/CustomerManagement'
-import BillLookup from './pages/BillLookup'
-import VoucherOnline from './pages/admin/VoucherOnline'
-import VoucherSold from './pages/admin/VoucherSold'
-import RadiusSettings from './pages/admin/RadiusSettings'
-import NetworkCenter from './pages/admin/NetworkCenter'
-import EventAnalytics from './pages/admin/EventAnalytics'
-import PointAnalytics from './pages/admin/PointAnalytics'
-import Announcements from './pages/admin/Announcements'
-import CheckVoucher from './pages/CheckVoucher'
-import PublicLoyalty from './pages/PublicLoyalty'
-import PublicPoints from './pages/PublicPoints'
-import Maintenance from './pages/Maintenance'
-import PaymentSuccess from './pages/PaymentSuccess'
-import GamingArea from './pages/GamingArea'
-import GamingCheckout from './pages/GamingCheckout'
-import GamingSuccess from './pages/GamingSuccess'
+import { useState, useEffect, useRef, lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, Link, Outlet } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import PublicLayout from './components/PublicLayout'
 import QuickReorderModal from './components/QuickReorderModal'
 import { VoucherSkeleton } from './components/Skeleton'
 import axios from 'axios'
+
+// Public Secondary Pages (Lazy Loaded)
+const Checkout = lazy(() => import('./pages/Checkout'))
+const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
+const CheckVoucher = lazy(() => import('./pages/CheckVoucher'))
+const PublicLoyalty = lazy(() => import('./pages/PublicLoyalty'))
+const BillLookup = lazy(() => import('./pages/BillLookup'))
+const Maintenance = lazy(() => import('./pages/Maintenance'))
+const GamingArea = lazy(() => import('./pages/GamingArea'))
+const GamingCheckout = lazy(() => import('./pages/GamingCheckout'))
+const GamingSuccess = lazy(() => import('./pages/GamingSuccess'))
+
+// Admin Auth & Layout (Lazy Loaded)
+const AdminLogin = lazy(() => import('./pages/AdminLogin'))
+const AdminLayout = lazy(() => import('./components/AdminLayout'))
+
+// Protected Admin Pages (Lazy Loaded - Isolating Chart.js and heavyweight tables)
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
+const Announcements = lazy(() => import('./pages/admin/Announcements'))
+const DeepAnalytics = lazy(() => import('./pages/admin/DeepAnalytics'))
+const VoucherStock = lazy(() => import('./pages/admin/VoucherStock'))
+const VoucherOnline = lazy(() => import('./pages/admin/VoucherOnline'))
+const VoucherSold = lazy(() => import('./pages/admin/VoucherSold'))
+const NetworkCenter = lazy(() => import('./pages/admin/NetworkCenter'))
+const OltManagement = lazy(() => import('./pages/admin/OltManagement'))
+const RadiusSettings = lazy(() => import('./pages/admin/RadiusSettings'))
+const VoucherPlans = lazy(() => import('./pages/admin/VoucherPlans'))
+const WhatsAppSettings = lazy(() => import('./pages/admin/WhatsAppSettings'))
+const CustomerManagement = lazy(() => import('./pages/admin/CustomerManagement'))
+const EventAnalytics = lazy(() => import('./pages/admin/EventAnalytics'))
+const IncidentHub = lazy(() => import('./pages/admin/IncidentHub'))
+
+// Loading Fallback Component for Suspense
+const PageLoader = () => (
+  <div style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+    <div style={{ width: '42px', height: '42px', border: '3.5px solid #00a884', borderTopColor: 'transparent', borderRadius: '50%' }} className="animate-spin" />
+    <span style={{ marginTop: '0.85rem', fontSize: '0.8rem', fontWeight: 700, color: '#64748b', letterSpacing: '0.03em' }}>Memuat Halaman...</span>
+  </div>
+)
 
 // Configure Axios Defaults
 const bypassToken = localStorage.getItem('maintenance_bypass');
@@ -55,9 +70,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-import OltManagement from './pages/admin/OltManagement'
-import IncidentHub from './pages/admin/IncidentHub'
 
 // Private Route Component
 const PrivateRoute = ({ children }) => {
@@ -122,61 +134,63 @@ const PublicMaintenanceGuard = () => {
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* Protected by Public Maintenance Guard */}
-        <Route element={<PublicMaintenanceGuard />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/gaming-area" element={<GamingArea />} />
-          <Route path="/gaming-checkout" element={<GamingCheckout />} />
-          <Route path="/gaming-success" element={<GamingSuccess />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/check-voucher" element={<CheckVoucher />} />
-          <Route path="/loyalty" element={<PublicLoyalty />} />
-          <Route path="/points" element={<Navigate to="/" replace />} />
-          <Route path="/payment" element={<BillLookup />} />
-          <Route path="/bill-lookup" element={<BillLookup />} />
-        </Route>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Protected by Public Maintenance Guard */}
+          <Route element={<PublicMaintenanceGuard />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/gaming-area" element={<GamingArea />} />
+            <Route path="/gaming-checkout" element={<GamingCheckout />} />
+            <Route path="/gaming-success" element={<GamingSuccess />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/check-voucher" element={<CheckVoucher />} />
+            <Route path="/loyalty" element={<PublicLoyalty />} />
+            <Route path="/points" element={<Navigate to="/" replace />} />
+            <Route path="/payment" element={<BillLookup />} />
+            <Route path="/bill-lookup" element={<BillLookup />} />
+          </Route>
 
-        {/* Maintenance Page */}
-        <Route path="/maintenance" element={<Maintenance />} />
+          {/* Maintenance Page */}
+          <Route path="/maintenance" element={<Maintenance />} />
 
-        {/* HIDDEN ADMIN LOGIN */}
-        <Route path="/portal-secret-nd-admin" element={<AdminLogin />} />
+          {/* HIDDEN ADMIN LOGIN */}
+          <Route path="/portal-secret-nd-admin" element={<AdminLogin />} />
 
-        {/* PROTECTED ADMIN ROUTES */}
-        <Route element={<PrivateRoute><AdminLayoutWrapper /></PrivateRoute>}>
-          <Route path="/admin-dashboard-access-granted" element={<AdminDashboard />} />
-          <Route path="/admin/announcements" element={<Announcements />} />
-          <Route path="/admin/deep-analytics" element={<DeepAnalytics />} />
-          <Route path="/admin/vouchers" element={<VoucherStock />} />
-          <Route path="/admin/vouchers-online" element={<VoucherOnline />} />
-          <Route path="/admin/vouchers-sold" element={<VoucherSold />} />
-          <Route path="/admin/network-center" element={<NetworkCenter />} />
-          <Route path="/admin/olt-management" element={<OltManagement />} />
-          <Route path="/admin/radius-settings" element={<RadiusSettings />} />
-          <Route path="/admin/voucher-plans" element={<VoucherPlans />} />
-          <Route path="/admin/whatsapp" element={<WhatsAppSettings />} />
-          <Route path="/admin/customers" element={<CustomerManagement />} />
-          <Route path="/admin/event-analytics" element={<EventAnalytics />} />
-          <Route path="/admin/points" element={<Navigate to="/admin-dashboard-access-granted" replace />} />
-          <Route path="/admin/incidents" element={<IncidentHub />} />
-        </Route>
+          {/* PROTECTED ADMIN ROUTES */}
+          <Route element={<PrivateRoute><AdminLayoutWrapper /></PrivateRoute>}>
+            <Route path="/admin-dashboard-access-granted" element={<AdminDashboard />} />
+            <Route path="/admin/announcements" element={<Announcements />} />
+            <Route path="/admin/deep-analytics" element={<DeepAnalytics />} />
+            <Route path="/admin/vouchers" element={<VoucherStock />} />
+            <Route path="/admin/vouchers-online" element={<VoucherOnline />} />
+            <Route path="/admin/vouchers-sold" element={<VoucherSold />} />
+            <Route path="/admin/network-center" element={<NetworkCenter />} />
+            <Route path="/admin/olt-management" element={<OltManagement />} />
+            <Route path="/admin/radius-settings" element={<RadiusSettings />} />
+            <Route path="/admin/voucher-plans" element={<VoucherPlans />} />
+            <Route path="/admin/whatsapp" element={<WhatsAppSettings />} />
+            <Route path="/admin/customers" element={<CustomerManagement />} />
+            <Route path="/admin/event-analytics" element={<EventAnalytics />} />
+            <Route path="/admin/points" element={<Navigate to="/admin-dashboard-access-granted" replace />} />
+            <Route path="/admin/incidents" element={<IncidentHub />} />
+          </Route>
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Suspense>
     </Router>
   )
 }
 
 // Wrapper to provide AdminLayout to sub-routes
-import AdminLayout from './components/AdminLayout'
-import { Outlet } from 'react-router-dom'
 const AdminLayoutWrapper = () => {
   return (
-    <AdminLayout title="Admin System" subtitle="Management & Monitoring Core">
-      <Outlet />
-    </AdminLayout>
+    <Suspense fallback={<PageLoader />}>
+      <AdminLayout title="Admin System" subtitle="Management & Monitoring Core">
+        <Outlet />
+      </AdminLayout>
+    </Suspense>
   )
 }
 
