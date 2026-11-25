@@ -11,6 +11,25 @@ const WhatsAppSettings = () => {
   const [testNumber, setTestNumber] = useState('')
   const [testMessage, setTestMessage] = useState('Halo! Ini pesan tes dari sistem ND-HOTSPOT.')
   const [sending, setSending] = useState(false)
+  const [restarting, setRestarting] = useState(false)
+
+  const handleRestart = async () => {
+    if (!window.confirm('Yakin ingin merestart service WhatsApp Gateway?')) return
+    setRestarting(true)
+    try {
+      await axios.post(`${import.meta.env.VITE_WA_URL}/restart`)
+      setStatus('restarting')
+      setTimeout(() => {
+        axios.get(`${import.meta.env.VITE_WA_URL}/status`)
+          .then(res => setStatus(res.data.status))
+          .catch(() => setStatus('checking'))
+          .finally(() => setRestarting(false))
+      }, 4000)
+    } catch (err) {
+      alert('Gagal trigger restart: ' + (err.response?.data?.message || err.message))
+      setRestarting(false)
+    }
+  }
 
   useEffect(() => {
     socket.on('status', (s) => setStatus(s))
@@ -64,8 +83,8 @@ const WhatsAppSettings = () => {
             <p className="text-admin-muted font-bold text-xs mt-1 uppercase tracking-widest">Manajemen Notifikasi & Otomatisasi</p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className={`px-6 py-3 rounded-2xl flex items-center gap-3 border-2 transition-all ${
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className={`px-5 py-3 rounded-2xl flex items-center gap-3 border-2 transition-all ${
               status === 'connected' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 
               status === 'disconnected' ? 'bg-rose-50 border-rose-100 text-rose-700' : 
               'bg-admin-base border-admin-border text-admin-muted'
@@ -78,6 +97,17 @@ const WhatsAppSettings = () => {
                 Status: {status.toUpperCase()}
               </span>
             </div>
+
+            <button
+              type="button"
+              onClick={handleRestart}
+              disabled={restarting}
+              className="px-4 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-black uppercase text-[10px] tracking-wider transition-all flex items-center gap-2 shadow-sm border border-slate-700 disabled:opacity-50 cursor-pointer"
+              title="Restart WhatsApp Gateway Service"
+            >
+              <i className={`fas fa-sync-alt ${restarting ? 'fa-spin text-emerald-400' : ''}`} />
+              <span>{restarting ? 'Restarting...' : 'Restart Gateway'}</span>
+            </button>
           </div>
         </div>
       </div>
