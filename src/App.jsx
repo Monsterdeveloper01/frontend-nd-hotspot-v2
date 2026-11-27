@@ -5,6 +5,7 @@ import Footer from './components/Footer'
 import PublicLayout from './components/PublicLayout'
 import QuickReorderModal from './components/QuickReorderModal'
 import { VoucherSkeleton } from './components/Skeleton'
+import { useParallax } from './hooks/useParallax'
 import axios from 'axios'
 
 // Public Secondary Pages (Lazy Loaded)
@@ -192,7 +193,7 @@ const AdminLayoutWrapper = () => {
       </AdminLayout>
     </Suspense>
   )
-}
+  }
 
 // Icon Helper Component (Font Awesome style)
 export const FaIcon = ({ name, className = "" }) => (
@@ -200,6 +201,7 @@ export const FaIcon = ({ name, className = "" }) => (
 )
 
 function Home() {
+  const { scrollY, isMobile } = useParallax()
   const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
@@ -290,8 +292,24 @@ function Home() {
   return (
     <PublicLayout>
 
-      {/* Quick Action Buttons */}
+      {/* Quick Action Buttons & Parallax Hero Ambient Glow */}
       <section style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.5rem', overflow: 'hidden', background: '#f8fafc' }}>
+        {/* Parallax Ambient Glowing Shapes (Mobile-friendly, GPU accelerated, 0 pointer events) */}
+        <div 
+          className="parallax-gpu pointer-events-none absolute -top-12 -left-16 w-72 h-72 rounded-full opacity-35 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #00a884 0%, rgba(0, 168, 132, 0) 70%)',
+            transform: `translate3d(0, ${Math.min(90, scrollY * (isMobile ? 0.08 : 0.16))}px, 0)`,
+          }}
+        />
+        <div 
+          className="parallax-gpu pointer-events-none absolute -top-20 -right-16 w-80 h-80 rounded-full opacity-25 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%)',
+            transform: `translate3d(0, ${Math.max(-70, scrollY * (isMobile ? -0.06 : -0.12))}px, 0)`,
+          }}
+        />
+
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
 
           {/* Quick Action Pill Buttons (Responsive 3-Grid Layout - Symmetrical & Clean) */}
@@ -439,8 +457,16 @@ function Home() {
       })}
 
       {/* Packages Grid */}
-      <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1 }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem' }}>
+      <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1, position: 'relative', overflow: 'hidden' }}>
+        {/* Parallax Background Aura */}
+        <div 
+          className="parallax-gpu pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[350px] rounded-full opacity-15 blur-3xl"
+          style={{
+            background: 'radial-gradient(circle, #00a884 0%, transparent 70%)',
+            transform: `translate3d(-50%, ${Math.max(-30, Math.min(30, (scrollY - 450) * (isMobile ? 0.03 : 0.06)))}px, 0)`,
+          }}
+        />
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', position: 'relative', zIndex: 10 }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -569,14 +595,20 @@ function Home() {
             border: '1px solid rgba(52, 211, 153, 0.35)',
           }}
         >
-          {/* Decorative glowing gradient blur */}
+          {/* Decorative glowing gradient blur with Parallax Depth */}
           <div 
-            className="absolute -right-16 -top-16 w-72 h-72 rounded-full pointer-events-none opacity-25 blur-3xl"
-            style={{ background: '#34d399' }}
+            className="parallax-gpu absolute -right-16 -top-16 w-72 h-72 rounded-full pointer-events-none opacity-25 blur-3xl"
+            style={{ 
+              background: '#34d399',
+              transform: `translate3d(${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? 0.03 : 0.06)))}px, ${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? -0.04 : -0.07)))}px, 0)`,
+            }}
           />
           <div 
-            className="absolute -left-16 -bottom-16 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl"
-            style={{ background: '#06b6d4' }}
+            className="parallax-gpu absolute -left-16 -bottom-16 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl"
+            style={{ 
+              background: '#06b6d4',
+              transform: `translate3d(${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? -0.03 : -0.05)))}px, ${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? 0.03 : 0.06)))}px, 0)`,
+            }}
           />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -887,9 +919,17 @@ function Home() {
         )}
 
 
-      {/* High-Speed Zone Section */}
+      {/* High-Speed Zone Section with Parallax Depth */}
       {!loading && (
         <section style={{ padding: '4rem 0', background: '#f8fafc', position: 'relative', overflow: 'hidden' }}>
+          {/* Ambient Parallax Glow */}
+          <div 
+            className="parallax-gpu pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[360px] rounded-full opacity-15 blur-3xl"
+            style={{
+              background: 'radial-gradient(circle, #00a884 0%, #0284c7 100%)',
+              transform: `translate3d(-50%, calc(-50% + ${Math.max(-40, Math.min(40, (scrollY - 1300) * (isMobile ? 0.03 : 0.06)))}px), 0)`,
+            }}
+          />
           <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', position: 'relative', zIndex: 10 }}>
             <div 
               className="card-nd-elevated"
@@ -923,19 +963,24 @@ function Home() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
                   {[
-                    { icon: 'play-circle', label: 'YouTube 4K', color: '#ef4444' },
-                    { icon: 'gamepad', label: 'Low Latency Gaming', color: '#8b5cf6' },
-                    { icon: 'video', label: 'Live Streaming', color: '#0284c7' },
-                    { icon: 'bolt', label: 'Turbo Speed', color: '#00a884' },
+                    { icon: 'play-circle', label: 'YouTube 4K', color: '#ef4444', delay: '0s' },
+                    { icon: 'gamepad', label: 'Low Latency Gaming', color: '#8b5cf6', delay: '1.5s' },
+                    { icon: 'video', label: 'Live Streaming', color: '#0284c7', delay: '3s' },
+                    { icon: 'bolt', label: 'Turbo Speed', color: '#00a884', delay: '4.5s' },
                   ].map((tag) => (
-                    <div key={tag.label} style={{
-                      display: 'flex', alignItems: 'center', gap: '0.5rem',
-                      padding: '0.55rem 1rem',
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '9999px',
-                      boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
-                    }}>
+                    <div 
+                      key={tag.label} 
+                      className="animate-float-subtle"
+                      style={{
+                        animationDelay: tag.delay,
+                        display: 'flex', alignItems: 'center', gap: '0.5rem',
+                        padding: '0.55rem 1rem',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: '9999px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                      }}
+                    >
                       <i className={`fas fa-${tag.icon}`} style={{ color: tag.color }} />
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>{tag.label}</span>
                     </div>

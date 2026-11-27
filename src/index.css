@@ -174,6 +174,19 @@
 }
 .animate-bounce-slow { animation: bounce-slow 3s ease-in-out infinite; }
 
+/* GPU-accelerated parallax helpers */
+.parallax-gpu {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(1deg); }
+}
+.animate-float-subtle { animation: float-subtle 6s ease-in-out infinite; }
+
 /* Admin Theme Overrides (Enterprise Minimalist) */
 .admin-theme {
   @apply bg-admin-base text-admin-muted font-sans antialiased min-h-screen;
