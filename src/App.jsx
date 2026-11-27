@@ -294,21 +294,58 @@ function Home() {
 
       {/* Quick Action Buttons & Parallax Hero Ambient Glow */}
       <section style={{ position: 'relative', paddingTop: '1.25rem', paddingBottom: '0.5rem', overflow: 'hidden', background: '#f8fafc' }}>
-        {/* Parallax Ambient Glowing Shapes (Mobile-friendly, GPU accelerated, 0 pointer events) */}
+        {/* Parallax Moving Tech Grid (Layer 0: Glides visibly in 3D depth) */}
         <div 
-          className="parallax-gpu pointer-events-none absolute -top-12 -left-16 w-72 h-72 rounded-full opacity-35 blur-3xl"
+          className="parallax-gpu pointer-events-none absolute -top-32 -bottom-32 -left-16 -right-16 bg-parallax-grid opacity-60"
+          style={{
+            transform: `translate3d(0, ${scrollY * (isMobile ? 0.18 : 0.28)}px, 0)`,
+          }}
+        />
+
+        {/* Parallax Ambient Glowing Shapes with Crisp Contrast */}
+        <div 
+          className="parallax-gpu pointer-events-none absolute -top-16 -left-16 w-80 h-80 rounded-full opacity-40 blur-3xl"
           style={{
             background: 'radial-gradient(circle, #00a884 0%, rgba(0, 168, 132, 0) 70%)',
-            transform: `translate3d(0, ${Math.min(90, scrollY * (isMobile ? 0.08 : 0.16))}px, 0)`,
+            transform: `translate3d(0, ${Math.min(150, scrollY * (isMobile ? 0.14 : 0.3))}px, 0)`,
           }}
         />
         <div 
-          className="parallax-gpu pointer-events-none absolute -top-20 -right-16 w-80 h-80 rounded-full opacity-25 blur-3xl"
+          className="parallax-gpu pointer-events-none absolute -top-20 -right-16 w-96 h-96 rounded-full opacity-30 blur-3xl"
           style={{
             background: 'radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%)',
-            transform: `translate3d(0, ${Math.max(-70, scrollY * (isMobile ? -0.06 : -0.12))}px, 0)`,
+            transform: `translate3d(0, ${Math.max(-130, scrollY * (isMobile ? -0.12 : -0.24))}px, 0)`,
           }}
         />
+
+        {/* Crisp Floating Parallax Badges (Instantly noticeable 3D depth relative to center buttons) */}
+        <div 
+          className="parallax-gpu parallax-chip pointer-events-none absolute left-3 sm:left-6 lg:left-16 top-6 hidden xs:flex items-center gap-2 px-3 py-1.5 z-20"
+          style={{
+            transform: `translate3d(0, ${Math.max(-100, -scrollY * (isMobile ? 0.22 : 0.38))}px, 0)`,
+          }}
+        >
+          <span className="w-5 h-5 rounded-full bg-emerald-100 text-[#00a884] flex items-center justify-center text-xs flex-shrink-0">
+            <i className="fas fa-bolt" />
+          </span>
+          <span className="text-[11px] font-extrabold text-slate-700 tracking-tight whitespace-nowrap">
+            Prioritas <span className="text-[#00a884]">100%</span>
+          </span>
+        </div>
+
+        <div 
+          className="parallax-gpu parallax-chip pointer-events-none absolute right-3 sm:right-6 lg:right-16 top-10 hidden xs:flex items-center gap-2 px-3 py-1.5 z-20"
+          style={{
+            transform: `translate3d(0, ${Math.min(110, scrollY * (isMobile ? 0.24 : 0.4))}px, 0)`,
+          }}
+        >
+          <span className="w-5 h-5 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center text-xs flex-shrink-0">
+            <i className="fas fa-shield-alt" />
+          </span>
+          <span className="text-[11px] font-extrabold text-slate-700 tracking-tight whitespace-nowrap">
+            100% Bebas FUP
+          </span>
+        </div>
 
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', textAlign: 'center', position: 'relative', zIndex: 10 }}>
 
@@ -458,23 +495,60 @@ function Home() {
 
       {/* Packages Grid */}
       <section id="packages" style={{ padding: '3rem 0', background: '#f8fafc', flex: 1, position: 'relative', overflow: 'hidden' }}>
+        {/* Parallax Moving Dot Pattern (Layer 0) */}
+        <div 
+          className="parallax-gpu pointer-events-none absolute -top-32 -bottom-32 -left-16 -right-16 bg-parallax-dots opacity-45"
+          style={{
+            transform: `translate3d(0, ${(scrollY - 400) * (isMobile ? 0.12 : 0.22)}px, 0)`,
+          }}
+        />
+
+        {/* Parallax Floating Side Badges for Packages */}
+        <div 
+          className="parallax-gpu parallax-chip pointer-events-none absolute left-3 lg:left-12 top-24 hidden md:flex items-center gap-2 px-3.5 py-1.5 z-20"
+          style={{
+            transform: `translate3d(0, ${Math.max(-80, Math.min(80, (scrollY - 450) * -0.2))}px, 0)`,
+          }}
+        >
+          <span className="w-5 h-5 rounded-full bg-teal-100 text-[#00a884] flex items-center justify-center text-xs">
+            <i className="fas fa-wifi" />
+          </span>
+          <span className="text-[11px] font-bold text-slate-700">Fiber Optic 100%</span>
+        </div>
+
+        <div 
+          className="parallax-gpu parallax-chip pointer-events-none absolute right-3 lg:right-12 top-20 hidden md:flex items-center gap-2 px-3.5 py-1.5 z-20"
+          style={{
+            transform: `translate3d(0, ${Math.max(-80, Math.min(80, (scrollY - 450) * 0.22))}px, 0)`,
+          }}
+        >
+          <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs">
+            <i className="fas fa-tachometer-alt" />
+          </span>
+          <span className="text-[11px] font-bold text-slate-700">Uncapped Speed</span>
+        </div>
+
         {/* Parallax Background Aura */}
         <div 
-          className="parallax-gpu pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[350px] rounded-full opacity-15 blur-3xl"
+          className="parallax-gpu pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[350px] rounded-full opacity-25 blur-3xl"
           style={{
             background: 'radial-gradient(circle, #00a884 0%, transparent 70%)',
-            transform: `translate3d(-50%, ${Math.max(-30, Math.min(30, (scrollY - 450) * (isMobile ? 0.03 : 0.06)))}px, 0)`,
+            transform: `translate3d(-50%, ${Math.max(-60, Math.min(60, (scrollY - 450) * (isMobile ? 0.08 : 0.16)))}px, 0)`,
           }}
         />
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1rem', position: 'relative', zIndex: 10 }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              width: '52px', height: '52px', borderRadius: '16px',
-              background: '#ecfdf5', color: '#00a884',
-              boxShadow: '0 4px 14px rgba(0, 168, 132, 0.15)',
-              marginBottom: '0.75rem', fontSize: '1.35rem',
-            }}>
+            <div 
+              className="parallax-gpu"
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: '52px', height: '52px', borderRadius: '16px',
+                background: '#ecfdf5', color: '#00a884',
+                boxShadow: '0 4px 14px rgba(0, 168, 132, 0.15)',
+                marginBottom: '0.75rem', fontSize: '1.35rem',
+                transform: `translate3d(0, ${Math.max(-25, Math.min(25, (scrollY - 450) * -0.08))}px, 0)`,
+              }}
+            >
               <FaIcon name="ticket-alt" />
             </div>
             <h2 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.03em', marginBottom: '0.25rem' }}>
@@ -595,21 +669,31 @@ function Home() {
             border: '1px solid rgba(52, 211, 153, 0.35)',
           }}
         >
-          {/* Decorative glowing gradient blur with Parallax Depth */}
+          {/* Decorative glowing gradient blur with Enhanced Parallax Depth */}
           <div 
-            className="parallax-gpu absolute -right-16 -top-16 w-72 h-72 rounded-full pointer-events-none opacity-25 blur-3xl"
+            className="parallax-gpu absolute -right-16 -top-16 w-80 h-80 rounded-full pointer-events-none opacity-35 blur-3xl"
             style={{ 
               background: '#34d399',
-              transform: `translate3d(${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? 0.03 : 0.06)))}px, ${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? -0.04 : -0.07)))}px, 0)`,
+              transform: `translate3d(${Math.max(-80, Math.min(80, (scrollY - 700) * (isMobile ? 0.08 : 0.16)))}px, ${Math.max(-80, Math.min(80, (scrollY - 700) * (isMobile ? -0.1 : -0.2)))}px, 0)`,
             }}
           />
           <div 
-            className="parallax-gpu absolute -left-16 -bottom-16 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl"
+            className="parallax-gpu absolute -left-16 -bottom-16 w-80 h-80 rounded-full pointer-events-none opacity-30 blur-3xl"
             style={{ 
               background: '#06b6d4',
-              transform: `translate3d(${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? -0.03 : -0.05)))}px, ${Math.max(-30, Math.min(30, (scrollY - 700) * (isMobile ? 0.03 : 0.06)))}px, 0)`,
+              transform: `translate3d(${Math.max(-80, Math.min(80, (scrollY - 700) * (isMobile ? -0.08 : -0.15)))}px, ${Math.max(-80, Math.min(80, (scrollY - 700) * (isMobile ? 0.08 : 0.18)))}px, 0)`,
             }}
           />
+
+          {/* Crisp Floating Decorative Icon with Tangible Parallax Rotation */}
+          <div 
+            className="parallax-gpu pointer-events-none absolute right-6 -bottom-4 opacity-25 text-emerald-300 text-7xl hidden lg:block"
+            style={{
+              transform: `translate3d(0, ${Math.max(-50, Math.min(50, (scrollY - 750) * -0.15))}px, 0) rotate(${Math.max(-12, Math.min(12, (scrollY - 750) * 0.04))}deg)`,
+            }}
+          >
+            <i className="fas fa-gift" />
+          </div>
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="max-w-2xl">
@@ -963,14 +1047,14 @@ function Home() {
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
                   {[
-                    { icon: 'play-circle', label: 'YouTube 4K', color: '#ef4444', delay: '0s' },
-                    { icon: 'gamepad', label: 'Low Latency Gaming', color: '#8b5cf6', delay: '1.5s' },
-                    { icon: 'video', label: 'Live Streaming', color: '#0284c7', delay: '3s' },
-                    { icon: 'bolt', label: 'Turbo Speed', color: '#00a884', delay: '4.5s' },
+                    { icon: 'play-circle', label: 'YouTube 4K', color: '#ef4444', delay: '0s', offsetMultiplier: 0.05 },
+                    { icon: 'gamepad', label: 'Low Latency Gaming', color: '#8b5cf6', delay: '1.5s', offsetMultiplier: -0.05 },
+                    { icon: 'video', label: 'Live Streaming', color: '#0284c7', delay: '3s', offsetMultiplier: 0.06 },
+                    { icon: 'bolt', label: 'Turbo Speed', color: '#00a884', delay: '4.5s', offsetMultiplier: -0.06 },
                   ].map((tag) => (
                     <div 
                       key={tag.label} 
-                      className="animate-float-subtle"
+                      className="parallax-gpu animate-float-subtle"
                       style={{
                         animationDelay: tag.delay,
                         display: 'flex', alignItems: 'center', gap: '0.5rem',
@@ -979,6 +1063,7 @@ function Home() {
                         border: '1px solid #e2e8f0',
                         borderRadius: '9999px',
                         boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                        transform: `translate3d(0, ${Math.max(-25, Math.min(25, (scrollY - 1300) * (isMobile ? tag.offsetMultiplier * 0.5 : tag.offsetMultiplier)))}px, 0)`,
                       }}
                     >
                       <i className={`fas fa-${tag.icon}`} style={{ color: tag.color }} />
